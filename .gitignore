@@ -16,6 +16,7 @@ apps/demo/src/theme/styles.generated.ts
 # IDE
 .idea/
 .vscode/
+.cursor/
 *.swp
 *.swo
 .DS_Store
