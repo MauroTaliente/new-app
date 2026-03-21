@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.npmjs.com/package/@lib/i18n/lib-i18n.config.schema.json",
+  "title": "libI18n",
+  "description": "Misma forma que en @lib/styles: libPersistence (cookieName, localStorageKey, persistenceMode) + campos de locale. Mantener alineado con lib.config.schema.json $defs.libI18n.",
+  "allOf": [
+    {
+      "type": "object",
+      "title": "libPersistence",
+      "description": "Persistencia browser compartida con libTheme.",
+      "properties": {
+        "cookieName": {
+          "type": "string",
+          "description": "Nombre de la cookie cuando el backend activo es cookie."
+        },
+        "localStorageKey": {
+          "type": "string",
+          "description": "Clave de localStorage cuando el backend activo es localStorage."
+        },
+        "persistenceMode": {
+          "type": "string",
+          "enum": ["localStorage", "cookie"],
+          "description": "Backend por defecto; la app puede leer esto al armar resolveInitialLocale."
+        }
+      },
+      "additionalProperties": true
+    },
+    {
+      "type": "object",
+      "properties": {
+        "defaultLocale": {
+          "type": "string",
+          "description": "Locale por defecto (e.g. es)."
+        },
+        "locales": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Códigos permitidos."
+        },
+        "localesDirectory": {
+          "type": "string",
+          "description": "Directorio de mensajes por idioma, relativo a lib.config.json."
+        },
+        "urlLocalePattern": {
+          "type": "string",
+          "description": "Regex string para pathname (primer grupo = locale)."
+        },
+        "generatedTypesOutput": {
+          "type": "string",
+          "description": "Reservado para tipos generados."
+        }
+      },
+      "additionalProperties": true
+    }
+  ]
+}
