@@ -1,0 +1,22 @@
+{
+  "name": "@lib/generate",
+  "version": "0.0.1",
+  "description": "Unified codegen: lib-styles-generate + lib-networking-generate",
+  "type": "module",
+  "bin": {
+    "lib-generate": "./dist/bin/lib-generate.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/bin/lib-generate.ts --format esm --dts --outDir dist/bin"
+  },
+  "dependencies": {
+    "@lib/networking": "workspace:*",
+    "@lib/styles": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsup": "^8.4.0",
+    "typescript": "^5"
+  }
+}
