@@ -1,4 +1,4 @@
-# `@lib/theme`
+# `@maurotaliente/react-theme`
 
 React theme runtime: context + DOM sync + persistence hooks.
 

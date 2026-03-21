@@ -1,6 +1,6 @@
-# @lib/styles
+# @maurotaliente/react-styles
 
-## `lib-styles-generate` — config
+## `react-styles-generate` — config
 
 The CLI walks **up** from `cwd` looking for (first match wins):
 
@@ -10,13 +10,13 @@ The CLI walks **up** from `cwd` looking for (first match wins):
 
 ### JSON Schema — IDE autocomplete
 
-You **do not** need to repeat `$schema` in every `lib.config.json` if the repo defines **`json.schemas`** in `.vscode/settings.json` (Cursor/VS Code): map `**/lib.config.json` to `./node_modules/@lib/styles/lib.config.schema.json` from the **workspace root** (where `node_modules` lives after `pnpm install`).
+You **do not** need to repeat `$schema` in every `lib.config.json` if the repo defines **`json.schemas`** in `.vscode/settings.json` (Cursor/VS Code): map `**/lib.config.json` to `./node_modules/@maurotaliente/react-styles/lib.config.schema.json` from the **workspace root** (where `node_modules` lives after `pnpm install`).
 
 If you open only a subfolder as the workspace or use another editor, declare the schema in the JSON file:
 
 ```json
 {
-  "$schema": "./node_modules/@lib/styles/lib.config.schema.json",
+  "$schema": "./node_modules/@maurotaliente/react-styles/lib.config.schema.json",
   "libStyles": {
     "fromCss": "./src/theme",
     "domainsOrder": ["tokens", "palette", "theme"],
@@ -25,7 +25,7 @@ If you open only a subfolder as the workspace or use another editor, declare the
 }
 ```
 
-Package export: `@lib/styles/lib.config.schema.json` (alias: `lib-styles.schema.json` → same file).
+Package export: `@maurotaliente/react-styles/lib.config.schema.json` (alias: `lib-styles.schema.json` → same file).
 
 Use a `libStyles` object:
 

@@ -1,10 +1,10 @@
 /**
- * Helpers para acoplar tipos al objeto `styles` emitido por `lib-styles-generate`.
+ * Helpers para acoplar tipos al objeto `styles` emitido por `react-styles-generate`.
  *
  * @example
  * ```ts
  * import { styles } from './theme/styles.generated';
- * import type { ExtractThemeName } from '@lib/styles';
+ * import type { ExtractThemeName } from '@maurotaliente/react-styles';
  * type ThemeName = ExtractThemeName<typeof styles>;
  * ```
  */

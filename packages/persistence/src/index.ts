@@ -10,6 +10,14 @@ export {
 } from './storage';
 
 export {
+  createVersionedStorageApi,
+  type VersionedEnvelope,
+  type VersionedStorageOptions,
+} from './versioned-storage';
+
+export { subscribeStorageKey } from './storage-events';
+
+export {
   parseDocumentCookie,
   getCookie,
   setCookie,
@@ -35,4 +43,4 @@ export {
   createLoadRequestPropsFromAuthProfiles,
 } from './http-auth-load';
 
-export type { AuthProfile } from '@lib/networking';
+export type { AuthProfile } from '@maurotaliente/react-networking';

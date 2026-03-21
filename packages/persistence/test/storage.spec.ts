@@ -6,6 +6,10 @@ describe('createStorageApi (localStorage)', () => {
     localStorage.clear();
   });
 
+  it('returns initData when name is empty', () => {
+    expect(getLocalStorage({ name: '', initData: 'fallback' })).toBe('fallback');
+  });
+
   it('setLocal round-trips JSON values', () => {
     setLocalStorage({ name: 'k', params: { a: 1 } });
     expect(getLocalStorage<{ a: number }>({ name: 'k', initData: { a: 0 } })).toEqual({ a: 1 });

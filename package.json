@@ -8,8 +8,9 @@
     "build:packages": "pnpm run -r --filter \"./packages/*\" build",
     "dev": "pnpm run -r --parallel dev",
     "clean": "pnpm -r exec rm -rf dist",
-    "test": "pnpm run -r --filter \"./packages/*\" test",
-    "generate": "pnpm run --filter demo generate"
+    "test": "pnpm run -r --filter \"./packages/*\" test && pnpm --filter demo test",
+    "generate": "pnpm run --filter demo generate",
+    "publish:packages": "pnpm publish -r --filter './packages/*'"
   },
   "packageManager": "pnpm@10.10.0"
 }

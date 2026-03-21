@@ -1,8 +1,8 @@
 import { type DeepPartial } from 'ts-essentials';
 import HttpCode from './http-status-code';
 
-// Helpers Types
-export type Expand<T> = T extends (...args: any) => any
+// Helpers Types — `any` only in the conditional so call signatures (Action/Setter) are preserved.
+export type Expand<T> = T extends (...args: any[]) => any
   ? T
   : T extends object
   ? { [K in keyof T]: Expand<T[K]> }
@@ -15,19 +15,21 @@ export interface SettingsProps extends RequestInit {
   method?: HttpMethod;
 }
 
-export interface RequestProps<Params = any> extends Omit<SettingsProps, 'body'> {
+export interface RequestProps<Params = unknown> extends Omit<SettingsProps, 'body'> {
   url?: string;
   body?: Params;
 }
 
-export interface RequestReturn<Data = any> extends DeepPartial<Response> {
+export interface RequestReturn<Data = unknown> extends DeepPartial<Response> {
   status: HttpCode;
   data: Data;
-  error?: any;
-  errors?: any;
+  error?: unknown;
+  errors?: unknown;
 }
 
-export type LoadRequestProps = (shared: RequestProps<any>) => Promise<Partial<RequestProps<any>>>;
+export type LoadRequestProps = (
+  shared: RequestProps<unknown>,
+) => Promise<Partial<RequestProps<unknown>>>;
 
 export interface JoinResponsesProps<Response> extends RequestReturn<Response> {
   loading?: boolean;
@@ -40,7 +42,7 @@ export interface Request<Params, Data> {
 }
 
 // Server Types
-export interface DynamicCookieOptions<Data = any> {
+export interface DynamicCookieOptions<Data = unknown> {
   name: string;
   initData?: Data;
   params?: Data;
@@ -60,12 +62,12 @@ export interface StaticOptions {
   updater?: (context: Context) => void;
   state?: Context;
   method?: HttpMethod;
-  onMount?: (model: any) => void;
-  onBefore?: (model: any) => void;
-  onFinal?: (model: any) => void;
-  onSuccess?: (model: any) => void;
-  onError?: (model: any) => void;
-  params?: any;
+  onMount?: (model: unknown) => void;
+  onBefore?: (model: unknown) => void;
+  onFinal?: (model: unknown) => void;
+  onSuccess?: (model: unknown) => void;
+  onError?: (model: unknown) => void;
+  params?: unknown;
   auto?: boolean;
   prevent?: boolean;
   /** Extra attempts after the first failure (network throw or retryable HTTP). Total attempts = 1 + retries. */
@@ -74,7 +76,7 @@ export interface StaticOptions {
   retryDelayMs?: number;
   verbose?: boolean;
   initLoading?: boolean;
-  initData?: any;
+  initData?: unknown;
 }
 
 export type StaticMeta = {
@@ -87,36 +89,36 @@ export type StaticMeta = {
 
 export type StaticMemo = {
   author: string;
-  params: any;
-  data: any;
-  error: any;
+  params: unknown;
+  data: unknown;
+  error: unknown;
   loading: boolean;
   localMeta: StaticMeta;
   initMount: boolean;
-  onFinal?: (model: any) => void;
+  onFinal?: (model: unknown) => void;
 };
 
 export type StaticModel = {
   author: string;
-  params: any;
-  data: any;
-  error: any;
+  params: unknown;
+  data: unknown;
+  error: unknown;
   loading: boolean;
   meta: StaticMeta;
   status: HttpCode;
 };
 
-export type Action<P = any, R = null> = Expand<{
+export type Action<P = unknown, R = null> = Expand<{
   (params?: P, author?: string): Promise<RequestReturn<R>> | RequestReturn<R>;
 }>;
 
-export type Setter<P = any, D = any, R = null> = Expand<{
+export type Setter<P = unknown, D = unknown, R = null> = Expand<{
   (response: RequestReturn<D>, params?: P): ResponseOrData<D, R>;
 }>;
 
-export type ResponseOrData<D = any, R = null> = R extends object ? R : D;
+export type ResponseOrData<D = unknown, R = null> = R extends object ? R : D;
 
-export type DynamicOptions<Params = any, Data = any, Response = null> = {
+export type DynamicOptions<Params = unknown, Data = unknown, Response = null> = {
   name: string;
   url?: string;
   scope?: string;
@@ -140,9 +142,15 @@ export type DynamicOptions<Params = any, Data = any, Response = null> = {
   verbose?: boolean;
   initLoading?: boolean;
   initData?: ResponseOrData<Data, Response>;
+  /** Opt-in: dedupe in-flight `action` by key; optional TTL for successful 2xx `RequestReturn`. Use `'global'` for the shared cache without importing it, or pass a `RequestCache` instance. */
+  requestCache?: import('../cache/request-cache').RequestCacheOption;
+  /** Override cache key (default: `name` + `params` + optional `scope`). */
+  cacheKey?: string;
+  /** `undefined`: no memory cache (still dedupes in-flight when `requestCache` is set). `> 0`: keep last success for TTL ms. */
+  cacheTtlMs?: number;
 };
 
-export type SoftDynamicOptions<Params = any, Data = any, Response = null> = Partial<
+export type SoftDynamicOptions<Params = unknown, Data = unknown, Response = null> = Partial<
   DynamicOptions<Params, Data, Response>
 >;
 
@@ -158,7 +166,7 @@ export type DynamicModel<Params, Data, Response = null> = Expand<{
   isFirst: boolean;
   data: ResponseOrData<Data, Response>;
   status: HttpCode;
-  error: any;
+  error: unknown;
   meta: StaticMeta;
   trigger: (
     params?: Params,
@@ -174,7 +182,7 @@ export type DynamicMemo<Params, Data, Response = null> = {
   isRepeated: boolean;
   isFirst: boolean;
   data: ResponseOrData<Data, Response>;
-  error: any;
+  error: unknown;
   localMeta: StaticMeta;
   initMount: boolean;
   onFinal: (model: DynamicModel<Params, Data, Response>) => void;
@@ -183,7 +191,7 @@ export type DynamicMemo<Params, Data, Response = null> = {
 export interface AsyncFetch<Params, Data, Response = null> {
   (
     props: DynamicOptions<Params, Data, Response>,
-    watch: any[],
+    watch: readonly unknown[],
   ): DynamicModel<Params, Data, Response>;
 }
 
@@ -199,7 +207,7 @@ export const emptyMeta: StaticMeta = {
 export const runInClient = typeof document === 'undefined';
 export class AsyncMeta {
   token: string;
-  recordList: Record<string, any>;
+  recordList: Record<string, unknown>;
 
   constructor() {
     this.token = '';

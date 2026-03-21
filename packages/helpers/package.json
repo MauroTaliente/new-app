@@ -1,6 +1,13 @@
 {
-  "name": "@lib/helpers",
+  "name": "@maurotaliente/react-helpers",
   "version": "0.0.1",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -1,6 +1,13 @@
 {
-  "name": "@lib/theme",
+  "name": "@maurotaliente/react-theme",
   "version": "0.0.1",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -18,8 +25,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lib/context": "workspace:*",
-    "@lib/styles": "workspace:*"
+    "@maurotaliente/react-context": "workspace:*",
+    "@maurotaliente/react-styles": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18",

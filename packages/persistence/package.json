@@ -1,7 +1,14 @@
 {
-  "name": "@lib/persistence",
+  "name": "@maurotaliente/react-persistence",
   "version": "0.0.1",
   "description": "Browser localStorage/sessionStorage and cookie persistence with optional Next.js server adapter",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -24,8 +31,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lib/helpers": "workspace:*",
-    "@lib/networking": "workspace:*"
+    "@maurotaliente/react-helpers": "workspace:*",
+    "@maurotaliente/react-networking": "workspace:*"
   },
   "peerDependencies": {
     "next": ">=13",

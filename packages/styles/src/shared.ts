@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge, type ClassNameValue } from 'tailwind-merge';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { isArray, isObject } from '@lib/helpers';
+import { isArray, isObject } from '@maurotaliente/react-helpers';
 import { BuildStyles, ProcessedModel } from './module';
 
 /**

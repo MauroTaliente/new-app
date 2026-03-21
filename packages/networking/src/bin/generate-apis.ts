@@ -20,7 +20,7 @@ function parseArgs(): { config: string; outputCli: string | undefined } {
     } else if (a === '--output' || a === '-o') {
       outputCli = args[++i] ?? outputCli;
     } else if (a === '--help' || a === '-h') {
-      console.log(`Usage: lib-networking-generate [--config lib.config.json] [--output src/api/apis.generated.ts]
+      console.log(`Usage: react-networking-generate [--config lib.config.json] [--output src/api/apis.generated.ts]
 Paths: CLI --output overrides libNetworking.output in config; default is src/api/apis.generated.ts (cwd-relative).
 Reads libNetworking.apis (object keyed by API name) and emits:
   - apis.generated.ts: createApiRegistry, export const apis, export const *Request per API
@@ -60,8 +60,8 @@ function run() {
   mkdirSync(dirname(hooksPath), { recursive: true });
   writeFileSync(outputPath, source, 'utf8');
   writeFileSync(hooksPath, hooksSource, 'utf8');
-  console.log(`lib-networking-generate: wrote ${outputPath}`);
-  console.log(`lib-networking-generate: wrote ${hooksPath}`);
+  console.log(`react-networking-generate: wrote ${outputPath}`);
+  console.log(`react-networking-generate: wrote ${hooksPath}`);
 }
 
 run();

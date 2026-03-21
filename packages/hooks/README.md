@@ -1,4 +1,4 @@
-# @lib/hooks
+# @maurotaliente/react-hooks
 
 React hooks: timer, viewport, route query, media.
 

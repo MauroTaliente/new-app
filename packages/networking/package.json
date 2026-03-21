@@ -1,13 +1,20 @@
 {
-  "name": "@lib/networking",
+  "name": "@maurotaliente/react-networking",
   "version": "0.0.1",
   "description": "HTTP helpers, useAsyncFetch (one in-flight request per instance), and event bus",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "lib-networking-generate": "./dist/bin/generate-apis.js"
+    "react-networking-generate": "./dist/bin/generate-apis.js"
   },
   "exports": {
     ".": {
@@ -28,7 +35,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lib/helpers": "workspace:*",
+    "@maurotaliente/react-helpers": "workspace:*",
     "ts-essentials": "^10.0.4",
     "use-memo-one": "^1.1.3"
   },

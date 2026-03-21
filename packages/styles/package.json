@@ -1,6 +1,10 @@
 {
-  "name": "@lib/styles",
+  "name": "@maurotaliente/react-styles",
   "version": "0.0.1",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "files": [
     "dist",
@@ -12,7 +16,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "lib-styles-generate": "./dist/bin/generate-tokens.js"
+    "react-styles-generate": "./dist/bin/generate-tokens.js"
   },
   "exports": {
     ".": {
@@ -36,7 +40,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lib/helpers": "workspace:*",
+    "@maurotaliente/react-helpers": "workspace:*",
     "chokidar": "^4.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

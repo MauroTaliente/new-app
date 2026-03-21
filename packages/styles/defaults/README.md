@@ -1,6 +1,6 @@
 # Default theme CSS
 
-Shipped with `@lib/styles` so `lib-styles-generate` works without extra arguments.
+Shipped with `@maurotaliente/react-styles` so `react-styles-generate` works without extra arguments.
 
 Edit these files to change library defaults, or pass `--from-css <your-app/src/theme>` to use your app’s CSS as the source of truth.
 
@@ -13,4 +13,4 @@ Edit these files to change library defaults, or pass `--from-css <your-app/src/t
 
 ## `var()` resolution
 
-`lib-styles-generate` resolves `var(--*)` to literals **only** using declarations from your three CSS files. Lookup order: for `theme.*`, **mode → tokens → palette** (tokens hold scales like border width / radius / shadow). Unresolved references stay as strings; pure integer literals become `number` in TS.
+`react-styles-generate` resolves `var(--*)` to literals **only** using declarations from your three CSS files. Lookup order: for `theme.*`, **mode → tokens → palette** (tokens hold scales like border width / radius / shadow). Unresolved references stay as strings; pure integer literals become `number` in TS.

@@ -1,5 +1,5 @@
 /**
- * Static defaults for `@lib/styles` runtime token helpers (`tokens/index.ts`).
+ * Static defaults for `@maurotaliente/react-styles` runtime token helpers (`tokens/index.ts`).
  * Prefer app-level `styles.generated.ts` from CSS for app truth.
  */
 export const defaultTokensData = {

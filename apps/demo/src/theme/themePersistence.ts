@@ -3,7 +3,7 @@
  *
  * Override: `VITE_THEME_PERSISTENCE=cookie` | `localStorage` (p. ej. probar sin tocar lib.config).
  */
-import { getCookie, getLocalStorage, setCookie, setLocalStorage } from '@lib/persistence';
+import { getCookie, getLocalStorage, setCookie, setLocalStorage } from '@maurotaliente/react-persistence';
 import type { ThemeName } from './styles.generated';
 import libConfig from '../../lib.config.json';
 

@@ -48,12 +48,12 @@ const createDataFlow = (
       ? `${baseUrl}${childUrl}`
       : baseUrl || childUrl || '/';
 
-    const mergedProps: RequestProps<Params> = {
+    const mergedProps = {
       ...shared,
       ...loadedProps,
       ...props,
       url: mergedUrl,
-    };
+    } as RequestProps<Params>;
 
     return request<Params, Data>(mergedProps);
   };

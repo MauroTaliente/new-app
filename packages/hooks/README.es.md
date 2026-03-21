@@ -1,10 +1,10 @@
-# @lib/hooks (Español)
+# @maurotaliente/react-hooks (Español)
 
-Hooks reutilizables para React y utilidades pequeñas. Depende de `@lib/helpers` (p. ej. `mergeDeepRight` en helpers de viewport).
+Hooks reutilizables para React y utilidades pequeñas. Depende de `@maurotaliente/react-helpers` (p. ej. `mergeDeepRight` en helpers de viewport).
 
 ## Instalación (monorepo)
 
-`"@lib/hooks": "workspace:*"`
+`"@maurotaliente/react-hooks": "workspace:*"`
 
 ### Convención `.ts` / `.tsx`
 
@@ -16,7 +16,7 @@ Solo **`.tsx`** si el archivo contiene **JSX**. Hooks sin JSX van en **`.ts`** (
 - **Nombres:** `*.spec.ts` (o `*.spec.tsx` si hay JSX). Imports: `../src/...`.
 - **Herramienta:** Vitest + happy-dom + Testing Library (`renderHook`).
 
-`pnpm --filter @lib/hooks test`
+`pnpm --filter @maurotaliente/react-hooks test`
 
 Convención `.spec` vs `.test`: [docs/testing.es.md](../../docs/testing.es.md).
 
@@ -35,7 +35,7 @@ Convención `.spec` vs `.test`: [docs/testing.es.md](../../docs/testing.es.md).
 | `useMediaQuery` | Media query |
 | `usePrefersColorScheme` | `prefers-color-scheme` |
 
-## Next.js (`@lib/hooks/next`)
+## Next.js (`@maurotaliente/react-hooks/next`)
 
 | Export | Notas |
 |--------|--------|
@@ -46,6 +46,6 @@ Requiere `next` en la app que importe este entry.
 
 ## Fuera de alcance a propósito
 
-La capa de requests de la app está en **`@lib/networking`**. Tema e idioma: **`@lib/theme`**, **`@lib/persistence`**, **`@lib/i18n`**.
+La capa de requests de la app está en **`@maurotaliente/react-networking`**. Tema e idioma: **`@maurotaliente/react-theme`**, **`@maurotaliente/react-persistence`**, **`@maurotaliente/react-i18n`**.
 
-`useCssVariable` y `useBuildStyles` están en **`@lib/styles`**.
+`useCssVariable` y `useBuildStyles` están en **`@maurotaliente/react-styles`**.

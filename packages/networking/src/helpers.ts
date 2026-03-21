@@ -1,4 +1,4 @@
-import { isArray, isObject, mergeDeepRight } from '@lib/helpers';
+import { isArray, isObject, mergeDeepRight } from '@maurotaliente/react-helpers';
 import type { JoinResponsesProps, HttpMethod } from './types';
 
 /** HTTP statuses after which another attempt may help (unstable server, timeout, rate limit). */

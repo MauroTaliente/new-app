@@ -1,7 +1,14 @@
 {
-  "name": "@lib/hooks",
+  "name": "@maurotaliente/react-hooks",
   "version": "0.0.1",
   "description": "React hooks: timer, viewport, route query, media",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -24,7 +31,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@lib/helpers": "workspace:*"
+    "@maurotaliente/react-helpers": "workspace:*"
   },
   "peerDependencies": {
     "next": ">=13",

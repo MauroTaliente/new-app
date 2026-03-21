@@ -127,7 +127,7 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
       domains = discoverCssStemsInDir(fromCssDir, configSection.excludeStems);
       if (domains.length === 0) {
         throw new Error(
-          `[lib-styles-generate] No *.css files in ${fromCssDir}\n` +
+          `[react-styles-generate] No *.css files in ${fromCssDir}\n` +
             'Add CSS files, set `libStyles.domainsOrder` in lib.config.json, or pass --domains <stems>.',
         );
       }
@@ -200,7 +200,7 @@ function resolveDomainPaths(merged: ResolvedGenerateOptions): ResolvedDomainPath
 function assertReadable(filePath: string, label: string): void {
   if (!existsSync(filePath)) {
     throw new Error(
-      `[lib-styles-generate] Missing ${label}: ${filePath}\n` +
+      `[react-styles-generate] Missing ${label}: ${filePath}\n` +
         'Check `libStyles.domainsOrder` / file names, or pass --from-css <dir> with matching <stem>.css files.',
     );
   }
@@ -241,7 +241,7 @@ export async function generateTokens(options: GenerateTokensOptions = {}): Promi
   const domainOrder = orderedStems.map(stemToCamelCase);
 
   if (merged.verbose) {
-    console.log('[lib-styles-generate] Resolved:');
+    console.log('[react-styles-generate] Resolved:');
     if (merged.configPath) console.log('  config:', merged.configPath);
     console.log('  fromCss:', merged.fromCssDir);
     console.log('  domains (cascade):', orderedStems.join(' → '));

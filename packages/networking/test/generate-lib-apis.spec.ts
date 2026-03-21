@@ -3,6 +3,7 @@ import {
   deriveHooksGeneratedPath,
   generateApisHooksModuleSource,
   generateApisModuleSource,
+  readLibNetworkingOutputPaths,
 } from '../src/generate-lib-apis.js';
 
 describe('generateApisModuleSource', () => {
@@ -44,6 +45,28 @@ describe('generateApisModuleSource', () => {
       /export const definitions = \{\} satisfies Record<string, ApiClientConfigBody>/s,
     );
     expect(src).toContain('export type ApiNames = keyof typeof apis');
+  });
+});
+
+describe('readLibNetworkingOutputPaths', () => {
+  it('returns output and hooksOutput when present', () => {
+    expect(
+      readLibNetworkingOutputPaths({
+        libNetworking: { output: './a/apis.generated.ts', hooksOutput: './b/hooks.tsx', apis: {} },
+      }),
+    ).toEqual({ output: './a/apis.generated.ts', hooksOutput: './b/hooks.tsx' });
+  });
+
+  it('returns empty object when libNetworking is missing', () => {
+    expect(readLibNetworkingOutputPaths({})).toEqual({});
+  });
+
+  it('returns undefined strings when output is not a string', () => {
+    expect(
+      readLibNetworkingOutputPaths({
+        libNetworking: { output: 1 as unknown as string, apis: {} },
+      }),
+    ).toEqual({ output: undefined, hooksOutput: undefined });
   });
 });
 

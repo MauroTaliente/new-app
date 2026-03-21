@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
+import { createRequestCache } from '../src/cache/request-cache.js';
 import { useAsyncFetch } from '../src/fetch/fetch.client.js';
 import HttpCode from '../src/types/http-status-code.js';
 
@@ -123,6 +124,50 @@ describe('useAsyncFetch', () => {
     await waitFor(() => {
       expect(result.current.hasLoadedOnce).toBe(true);
       expect(result.current.initialLoading).toBe(false);
+    });
+  });
+
+  it('accepts requestCache preset global', async () => {
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        {
+          name: 'cache-preset',
+          requestCache: 'global',
+          cacheTtlMs: 60_000,
+          action: async () => ({ status: HttpCode.OK, data: { ok: true } }),
+        },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ ok: true });
+    });
+  });
+
+  it('accepts a custom RequestCache instance', async () => {
+    const myCache = createRequestCache();
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        {
+          name: 'cache-custom',
+          requestCache: myCache,
+          action: async () => ({ status: HttpCode.OK, data: { custom: true } }),
+        },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ custom: true });
     });
   });
 });

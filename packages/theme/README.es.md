@@ -1,8 +1,8 @@
-# `@lib/theme`
+# `@maurotaliente/react-theme`
 
-Runtime de tema para React: **memoria** (context) + **sync DOM** (`body` / `documentElement` / `data-theme`), con enganche **`onThemeChange`** para persistencia (`@lib/persistence`, cookies, Server Actions, etc.).
+Runtime de tema para React: **memoria** (context) + **sync DOM** (`body` / `documentElement` / `data-theme`), con enganche **`onThemeChange`** para persistencia (`@maurotaliente/react-persistence`, cookies, Server Actions, etc.).
 
-La **definición** de nombres de tema sigue en **CSS → `lib-styles-generate` → `styles.generated.ts`** (una sola fuente de verdad).
+La **definición** de nombres de tema sigue en **CSS → `react-styles-generate` → `styles.generated.ts`** (una sola fuente de verdad).
 
 ## `lib.config.json` — `libTheme`
 
@@ -10,18 +10,18 @@ Junto a `libStyles`, **`libTheme`** comparte **`libPersistence`** con **`libI18n
 
 ## Dependencias internas (recomendado en monorepo)
 
-- `@lib/context` — estado del tema
-- `@lib/styles` — tipos `ExtractThemeName` / `ExtractDefaultTheme` alineados al objeto `styles` generado
+- `@maurotaliente/react-context` — estado del tema
+- `@maurotaliente/react-styles` — tipos `ExtractThemeName` / `ExtractDefaultTheme` alineados al objeto `styles` generado
 
-Instalación típica en una app que ya usa `@lib/styles` y `@lib/persistence`:
+Instalación típica en una app que ya usa `@maurotaliente/react-styles` y `@maurotaliente/react-persistence`:
 
 ```json
 {
   "dependencies": {
-    "@lib/theme": "workspace:*",
-    "@lib/styles": "workspace:*",
-    "@lib/persistence": "workspace:*",
-    "@lib/context": "workspace:*"
+    "@maurotaliente/react-theme": "workspace:*",
+    "@maurotaliente/react-styles": "workspace:*",
+    "@maurotaliente/react-persistence": "workspace:*",
+    "@maurotaliente/react-context": "workspace:*"
   }
 }
 ```
@@ -29,7 +29,7 @@ Instalación típica en una app que ya usa `@lib/styles` y `@lib/persistence`:
 ## Uso
 
 ```tsx
-import { createThemeRuntime, type ExtractThemeName } from '@lib/theme';
+import { createThemeRuntime, type ExtractThemeName } from '@maurotaliente/react-theme';
 import { styles } from './theme/styles.generated';
 
 type ThemeName = ExtractThemeName<typeof styles>;
@@ -52,11 +52,11 @@ export const { ThemeProvider, ThemeBodySync, useTheme } = createThemeRuntime<The
 
 ## Next.js / SSR
 
-`@lib/theme` **no** importa `next/headers`. Patrones:
+`@maurotaliente/react-theme` **no** importa `next/headers`. Patrones:
 
 ### A — Cookie legible en el cliente (como el demo con Vite)
 
-En el entry del cliente: `getInitialTheme(defaultTheme)` + `onThemeChange` escribiendo cookie/`localStorage` con `@lib/persistence`.
+En el entry del cliente: `getInitialTheme(defaultTheme)` + `onThemeChange` escribiendo cookie/`localStorage` con `@maurotaliente/react-persistence`.
 
 ### B — Valor ya resuelto en el servidor (layout RSC)
 
@@ -64,7 +64,7 @@ En el entry del cliente: `getInitialTheme(defaultTheme)` + `onThemeChange` escri
 2. Pintar **HTML** coherente: `<html className={theme} data-theme={theme}>` (o solo `body`).
 3. En el **árbol cliente**, `<ThemeProvider value={theme}>` con el **mismo** string para evitar mismatch de hidratación.
 
-`@lib/theme` solo necesita que **`value`** coincida con lo que ya mostró el servidor.
+`@maurotaliente/react-theme` solo necesita que **`value`** coincida con lo que ya mostró el servidor.
 
 ### C — Cookie httpOnly
 
@@ -76,10 +76,10 @@ La lectura solo en servidor: pasás **`value={theme}`** desde el layout; en **`o
 |--------|-----|
 | `createThemeRuntime` | Factory: `ThemeProvider`, `ThemeBodySync`, `useTheme`, … |
 | `applyThemeToDocument` / `mountThemeToDocument` / … | Primitivas DOM (tests, casos avanzados) |
-| `ExtractThemeName`, `ExtractDefaultTheme` | Re-export desde `@lib/styles` |
+| `ExtractThemeName`, `ExtractDefaultTheme` | Re-export desde `@maurotaliente/react-styles` |
 
 ## Tests
 
 ```bash
-pnpm --filter @lib/theme test
+pnpm --filter @maurotaliente/react-theme test
 ```

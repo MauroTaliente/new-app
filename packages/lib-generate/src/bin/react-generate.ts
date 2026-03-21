@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Runs `lib-styles-generate` then `lib-networking-generate` so one command
+ * Runs `react-styles-generate` then `react-networking-generate` so one command
  * refreshes CSS-derived tokens and API registry + client hooks from `lib.config.json`.
  */
 
@@ -17,7 +17,7 @@ function resolvePackageBin(packageName: string, binName: string): string {
   return join(dirname(resolved), 'bin', binName);
 }
 
-/** Args relevant to lib-networking-generate (`--config`, `--output`). */
+/** Args relevant to react-networking-generate (`--config`, `--output`). */
 function extractNetworkingArgs(argv: string[]): string[] {
   const result: string[] = [];
   for (let i = 0; i < argv.length; i++) {
@@ -36,23 +36,23 @@ function extractNetworkingArgs(argv: string[]): string[] {
 const argv = process.argv.slice(2);
 
 if (argv.includes('--help') || argv.includes('-h')) {
-  console.log(`Usage: lib-generate [options...]
+  console.log(`Usage: react-generate [options...]
 
 Runs in order:
-  1) lib-styles-generate — same flags as standalone (see lib-styles-generate --help)
-  2) lib-networking-generate — uses --config / --output from argv if present
+  1) react-styles-generate — same flags as standalone (see react-styles-generate --help)
+  2) react-networking-generate — uses --config / --output from argv if present
 
 Typical app (cwd next to lib.config.json):
-  lib-generate
+  react-generate
 
 With explicit config path:
-  lib-generate --config ./lib.config.json
+  react-generate --config ./lib.config.json
 `);
   process.exit(0);
 }
 
-const stylesBin = resolvePackageBin('@lib/styles', 'generate-tokens.js');
-const networkingBin = resolvePackageBin('@lib/networking', 'generate-apis.js');
+const stylesBin = resolvePackageBin('@maurotaliente/react-styles', 'generate-tokens.js');
+const networkingBin = resolvePackageBin('@maurotaliente/react-networking', 'generate-apis.js');
 
 const stylesRun = spawnSync(process.execPath, [stylesBin, ...argv], {
   stdio: 'inherit',

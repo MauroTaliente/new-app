@@ -1,7 +1,7 @@
 'use client';
 
-import { useAsyncFetch, HttpCode } from '@lib/networking';
-import type { Action, DynamicOptions } from '@lib/networking';
+import { useAsyncFetch, HttpCode } from '@maurotaliente/react-networking';
+import type { Action, DynamicOptions } from '@maurotaliente/react-networking';
 import type { StorageDriverOptions } from './storage';
 import { getLocalStorage, putLocalStorage, setLocalStorage } from './storage';
 

@@ -6,8 +6,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useMemo, useCallback } from 'use-memo-one';
-import { isDeepEqual } from '@lib/helpers';
+import { isDeepEqual } from '@maurotaliente/react-helpers';
 import { shouldRetryAfterHttpFailure, sleepMs } from '../helpers';
+import {
+  buildRequestCacheKey,
+  defaultRequestCache,
+  type RequestCache as LibRequestCache,
+  type RequestCacheOption,
+} from '../cache/request-cache';
 import {
   HttpCode,
   emptyMeta,
@@ -15,8 +21,17 @@ import {
   type DynamicOptions,
   type DynamicModel,
   type ResponseOrData,
+  type RequestReturn,
   type Context,
 } from '../types';
+
+function resolveRequestCacheOption(
+  option: RequestCacheOption | undefined,
+): LibRequestCache | undefined {
+  if (option === undefined) return undefined;
+  if (option === 'global') return defaultRequestCache;
+  return option;
+}
 
 const useAsyncFetch = <Params, Data, Response = null>(
   {
@@ -30,8 +45,9 @@ const useAsyncFetch = <Params, Data, Response = null>(
     verbose = false,
     initData = undefined,
     initLoading = false,
-    action = (data: any) => ({ status: HttpCode.OK, data }),
-    setter = ({ data }: any) => data,
+    action = (params?: Params) =>
+      ({ status: HttpCode.OK, data: params as unknown as Data }) as RequestReturn<Data>,
+    setter = ({ data }: RequestReturn<Data>) => data as ResponseOrData<Data, Response>,
     updater = () => { },
     onChange = () => { },
     onMount = () => { },
@@ -40,8 +56,12 @@ const useAsyncFetch = <Params, Data, Response = null>(
     onSuccess = () => { },
     onError = () => { },
     onUnauthorized = () => { },
+    requestCache,
+    cacheKey,
+    cacheTtlMs,
+    scope,
   }: DynamicOptions<Params, Data, Response>,
-  watch: any[],
+  watch: readonly unknown[],
 ) => {
   const memo = useMemo(() => ({
     author: 'unknown',
@@ -53,7 +73,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     isFirst: true,
     data: initData as ResponseOrData<Data, Response>,
     onFinal,
-    error: undefined,
+    error: undefined as unknown,
   }), []);
 
   const remoteMeta = state?.recordList?.[name];
@@ -81,6 +101,10 @@ const useAsyncFetch = <Params, Data, Response = null>(
     onSuccess,
     onError,
     onUnauthorized,
+    requestCache,
+    cacheKey,
+    cacheTtlMs,
+    scope,
   });
 
   optsRef.current = {
@@ -98,6 +122,10 @@ const useAsyncFetch = <Params, Data, Response = null>(
     onSuccess,
     onError,
     onUnauthorized,
+    requestCache,
+    cacheKey,
+    cacheTtlMs,
+    scope,
   };
 
   const trigger = useCallback((newParams: any, onFinalCb: any, newAuthor = '') => {
@@ -226,7 +254,14 @@ const useAsyncFetch = <Params, Data, Response = null>(
             memo.loading = true;
             setStatus(100);
             const latest = optsRef.current;
-            const response = await latest.action(params);
+            const cache = resolveRequestCacheOption(latest.requestCache);
+            const key =
+              latest.cacheKey ?? buildRequestCacheKey(latest.name, params, latest.scope);
+            const response = cache
+              ? await cache.run<RequestReturn<Data>>(key, latest.cacheTtlMs, () =>
+                  Promise.resolve(latest.action(params)),
+                )
+              : await latest.action(params);
             if (!alive) return;
 
             memo.error = response.error || response.errors;
@@ -245,11 +280,11 @@ const useAsyncFetch = <Params, Data, Response = null>(
             if (!canHttpRetry) {
               break;
             }
-          } catch (error: any) {
+          } catch (error: unknown) {
             if (!alive) return;
             if (memo.error) console.error(memo.error);
             if (error) memo.error = error;
-            const errStatus = (error?.status ?? 500) as HttpCode;
+            const errStatus = ((error as { status?: number })?.status ?? 500) as HttpCode;
             setStatus(errStatus);
 
             if (attempt >= maxAttempts - 1) {

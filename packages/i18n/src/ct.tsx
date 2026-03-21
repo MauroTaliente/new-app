@@ -1,5 +1,5 @@
 import { Fragment, type JSX, type ReactNode } from 'react';
-import { isNullOrEmpty } from '@lib/helpers';
+import { isNullOrEmpty } from '@maurotaliente/react-helpers';
 
 type InterpolatedComponents = {
   [key: string]: (children: ReactNode[]) => ReactNode | JSX.Element;

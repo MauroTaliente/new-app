@@ -1,4 +1,4 @@
-import { cn } from '@lib/styles';
+import { cn } from '@maurotaliente/react-styles';
 import { usePokemonRequest } from './api/apis.client.generated';
 
 type PokemonListResponse = {
@@ -21,6 +21,9 @@ export function PokemonDemo() {
     initData: { results: [] },
     auto: true,
     verbose: true,
+    /** Shared in-memory cache: dedupes identical keys and keeps last 2xx response for 5 min. */
+    requestCache: 'global',
+    cacheTtlMs: 5 * 60 * 1000,
   }, []);
 
   const names = pokemonList?.results?.map((r) => r.name) ?? [];
@@ -33,7 +36,7 @@ export function PokemonDemo() {
       )}
     >
       <h2 className="text-(length:--text-xl) font-semibold text-text-100 p-space-lg">
-        @lib/networking + PokeAPI
+        @maurotaliente/react-networking + PokeAPI
       </h2>
       <p className="px-space-lg pb-space-md text-sm text-text-200">
         Generated hook <code className="bg-bg-300 px-space-xs rounded-input">usePokemonRequest</code> in{' '}

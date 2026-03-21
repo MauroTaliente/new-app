@@ -1,10 +1,10 @@
-# @lib/hooks
+# @maurotaliente/react-hooks
 
-Reusable React hooks and small utilities. Depends on `@lib/helpers` (e.g. `mergeDeepRight` for adaptive viewport helpers).
+Reusable React hooks and small utilities. Depends on `@maurotaliente/react-helpers` (e.g. `mergeDeepRight` for adaptive viewport helpers).
 
 ## Install (monorepo)
 
-`"@lib/hooks": "workspace:*"`
+`"@maurotaliente/react-hooks": "workspace:*"`
 
 ### `.ts` vs `.tsx`
 
@@ -16,7 +16,7 @@ Use **`.tsx`** only when the file contains **JSX**. Hooks without JSX use **`.ts
 - **Names:** `*.spec.ts` or `*.spec.tsx`. Imports: `../src/...`.
 - **Runner:** Vitest + happy-dom + Testing Library (`renderHook` where needed).
 
-`pnpm --filter @lib/hooks test`
+`pnpm --filter @maurotaliente/react-hooks test`
 
 See [docs/testing.en.md](../../docs/testing.en.md) for `.spec` vs `.test`.
 
@@ -35,7 +35,7 @@ See [docs/testing.en.md](../../docs/testing.en.md) for `.spec` vs `.test`.
 | `useMediaQuery` | Match media |
 | `usePrefersColorScheme` | `prefers-color-scheme` |
 
-## Next.js entry (`@lib/hooks/next`)
+## Next.js entry (`@maurotaliente/react-hooks/next`)
 
 | Export | Notes |
 |--------|--------|
@@ -46,6 +46,6 @@ Requires `next` in the app that imports this entry.
 
 ## Out of scope (by design)
 
-App-specific request wiring lives in **`@lib/networking`** (`useAsyncFetch`, generated `use*Request`). Theme and locale live in **`@lib/theme`**, **`@lib/persistence`**, and **`@lib/i18n`**.
+App-specific request wiring lives in **`@maurotaliente/react-networking`** (`useAsyncFetch`, generated `use*Request`). Theme and locale live in **`@maurotaliente/react-theme`**, **`@maurotaliente/react-persistence`**, and **`@maurotaliente/react-i18n`**.
 
-`useCssVariable` and `useBuildStyles` live in **`@lib/styles`**.
+`useCssVariable` and `useBuildStyles` live in **`@maurotaliente/react-styles`**.

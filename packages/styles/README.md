@@ -1,5 +1,5 @@
-# @lib/styles
+# @maurotaliente/react-styles
 
-Tailwind-oriented tokens from CSS, `lib-styles-generate`, `cn` / `cva` helpers.
+Tailwind-oriented tokens from CSS, `react-styles-generate`, `cn` / `cva` helpers.
 
 **Docs:** [English](README.en.md) · [Español](README.es.md)

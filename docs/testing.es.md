@@ -21,7 +21,7 @@ Usamos el sufijo **`.spec.ts`** (o **`.spec.tsx`** si el test contiene JSX).
 
 No es obligatorio a nivel de herramienta: Vitest acepta **ambos**; la elección es de **estilo de equipo**.
 
-## Referencia: `@lib/hooks`
+## Referencia: `@maurotaliente/react-hooks`
 
 - Config: `packages/hooks/vitest.config.ts`
-- Comando: `pnpm --filter @lib/hooks test`
+- Comando: `pnpm --filter @maurotaliente/react-hooks test`

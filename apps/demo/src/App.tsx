@@ -1,4 +1,4 @@
-import { cn, buildStyles, useBuildStyles } from '@lib/styles';
+import { cn, buildStyles, useBuildStyles } from '@maurotaliente/react-styles';
 import { useTheme } from './theme/runtime';
 import { apis } from './api/apis.generated';
 import { PokemonDemo } from './PokemonDemo';

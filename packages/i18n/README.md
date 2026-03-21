@@ -1,4 +1,4 @@
-# @lib/i18n
+# @maurotaliente/react-i18n
 
 Typed locale dictionaries, `ct` interpolation, browser locale resolution, optional Next.js adapters.
 

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.npmjs.com/package/@lib/i18n/lib-i18n.config.schema.json",
+  "$id": "https://www.npmjs.com/package/@maurotaliente/react-i18n/lib-i18n.config.schema.json",
   "title": "libI18n",
-  "description": "Misma forma que en @lib/styles: libPersistence (cookieName, localStorageKey, persistenceMode) + campos de locale. Mantener alineado con lib.config.schema.json $defs.libI18n.",
+  "description": "Misma forma que en @maurotaliente/react-styles: libPersistence (cookieName, localStorageKey, persistenceMode) + campos de locale. Mantener alineado con lib.config.schema.json $defs.libI18n.",
   "allOf": [
     {
       "type": "object",

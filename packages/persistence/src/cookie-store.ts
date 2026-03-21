@@ -1,5 +1,5 @@
-import { mergeDeepRight, safeParse, safeStringify } from '@lib/helpers';
-import type { DynamicCookieOptions } from '@lib/networking';
+import { mergeDeepRight, safeParse, safeStringify } from '@maurotaliente/react-helpers';
+import type { DynamicCookieOptions } from '@maurotaliente/react-networking';
 
 /** Minimal shape compatible with Next.js `cookies()` read/write API. */
 export type CookieStoreLike = {

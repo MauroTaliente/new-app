@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://www.npmjs.com/package/@lib/styles/lib.config.schema.json",
+  "$id": "https://www.npmjs.com/package/@maurotaliente/react-styles/lib.config.schema.json",
   "title": "lib.config — libStyles, libI18n, libTheme, libNetworking",
   "description": "Root schema for lib.config.json (monorepo). Optional $schema key, or associate via .vscode/settings.json (json.schemas).",
   "type": "object",
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "Opcional si el editor ya asocia lib.config.json vía workspace (ver documentación @lib/styles). Si lo declarás: ./node_modules/@lib/styles/lib.config.schema.json"
+      "description": "Opcional si el editor ya asocia lib.config.json vía workspace (ver documentación @maurotaliente/react-styles). Si lo declarás: ./node_modules/@maurotaliente/react-styles/lib.config.schema.json"
     },
     "libStyles": {
       "$ref": "#/$defs/libStyles"
@@ -26,7 +26,7 @@
   "$defs": {
     "libNetworking": {
       "type": "object",
-      "description": "Generated API registry and client hooks (@lib/networking). Paths are relative to lib.config.json.",
+      "description": "Generated API registry and client hooks (@maurotaliente/react-networking). Paths are relative to lib.config.json.",
       "properties": {
         "output": {
           "type": "string",
@@ -71,7 +71,7 @@
         },
         {
           "type": "object",
-          "description": "Locale: convención de rutas y mensajes (ver @lib/i18n).",
+          "description": "Locale: convención de rutas y mensajes (ver @maurotaliente/react-i18n).",
           "properties": {
             "defaultLocale": {
               "type": "string",

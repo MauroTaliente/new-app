@@ -1,4 +1,4 @@
-# @lib/networking
+# @maurotaliente/react-networking
 
 HTTP utilities, `useAsyncFetch`, API registry codegen, and an event bus.
 
