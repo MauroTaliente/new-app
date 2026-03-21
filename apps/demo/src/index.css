@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Tokens from @lib/styles (generated) */
+@import "./theme/palette.css";
+@import "./theme/theme.css";
+@import "./theme/tokens.css";

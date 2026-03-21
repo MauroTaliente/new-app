@@ -1,0 +1,29 @@
+{
+  "libStyles": {
+    "fromCss": "./src/theme",
+    "domainsOrder": ["tokens", "palette", "theme"],
+    "output": "./src/theme/styles.generated.ts"
+  },
+  "libI18n": {
+    "defaultLocale": "es",
+    "locales": ["es", "en"],
+    "localesDirectory": "./src/locales",
+    "cookieName": "locale",
+    "persistenceMode": "cookie"
+  },
+  "libTheme": {
+    "cookieName": "demo-theme",
+    "persistenceMode": "cookie"
+  },
+  "libNetworking": {
+    "output": "./src/api/apis.generated.ts",
+    "apis": {
+      "pokemon": {
+        "url": "https://pokeapi.co/api/v2",
+        "headers": {
+          "Accept": "application/json"
+        }
+      }
+    }
+  }
+}
