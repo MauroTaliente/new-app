@@ -1,0 +1,188 @@
+/*
+  Design tokens — source of truth for lib-styles-generate.
+*/
+@theme inline {
+  /* Generator meta (optional) */
+  --theme-default: dark;
+  --theme-cols: 12;
+/* Colors */
+  --color-bg-100: var(--color-bg-100);
+  --color-bg-200: var(--color-bg-200);
+  --color-bg-300: var(--color-bg-300);
+  --color-text-100: var(--color-text-100);
+  --color-text-200: var(--color-text-200);
+  --color-text-300: var(--color-text-300);
+  --color-border-100: var(--color-border-100);
+  --color-border-200: var(--color-border-200);
+  --color-accent-100: var(--color-accent-100);
+  --color-neutral-050: var(--color-neutral-050);
+  --color-demo-accent: var(--color-accent-100);
+/* Screen */
+  --screen-xs: 30rem;
+  --screen-sm: 40rem;
+  --screen-md: 48rem;
+  --screen-lg: 64rem;
+  --breakpoint-xs: 30rem;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --container-xs: 30rem;
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+/* Space */
+  --space-0: 0;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3rem;
+/* Spacing (gap, p, m - aliases for space) */
+  --spacing-space-0: 0;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+  --spacing-space-2xl: 2.5rem;
+  --spacing-space-3xl: 3rem;
+/* Radius */
+  --radius-none: 0;
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+/* Radius (component aliases) */
+  --radius-button: var(--radius-sm);
+  --radius-card: var(--radius-md);
+  --radius-input: var(--radius-sm);
+  --radius-badge: var(--radius-full);
+  --radius-pill: var(--radius-full);
+  --radius-modal: var(--radius-lg);
+  --radius-avatar: var(--radius-full);
+/* Border */
+  --border-width-none: 0;
+  --border-width-thin: 1px;
+  --border-width-default: 1px;
+  --border-width-thick: 2px;
+/* Border (component aliases) */
+  --border-button: var(--border-width-default);
+  --border-card: var(--border-width-default);
+  --border-input: var(--border-width-default);
+  --border-row: var(--border-width-thin);
+  --border-divider: var(--border-width-thin);
+/* Shadow */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.12);
+/* Shadow (component aliases) */
+  --shadow-card: var(--shadow-sm);
+  --shadow-button: var(--shadow-sm);
+  --shadow-dropdown: var(--shadow-md);
+  --shadow-modal: var(--shadow-lg);
+/* Duration */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+/* Easing */
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+/* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-modal: 1200;
+  --z-overlay: 1300;
+  --z-toast: 1400;
+/* Text */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+/* Font */
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: ui-monospace, 'Cascadia Code', monospace;
+/* Leading */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+/* Weight */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+/* Line */
+  --line-width: 0.0625rem;
+/* Glass (uses radius) */
+  --glass-none: 0;
+  --glass-xs: 0.125rem;
+  --glass-sm: 0.25rem;
+  --glass-md: 0.5rem;
+  --glass-lg: 0.75rem;
+  --glass-xl: 1rem;
+  --glass-full: 9999px;
+}
+
+/* Utilities */
+@layer utilities {
+.xs\:grid-cols-1 { @apply xs:grid-cols-1; }
+.xs\:grid-cols-2 { @apply xs:grid-cols-2; }
+.xs\:grid-cols-3 { @apply xs:grid-cols-3; }
+.xs\:grid-cols-4 { @apply xs:grid-cols-4; }
+.xs\:grid-cols-5 { @apply xs:grid-cols-5; }
+.xs\:grid-cols-6 { @apply xs:grid-cols-6; }
+.xs\:grid-cols-7 { @apply xs:grid-cols-7; }
+.xs\:grid-cols-8 { @apply xs:grid-cols-8; }
+.xs\:grid-cols-9 { @apply xs:grid-cols-9; }
+.xs\:grid-cols-10 { @apply xs:grid-cols-10; }
+.xs\:grid-cols-11 { @apply xs:grid-cols-11; }
+.xs\:grid-cols-12 { @apply xs:grid-cols-12; }
+.sm\:grid-cols-1 { @apply sm:grid-cols-1; }
+.sm\:grid-cols-2 { @apply sm:grid-cols-2; }
+.sm\:grid-cols-3 { @apply sm:grid-cols-3; }
+.sm\:grid-cols-4 { @apply sm:grid-cols-4; }
+.sm\:grid-cols-5 { @apply sm:grid-cols-5; }
+.sm\:grid-cols-6 { @apply sm:grid-cols-6; }
+.sm\:grid-cols-7 { @apply sm:grid-cols-7; }
+.sm\:grid-cols-8 { @apply sm:grid-cols-8; }
+.sm\:grid-cols-9 { @apply sm:grid-cols-9; }
+.sm\:grid-cols-10 { @apply sm:grid-cols-10; }
+.sm\:grid-cols-11 { @apply sm:grid-cols-11; }
+.sm\:grid-cols-12 { @apply sm:grid-cols-12; }
+.md\:grid-cols-1 { @apply md:grid-cols-1; }
+.md\:grid-cols-2 { @apply md:grid-cols-2; }
+.md\:grid-cols-3 { @apply md:grid-cols-3; }
+.md\:grid-cols-4 { @apply md:grid-cols-4; }
+.md\:grid-cols-5 { @apply md:grid-cols-5; }
+.md\:grid-cols-6 { @apply md:grid-cols-6; }
+.md\:grid-cols-7 { @apply md:grid-cols-7; }
+.md\:grid-cols-8 { @apply md:grid-cols-8; }
+.md\:grid-cols-9 { @apply md:grid-cols-9; }
+.md\:grid-cols-10 { @apply md:grid-cols-10; }
+.md\:grid-cols-11 { @apply md:grid-cols-11; }
+.md\:grid-cols-12 { @apply md:grid-cols-12; }
+.lg\:grid-cols-1 { @apply lg:grid-cols-1; }
+.lg\:grid-cols-2 { @apply lg:grid-cols-2; }
+.lg\:grid-cols-3 { @apply lg:grid-cols-3; }
+.lg\:grid-cols-4 { @apply lg:grid-cols-4; }
+.lg\:grid-cols-5 { @apply lg:grid-cols-5; }
+.lg\:grid-cols-6 { @apply lg:grid-cols-6; }
+.lg\:grid-cols-7 { @apply lg:grid-cols-7; }
+.lg\:grid-cols-8 { @apply lg:grid-cols-8; }
+.lg\:grid-cols-9 { @apply lg:grid-cols-9; }
+.lg\:grid-cols-10 { @apply lg:grid-cols-10; }
+.lg\:grid-cols-11 { @apply lg:grid-cols-11; }
+.lg\:grid-cols-12 { @apply lg:grid-cols-12; }
+}

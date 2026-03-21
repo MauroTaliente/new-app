@@ -1,0 +1,106 @@
+/**
+ * Static defaults for `@lib/styles` runtime token helpers (`tokens/index.ts`).
+ * Prefer app-level `styles.generated.ts` from CSS for app truth.
+ */
+export const defaultTokensData = {
+  theme: ['light', 'dark'],
+  defaultTheme: 'light',
+  color: {
+    'bg-100': 'var(--color-bg-100)',
+    'bg-200': 'var(--color-bg-200)',
+    'bg-300': 'var(--color-bg-300)',
+    'text-100': 'var(--color-text-100)',
+    'text-200': 'var(--color-text-200)',
+    'text-300': 'var(--color-text-300)',
+    'border-100': 'var(--color-border-100)',
+    'border-200': 'var(--color-border-200)',
+    'accent-100': 'var(--color-accent-100)',
+    'neutral-050': 'var(--color-neutral-050)',
+  },
+  screen: {
+    xs: '30rem',
+    sm: '40rem',
+    md: '48rem',
+    lg: '64rem',
+  },
+  space: {
+    '0': '0',
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+    '2xl': '2.5rem',
+    '3xl': '3rem',
+  },
+  radius: {
+    none: '0',
+    xs: '0.125rem',
+    sm: '0.25rem',
+    md: '0.5rem',
+    lg: '0.75rem',
+    xl: '1rem',
+    full: '9999px',
+  },
+  border: {
+    'width-none': '0',
+    'width-thin': '1px',
+    'width-default': '1px',
+    'width-thick': '2px',
+  },
+  shadow: {
+    none: 'none',
+    sm: '0 1px 2px rgb(0 0 0 / 0.05)',
+    md: '0 4px 6px rgb(0 0 0 / 0.07)',
+    lg: '0 10px 15px rgb(0 0 0 / 0.1)',
+    xl: '0 20px 25px rgb(0 0 0 / 0.12)',
+  },
+  text: {
+    xs: '0.75rem',
+    sm: '0.875rem',
+    md: '1rem',
+    lg: '1.125rem',
+    xl: '1.25rem',
+    '2xl': '1.5rem',
+  },
+  font: {
+    sans: "'Inter', sans-serif",
+    serif: 'Georgia, serif',
+    mono: "ui-monospace, 'Cascadia Code', monospace",
+  },
+  leading: {
+    tight: '1.25',
+    normal: '1.5',
+    relaxed: '1.625',
+    loose: '2',
+  },
+  weight: {
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  },
+  duration: {
+    instant: '0ms',
+    fast: '150ms',
+    normal: '300ms',
+    slow: '500ms',
+  },
+  easing: {
+    default: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    in: 'cubic-bezier(0.4, 0, 1, 1)',
+    out: 'cubic-bezier(0, 0, 0.2, 1)',
+    'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+  z: {
+    dropdown: '1000',
+    sticky: '1100',
+    modal: '1200',
+    overlay: '1300',
+    toast: '1400',
+  },
+  line: {
+    width: '0.0625rem',
+  },
+  cols: 12,
+} as const;

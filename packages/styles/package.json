@@ -1,0 +1,57 @@
+{
+  "name": "@lib/styles",
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist",
+    "defaults",
+    "lib-styles.config.json",
+    "lib.config.schema.json"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "lib-styles-generate": "./dist/bin/generate-tokens.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./generate": {
+      "types": "./dist/generate.d.ts",
+      "import": "./dist/generate.js",
+      "default": "./dist/generate.js"
+    },
+    "./lib.config.schema.json": "./lib.config.schema.json",
+    "./lib-styles.schema.json": "./lib.config.schema.json"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/generate.ts src/bin/generate-tokens.ts --format esm --dts",
+    "generate": "node dist/bin/generate-tokens.js",
+    "generate:tokens": "node dist/bin/generate-tokens.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@lib/helpers": "workspace:*",
+    "chokidar": "^4.0.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "postcss": "^8.5.8",
+    "tailwind-merge": "^3.2.0"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "react": "^19.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5",
+    "vitest": "^3.0.0"
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.npmjs.com/package/@lib/styles/lib.config.schema.json",
+  "title": "lib.config — libStyles, libI18n, libTheme, libNetworking",
+  "description": "Root schema for lib.config.json (monorepo). Optional $schema key, or associate via .vscode/settings.json (json.schemas).",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Opcional si el editor ya asocia lib.config.json vía workspace (ver documentación @lib/styles). Si lo declarás: ./node_modules/@lib/styles/lib.config.schema.json"
+    },
+    "libStyles": {
+      "$ref": "#/$defs/libStyles"
+    },
+    "libI18n": {
+      "$ref": "#/$defs/libI18n"
+    },
+    "libTheme": {
+      "$ref": "#/$defs/libTheme"
+    },
+    "libNetworking": {
+      "$ref": "#/$defs/libNetworking"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "libNetworking": {
+      "type": "object",
+      "description": "Generated API registry and client hooks (@lib/networking). Paths are relative to lib.config.json.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Path for apis.generated.ts (createApiRegistry, apis, *Request). Overrides CLI default when --output is omitted."
+        },
+        "hooksOutput": {
+          "type": "string",
+          "description": "Optional path for the client hooks module. If omitted, derived from output (e.g. apis.client.generated.tsx next to apis.generated.ts)."
+        },
+        "apis": {
+          "type": "object",
+          "description": "Map of API name -> { url, headers?, cache?, credentials? }.",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "libPersistence": {
+      "type": "object",
+      "description": "Claves y modo de persistencia en browser compartidos por locale (libI18n) y tema (libTheme).",
+      "properties": {
+        "cookieName": {
+          "type": "string",
+          "description": "Nombre de la cookie cuando el backend activo es cookie."
+        },
+        "localStorageKey": {
+          "type": "string",
+          "description": "Clave de localStorage cuando el backend activo es localStorage."
+        },
+        "persistenceMode": {
+          "type": "string",
+          "enum": ["localStorage", "cookie"],
+          "description": "Backend por defecto si la app soporta ambos; variables de entorno (p. ej. VITE_*_PERSISTENCE) pueden sobreescribir."
+        }
+      },
+      "additionalProperties": true
+    },
+    "libI18n": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/libPersistence"
+        },
+        {
+          "type": "object",
+          "description": "Locale: convención de rutas y mensajes (ver @lib/i18n).",
+          "properties": {
+            "defaultLocale": {
+              "type": "string",
+              "description": "Locale por defecto (fallback)."
+            },
+            "locales": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Códigos de idioma permitidos."
+            },
+            "localesDirectory": {
+              "type": "string",
+              "description": "Carpeta de módulos por idioma (relativa a lib.config.json)."
+            },
+            "urlLocalePattern": {
+              "type": "string",
+              "description": "Regex (string) sobre pathname; primer grupo de captura = locale."
+            },
+            "generatedTypesOutput": {
+              "type": "string",
+              "description": "Reservado para tipos generados (p. ej. locales.generated.ts)."
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "libTheme": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/libPersistence"
+        },
+        {
+          "type": "object",
+          "description": "Tema: opciones extra de escritura de cookie. defaultTheme suele venir de styles.meta generado.",
+          "properties": {
+            "cookiePath": {
+              "type": "string",
+              "default": "/",
+              "description": "Atributo Path de Set-Cookie."
+            },
+            "cookieMaxAgeSeconds": {
+              "type": "number",
+              "default": 31536000,
+              "description": "Max-Age del cookie de tema (~1 año por defecto)."
+            },
+            "cookieSameSite": {
+              "type": "string",
+              "enum": ["strict", "lax", "none"],
+              "default": "lax"
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "libStyles": {
+      "type": "object",
+      "description": "Paths are relative to the config file directory.",
+      "properties": {
+        "fromCss": {
+          "type": "string",
+          "description": "Directory containing *.css source files."
+        },
+        "domainsOrder": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Cascade order (file stems without .css). Overrides alphabetical discovery."
+        },
+        "output": {
+          "type": "string",
+          "description": "Output path for the generated .ts file."
+        },
+        "outputDir": {
+          "type": "string",
+          "description": "Output directory (used with outputFile)."
+        },
+        "outputFile": {
+          "type": "string",
+          "default": "styles.generated.ts",
+          "description": "Generated filename when using outputDir."
+        },
+        "excludeStems": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Stems to skip when auto-discovering CSS files (ignored if domainsOrder is set)."
+        },
+        "banner": {
+          "type": "string",
+          "description": "First line(s) of the generated TypeScript file."
+        },
+        "verbose": {
+          "type": "boolean",
+          "description": "Log resolved config, fromCss, domain order, and output path."
+        },
+        "watch": {
+          "type": "boolean",
+          "description": "Watch fromCss for changes and regenerate (same as CLI --watch). Use CLI --no-watch to force a one-off run when this is true."
+        },
+        "metaSourceStem": {
+          "type": "string",
+          "description": "Which CSS stem provides @theme meta (defaultTheme, cols). Default: tokens, else first domain."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
