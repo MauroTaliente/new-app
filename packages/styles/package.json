@@ -2,6 +2,19 @@
   "name": "@maurotaliente/react-styles",
   "version": "0.0.1",
   "license": "MIT",
+  "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
+  "description": "Design tokens and buildStyles utility — CSS variables + Tailwind interop.",
+  "keywords": ["react", "tokens", "design-system", "tailwind", "css-variables"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maurotaliente/new-app.git",
+    "directory": "packages/styles"
+  },
+  "homepage": "https://github.com/maurotaliente/new-app/tree/main/packages/styles#readme",
+  "bugs": {
+    "url": "https://github.com/maurotaliente/new-app/issues"
+  },
+  "sideEffects": ["*.css", "defaults/**"],
   "publishConfig": {
     "access": "public"
   },
@@ -34,6 +47,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts src/generate.ts src/bin/generate-tokens.ts --format esm --dts",
+    "prepublishOnly": "pnpm build",
     "generate": "node dist/bin/generate-tokens.js",
     "generate:tokens": "node dist/bin/generate-tokens.js",
     "test": "vitest run",

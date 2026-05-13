@@ -2,6 +2,19 @@
   "name": "@maurotaliente/react-context",
   "version": "0.0.1",
   "license": "MIT",
+  "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
+  "description": "Tiny typed context factory for React state slices.",
+  "keywords": ["react", "context", "state"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maurotaliente/new-app.git",
+    "directory": "packages/context"
+  },
+  "homepage": "https://github.com/maurotaliente/new-app/tree/main/packages/context#readme",
+  "bugs": {
+    "url": "https://github.com/maurotaliente/new-app/issues"
+  },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -21,6 +34,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
+    "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
