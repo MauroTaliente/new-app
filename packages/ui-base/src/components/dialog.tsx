@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
 import { Icon } from './icon';
 
 export const dialogStyles = buildStyles({

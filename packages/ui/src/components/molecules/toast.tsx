@@ -10,8 +10,8 @@ import {
   type ReactNode,
 } from 'react';
 import * as ToastPrimitive from '@radix-ui/react-toast';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
-import { Icon } from '@maurotaliente/react-ui-base';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
+import { Icon } from '@react33/react-ui-base';
 
 export const toastStyles = buildStyles({
   viewport: [

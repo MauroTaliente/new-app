@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-hooks",
+  "name": "@react33/react-hooks",
   "version": "0.0.1",
   "description": "React hooks: timer, viewport, route query, media",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-helpers": "workspace:*"
+    "@react33/react-helpers": "workspace:*"
   },
   "peerDependencies": {
     "next": ">=13",

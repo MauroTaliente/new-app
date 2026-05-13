@@ -1,12 +1,12 @@
 'use client';
 
 import { useRef, type HTMLProps, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
 import {
   InputFrame,
   type FromInputCustomApi,
   type HtmlOmittedProps,
-} from '@maurotaliente/react-form';
+} from '@react33/react-form';
 
 type HtmlSliderProps = Omit<HTMLProps<HTMLDivElement>, HtmlOmittedProps>;
 type SliderRangeValue = [number, number];

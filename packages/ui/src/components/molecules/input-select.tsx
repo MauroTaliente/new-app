@@ -10,8 +10,8 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
-import { Button, Icon } from '@maurotaliente/react-ui-base';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
+import { Button, Icon } from '@react33/react-ui-base';
 import {
   InputFrame,
   InputOptions,
@@ -26,7 +26,7 @@ import {
   toOptionArray,
   type FromInputCustomApi,
   type HtmlOmittedProps,
-} from '@maurotaliente/react-form';
+} from '@react33/react-form';
 
 type HtmlInputProps = Omit<HTMLProps<HTMLInputElement>, HtmlOmittedProps>;
 type SelectLike = Record<string, unknown> | string | number | null;

@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-theme",
+  "name": "@react33/react-theme",
   "version": "0.0.1",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
@@ -39,8 +39,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-context": "workspace:*",
-    "@maurotaliente/react-styles": "workspace:*"
+    "@react33/react-context": "workspace:*",
+    "@react33/react-styles": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18",

@@ -1,10 +1,10 @@
-# Publishing to npm (`@maurotaliente/react-*`)
+# Publishing to npm (`@react33/react-*`)
 
-Packages live under the scope **`@maurotaliente`** with a **`react-`** name prefix (e.g. `@maurotaliente/react-networking`). Version **0.0.1** is aligned across packages in this repo.
+Packages live under the scope **`@react33`** with a **`react-`** name prefix (e.g. `@react33/react-networking`). Version **0.0.1** is aligned across packages in this repo.
 
 ## Prerequisites
 
-1. **npm account** — you must be logged in as a user who is allowed to publish to `@maurotaliente` (e.g. [npmjs.com/~maurotaliente](https://www.npmjs.com/~maurotaliente)).
+1. **npm account** — you must be logged in as a user who is allowed to publish to `@react33` (e.g. [npmjs.com/~maurotaliente](https://www.npmjs.com/~maurotaliente)).
 2. **2FA** — enable on the npm account (recommended before publishing).
 3. **Build** — from the repository root:
 
@@ -47,12 +47,12 @@ Published **bin** names (see each package’s `package.json`):
 
 | Command | Package |
 |---------|---------|
-| `react-generate` | `@maurotaliente/react-generate` (styles + APIs) |
-| `react-styles-generate` | `@maurotaliente/react-styles` |
-| `react-networking-generate` | `@maurotaliente/react-networking` |
+| `react-generate` | `@react33/react-generate` (styles + APIs) |
+| `react-styles-generate` | `@react33/react-styles` |
+| `react-networking-generate` | `@react33/react-networking` |
 
 In apps, prefer `pnpm exec react-generate` or `npx react-generate` so the local `node_modules/.bin` is used.
 
-## After renaming (`@lib/*` → `@maurotaliente/react-*`)
+## After renaming (`@lib/*` → `@react33/react-*`)
 
 Consumers must update `package.json` dependencies and all import paths. See [CHANGELOG.md](../CHANGELOG.md).

@@ -10,37 +10,37 @@ importers:
 
   apps/demo:
     dependencies:
-      '@maurotaliente/react-context':
+      '@react33/react-context':
         specifier: workspace:*
         version: link:../../packages/context
-      '@maurotaliente/react-form':
+      '@react33/react-form':
         specifier: workspace:*
         version: link:../../packages/form
-      '@maurotaliente/react-generate':
+      '@react33/react-generate':
         specifier: workspace:*
         version: link:../../packages/lib-generate
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../../packages/helpers
-      '@maurotaliente/react-hooks':
+      '@react33/react-hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
-      '@maurotaliente/react-networking':
+      '@react33/react-networking':
         specifier: workspace:*
         version: link:../../packages/networking
-      '@maurotaliente/react-persistence':
+      '@react33/react-persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../../packages/styles
-      '@maurotaliente/react-theme':
+      '@react33/react-theme':
         specifier: workspace:*
         version: link:../../packages/theme
-      '@maurotaliente/react-ui':
+      '@react33/react-ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@maurotaliente/react-ui-base':
+      '@react33/react-ui-base':
         specifier: workspace:*
         version: link:../../packages/ui-base
       react:
@@ -110,22 +110,22 @@ importers:
 
   packages/form:
     dependencies:
-      '@maurotaliente/react-context':
+      '@react33/react-context':
         specifier: workspace:*
         version: link:../context
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
-      '@maurotaliente/react-hooks':
+      '@react33/react-hooks':
         specifier: workspace:*
         version: link:../hooks
-      '@maurotaliente/react-networking':
+      '@react33/react-networking':
         specifier: workspace:*
         version: link:../networking
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles
-      '@maurotaliente/react-ui-base':
+      '@react33/react-ui-base':
         specifier: workspace:*
         version: link:../ui-base
       ts-essentials:
@@ -174,7 +174,7 @@ importers:
 
   packages/hooks:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
     devDependencies:
@@ -208,10 +208,10 @@ importers:
 
   packages/i18n:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
-      '@maurotaliente/react-persistence':
+      '@react33/react-persistence':
         specifier: workspace:*
         version: link:../persistence
       intl-messageformat:
@@ -245,10 +245,10 @@ importers:
 
   packages/lib-generate:
     dependencies:
-      '@maurotaliente/react-networking':
+      '@react33/react-networking':
         specifier: workspace:*
         version: link:../networking
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles
     devDependencies:
@@ -267,7 +267,7 @@ importers:
 
   packages/networking:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
       ts-essentials:
@@ -307,10 +307,10 @@ importers:
 
   packages/persistence:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
-      '@maurotaliente/react-networking':
+      '@react33/react-networking':
         specifier: workspace:*
         version: link:../networking
     devDependencies:
@@ -338,7 +338,7 @@ importers:
 
   packages/styles:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
       chokidar:
@@ -378,10 +378,10 @@ importers:
 
   packages/theme:
     dependencies:
-      '@maurotaliente/react-context':
+      '@react33/react-context':
         specifier: workspace:*
         version: link:../context
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles
     devDependencies:
@@ -421,25 +421,25 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.4)
-      '@maurotaliente/react-context':
+      '@react33/react-context':
         specifier: workspace:*
         version: link:../context
-      '@maurotaliente/react-form':
+      '@react33/react-form':
         specifier: workspace:*
         version: link:../form
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
-      '@maurotaliente/react-hooks':
+      '@react33/react-hooks':
         specifier: workspace:*
         version: link:../hooks
-      '@maurotaliente/react-networking':
+      '@react33/react-networking':
         specifier: workspace:*
         version: link:../networking
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles
-      '@maurotaliente/react-ui-base':
+      '@react33/react-ui-base':
         specifier: workspace:*
         version: link:../ui-base
       '@radix-ui/react-dialog':
@@ -500,10 +500,10 @@ importers:
 
   packages/ui-base:
     dependencies:
-      '@maurotaliente/react-helpers':
+      '@react33/react-helpers':
         specifier: workspace:*
         version: link:../helpers
-      '@maurotaliente/react-styles':
+      '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles
       '@radix-ui/react-dialog':

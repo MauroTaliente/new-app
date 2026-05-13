@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import type { DynamicCookieOptions } from '@maurotaliente/react-networking';
+import type { DynamicCookieOptions } from '@react33/react-networking';
 import {
   getCookieFromStore,
   putCookieInStore,

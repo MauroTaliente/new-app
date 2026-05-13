@@ -1,6 +1,6 @@
-# @maurotaliente/react-ui-base
+# @react33/react-ui-base
 
-Agnostic UI primitives used internally by `@maurotaliente/react-form` (InputFrame, Field) and `@maurotaliente/react-ui` (concrete inputs, Radix-wrapped components).
+Agnostic UI primitives used internally by `@react33/react-form` (InputFrame, Field) and `@react33/react-ui` (concrete inputs, Radix-wrapped components).
 
 ## Exports
 
@@ -13,13 +13,13 @@ Future Radix-wrapped primitives (Dialog, Popover, Tooltip, Separator, ScrollArea
 ## Install
 
 ```bash
-pnpm add @maurotaliente/react-ui-base @maurotaliente/react-styles
+pnpm add @react33/react-ui-base @react33/react-styles
 ```
 
 ## Use
 
 ```tsx
-import { Button, Icon, Overlay } from '@maurotaliente/react-ui-base';
+import { Button, Icon, Overlay } from '@react33/react-ui-base';
 
 <Button variant="main" size="md">Save</Button>
 <Icon name="IconCheck" />

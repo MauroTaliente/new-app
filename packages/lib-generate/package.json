@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-generate",
+  "name": "@react33/react-generate",
   "version": "0.0.1",
   "description": "Unified codegen: react-styles-generate + react-networking-generate",
   "license": "MIT",
@@ -31,8 +31,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-networking": "workspace:*",
-    "@maurotaliente/react-styles": "workspace:*"
+    "@react33/react-networking": "workspace:*",
+    "@react33/react-styles": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22",

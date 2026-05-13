@@ -15,8 +15,8 @@ import {
   FocusEvent,
 } from 'react';
 import type { Primitive } from 'ts-essentials';
-import { useTimer } from '@maurotaliente/react-hooks';
-import { HttpCode } from '@maurotaliente/react-networking';
+import { useTimer } from '@react33/react-hooks';
+import { HttpCode } from '@react33/react-networking';
 import {
   isArray,
   isNestedEmptyObject,
@@ -29,7 +29,7 @@ import {
   getFallback,
   isEmptyArray,
   mergeDeepRight,
-} from '@maurotaliente/react-helpers';
+} from '@react33/react-helpers';
 
 export type HtmlOmittedProps =
   | 'onChange'

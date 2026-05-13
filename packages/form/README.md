@@ -1,4 +1,4 @@
-# @maurotaliente/react-form
+# @react33/react-form
 
 Headless form framework: state, validation, submit lifecycle, and the connective tissue between fields.
 

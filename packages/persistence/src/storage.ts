@@ -1,4 +1,4 @@
-import { mergeDeepRight, safeParse, safeStringify } from '@maurotaliente/react-helpers';
+import { mergeDeepRight, safeParse, safeStringify } from '@react33/react-helpers';
 
 /** Loose shape so callers can pass `DynamicOptions` without Params/Data mismatch. */
 export type StorageDriverOptions<T = unknown> = {

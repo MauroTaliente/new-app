@@ -1,4 +1,4 @@
-import { Button, type ButtonSize, type ButtonVariant } from '@maurotaliente/react-ui';
+import { Button, type ButtonSize, type ButtonVariant } from '@react33/react-ui';
 
 const buttonVariantRows: Array<{
   label: string;

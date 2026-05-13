@@ -5,7 +5,7 @@ import {
   type ReactElement,
   type Ref,
 } from 'react';
-import { buildStyles, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, type ClassValue } from '@react33/react-styles';
 
 
 /** Compiled sheet (module scope). */

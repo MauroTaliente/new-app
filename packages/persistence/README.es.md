@@ -1,4 +1,4 @@
-# @maurotaliente/react-persistence (Español)
+# @react33/react-persistence (Español)
 
 Almacenamiento en navegador (localStorage, sessionStorage, cookies) y helpers opcionales para Next.js (cookie store).
 
@@ -17,11 +17,11 @@ Para claves cuyo JSON cambia en el tiempo, persistí **`{ _v: number, data: T }`
 
 ## Cargadores de auth HTTP (`createLoadRequestPropsFromAuthProfile`)
 
-`@maurotaliente/react-networking` define `createDataFlow` y los tipos **`AuthProfile`**. Este paquete **lee** el token en cookie o storage y fusiona cabeceras con `mergeRequestProps` / `buildHeadersFromTokenTemplate` de `@maurotaliente/react-networking`.
+`@react33/react-networking` define `createDataFlow` y los tipos **`AuthProfile`**. Este paquete **lee** el token en cookie o storage y fusiona cabeceras con `mergeRequestProps` / `buildHeadersFromTokenTemplate` de `@react33/react-networking`.
 
 - **`createLoadRequestPropsFromAuthProfile(profile)`** — un `LoadRequestProps` por API.
 - **`createLoadRequestPropsFromAuthProfiles(record)`** — mapa de loaders con nombre para `createApiRegistry(..., { loads })`.
 
 Las cookies se leen con **`parseDocumentCookie`** para soportar JWT opacos (no solo JSON).
 
-Tipo re-exportado: **`AuthProfile`** (desde `@maurotaliente/react-networking`).
+Tipo re-exportado: **`AuthProfile`** (desde `@react33/react-networking`).

@@ -1,4 +1,4 @@
-# @maurotaliente/react-styles
+# @react33/react-styles
 
 Tailwind-oriented tokens from CSS, `react-styles-generate`, `cn` / `cva` helpers.
 

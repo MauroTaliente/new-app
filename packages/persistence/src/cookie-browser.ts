@@ -1,5 +1,5 @@
-import { mergeDeepRight, safeParse, safeStringify } from '@maurotaliente/react-helpers';
-import type { DynamicCookieOptions } from '@maurotaliente/react-networking';
+import { mergeDeepRight, safeParse, safeStringify } from '@react33/react-helpers';
+import type { DynamicCookieOptions } from '@react33/react-networking';
 
 export type CookieWriteOptions = {
   path?: string;

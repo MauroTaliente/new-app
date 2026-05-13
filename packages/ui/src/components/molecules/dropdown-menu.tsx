@@ -6,8 +6,8 @@ import {
   type ElementRef,
 } from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
-import { Icon } from '@maurotaliente/react-ui-base';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
+import { Icon } from '@react33/react-ui-base';
 
 export const dropdownMenuStyles = buildStyles({
   content: [

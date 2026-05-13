@@ -1,4 +1,4 @@
-import { Tag, type TagColor } from '@maurotaliente/react-ui';
+import { Tag, type TagColor } from '@react33/react-ui';
 
 export type InputPropRowConfig<TProps extends object> = {
   keys: ReadonlyArray<Extract<keyof TProps, string>>;

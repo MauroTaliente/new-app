@@ -9,8 +9,8 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { buildStyles } from '@maurotaliente/react-styles';
-import type { FromInputCustomApi, HtmlOmittedProps } from '@maurotaliente/react-form';
+import { buildStyles } from '@react33/react-styles';
+import type { FromInputCustomApi, HtmlOmittedProps } from '@react33/react-form';
 
 type HtmlInputSwitchProps = Omit<HTMLProps<HTMLDivElement>, HtmlOmittedProps>;
 type SwitchValue = boolean | string | number | null;

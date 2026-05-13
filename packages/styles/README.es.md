@@ -1,4 +1,4 @@
-# @maurotaliente/react-styles (Español)
+# @react33/react-styles (Español)
 
 ## `react-styles-generate` — configuración
 
@@ -10,11 +10,11 @@ El CLI sube desde `cwd` buscando (gana el primero):
 
 ### JSON Schema — autocompletado en el IDE
 
-**No hace falta** repetir `$schema` en cada `lib.config.json` si el repo define **`json.schemas`** en `.vscode/settings.json` (Cursor/VS Code): asocia `**/lib.config.json` con `./node_modules/@maurotaliente/react-styles/lib.config.schema.json` desde la **raíz del workspace** (donde está `node_modules` tras `pnpm install`).
+**No hace falta** repetir `$schema` en cada `lib.config.json` si el repo define **`json.schemas`** en `.vscode/settings.json` (Cursor/VS Code): asocia `**/lib.config.json` con `./node_modules/@react33/react-styles/lib.config.schema.json` desde la **raíz del workspace** (donde está `node_modules` tras `pnpm install`).
 
 Si abrís solo una subcarpeta como workspace o usás otro editor, podés declarar el schema en el propio JSON (ver ejemplo en [README.en.md](README.en.md)).
 
-Export del paquete: `@maurotaliente/react-styles/lib.config.schema.json` (alias: `lib-styles.schema.json` → mismo archivo).
+Export del paquete: `@react33/react-styles/lib.config.schema.json` (alias: `lib-styles.schema.json` → mismo archivo).
 
 Usá un objeto `libStyles` con `fromCss`, `output` (ruta del `.ts` generado), `domainsOrder`, `excludeStems`, `metaSourceStem`, `banner`, `verbose`, `watch`, etc. (ejemplos completos en [README.en.md](README.en.md)).
 

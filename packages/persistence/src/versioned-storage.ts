@@ -1,4 +1,4 @@
-import { mergeDeepRight, safeParse, safeStringify } from '@maurotaliente/react-helpers';
+import { mergeDeepRight, safeParse, safeStringify } from '@react33/react-helpers';
 import type { StorageDriverOptions } from './storage';
 
 function assertName(name: string | undefined): name is string {

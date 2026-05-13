@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
 
 export const tooltipStyles = buildStyles({
   content: [

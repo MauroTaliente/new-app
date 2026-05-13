@@ -51,8 +51,8 @@ With explicit config path:
   process.exit(0);
 }
 
-const stylesBin = resolvePackageBin('@maurotaliente/react-styles', 'generate-tokens.js');
-const networkingBin = resolvePackageBin('@maurotaliente/react-networking', 'generate-apis.js');
+const stylesBin = resolvePackageBin('@react33/react-styles', 'generate-tokens.js');
+const networkingBin = resolvePackageBin('@react33/react-networking', 'generate-apis.js');
 
 const stylesRun = spawnSync(process.execPath, [stylesBin, ...argv], {
   stdio: 'inherit',

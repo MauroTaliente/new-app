@@ -1,7 +1,7 @@
 'use client';
 
 import { type KeyboardEvent as ReactKeyboardEvent } from 'react';
-import { buildStyles, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, type ClassValue } from '@react33/react-styles';
 
 export type InputOptionsDirection = 'up' | 'down';
 export type OptionMoveDirection = 'next' | 'prev';

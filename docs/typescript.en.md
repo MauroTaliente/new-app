@@ -1,8 +1,8 @@
 # TypeScript: public entry points
 
-Import **types** from the same package entry you use at runtime (`@maurotaliente/react-networking`, `@maurotaliente/react-persistence`, etc.). The tables below list the main symbols; see each package’s `src/index.ts` for the full surface.
+Import **types** from the same package entry you use at runtime (`@react33/react-networking`, `@react33/react-persistence`, etc.). The tables below list the main symbols; see each package’s `src/index.ts` for the full surface.
 
-## `@maurotaliente/react-networking`
+## `@react33/react-networking`
 
 | Area | Types (examples) | Notes |
 |------|------------------|--------|
@@ -13,24 +13,24 @@ Import **types** from the same package entry you use at runtime (`@maurotaliente
 
 Server-only helpers (`request`, `createDataFlow`) and client hooks (`useAsyncFetch`) share these models so generated code and hand-written calls stay consistent.
 
-## `@maurotaliente/react-persistence`
+## `@react33/react-persistence`
 
 | Area | Types (examples) | Notes |
 |------|------------------|--------|
 | Storage factory | `StorageDriverOptions` | Passed to `createStorageApi`. |
 | Cookies (browser) | `CookieWriteOptions`, `CookieClientOptions` | Client cookie helpers. |
 | Cookies (server / store) | `CookieStoreLike`, `ServerCookieOptions` | For `getCookieFromStore` / `setCookieInStore`. |
-| Auth bridge | `AuthProfile` | Re-exported from `@maurotaliente/react-networking` for HTTP load props. |
+| Auth bridge | `AuthProfile` | Re-exported from `@react33/react-networking` for HTTP load props. |
 
 Hooks (`useGetLocal`, …) infer keys from your storage API; options types document the configurable knobs.
 
-## `@maurotaliente/react-i18n`
+## `@react33/react-i18n`
 
 | Area | Types (examples) | Notes |
 |------|------------------|--------|
 | ICU / plurals | `formatMessage`, `MessageValues` | `intl-messageformat` under the hood. |
 
-## `@maurotaliente/react-helpers`, `@maurotaliente/react-context`, `@maurotaliente/react-theme`, `@maurotaliente/react-styles`, `@maurotaliente/react-hooks`
+## `@react33/react-helpers`, `@react33/react-context`, `@react33/react-theme`, `@react33/react-styles`, `@react33/react-hooks`
 
 Prefer **named imports** and rely on each package’s `package.json` `types` / `exports` field. If a symbol is not exported from the package root, treat it as internal unless documented in that package’s README.
 

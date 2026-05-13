@@ -1,8 +1,8 @@
 'use client';
 
 import { type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
-import { buildStyles, type ClassValue } from '@maurotaliente/react-styles';
-import { Button, Icon } from '@maurotaliente/react-ui-base';
+import { buildStyles, type ClassValue } from '@react33/react-styles';
+import { Button, Icon } from '@react33/react-ui-base';
 
 export interface InputFrameProps {
   className?: ClassValue;

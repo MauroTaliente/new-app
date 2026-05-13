@@ -12,13 +12,13 @@ import {
   type RefObject,
   type Ref,
 } from 'react';
-import { buildStyles, type ClassValue } from '@maurotaliente/react-styles';
-import { Button, Icon } from '@maurotaliente/react-ui-base';
+import { buildStyles, type ClassValue } from '@react33/react-styles';
+import { Button, Icon } from '@react33/react-ui-base';
 import {
   InputFrame,
   type FromInputCustomApi,
   type HtmlOmittedProps,
-} from '@maurotaliente/react-form';
+} from '@react33/react-form';
 
 export type HTMLComboElement = HTMLInputElement & HTMLTextAreaElement;
 

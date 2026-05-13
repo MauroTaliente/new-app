@@ -1,6 +1,6 @@
-# @maurotaliente/react-form
+# @react33/react-form
 
-Framework de formularios consumido por las apps (y por `@maurotaliente/react-ui` para los inputs concretos).
+Framework de formularios consumido por las apps (y por `@react33/react-ui` para los inputs concretos).
 
 ## Exports
 
@@ -9,20 +9,20 @@ Framework de formularios consumido por las apps (y por `@maurotaliente/react-ui`
 - `InputFrame` — shell visual compartido por los inputs (borde, foco, indicadores, clear, acciones derechas)
 - `InputOptions` + helpers de opciones (`normalizeActiveIndex`, `moveActiveIndex`, `pickActiveOption`, `splitInputSegments`, `readOptionText`, `readOptionLabel`, `resolveOptionsDirection`)
 - Tipos: `FormApi`, `FormConfig`, `FormInputApi`, `FromInputCustomApi`, `FromInputNativeApi`, `HtmlOmittedProps`, `Values`, `Errors`, `ValidatorsRules`, etc.
-- Re-export de `@maurotaliente/react-ui-base`: `Button`, `Icon`, `Overlay`
+- Re-export de `@react33/react-ui-base`: `Button`, `Icon`, `Overlay`
 
 ## Instalación
 
 ```bash
-pnpm add @maurotaliente/react-form @maurotaliente/react-styles
+pnpm add @react33/react-form @react33/react-styles
 ```
 
-`@maurotaliente/react-ui-base` viene como dep transitiva — no hace falta instalarlo aparte.
+`@react33/react-ui-base` viene como dep transitiva — no hace falta instalarlo aparte.
 
 ## Uso
 
 ```tsx
-import { Form, Field, Button } from '@maurotaliente/react-form';
+import { Form, Field, Button } from '@react33/react-form';
 
 function MiForm() {
   return (
@@ -52,7 +52,7 @@ function MiForm() {
 }
 ```
 
-Para inputs listos para usar (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) instalá `@maurotaliente/react-ui`.
+Para inputs listos para usar (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) instalá `@react33/react-ui`.
 
 ## Licencia
 

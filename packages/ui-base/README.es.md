@@ -1,6 +1,6 @@
-# @maurotaliente/react-ui-base
+# @react33/react-ui-base
 
-Primitives agnósticos usados internamente por `@maurotaliente/react-form` (InputFrame, Field) y `@maurotaliente/react-ui` (inputs concretos, componentes Radix-wrapped).
+Primitives agnósticos usados internamente por `@react33/react-form` (InputFrame, Field) y `@react33/react-ui` (inputs concretos, componentes Radix-wrapped).
 
 ## Exports
 
@@ -13,13 +13,13 @@ Futuros primitives Radix-wrapped (Dialog, Popover, Tooltip, Separator, ScrollAre
 ## Instalación
 
 ```bash
-pnpm add @maurotaliente/react-ui-base @maurotaliente/react-styles
+pnpm add @react33/react-ui-base @react33/react-styles
 ```
 
 ## Uso
 
 ```tsx
-import { Button, Icon, Overlay } from '@maurotaliente/react-ui-base';
+import { Button, Icon, Overlay } from '@react33/react-ui-base';
 
 <Button variant="main" size="md">Guardar</Button>
 <Icon name="IconCheck" />

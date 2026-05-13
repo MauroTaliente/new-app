@@ -1,6 +1,6 @@
-import { buildStyles, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, type ClassValue } from '@react33/react-styles';
 import { type ReactNode } from 'react';
-import { Icon, type IconName } from '@maurotaliente/react-ui-base';
+import { Icon, type IconName } from '@react33/react-ui-base';
 
 const tagStyleMap = {
   root: 'inline-flex items-center justify-center gap-1 rounded-full',

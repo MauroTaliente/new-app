@@ -10,16 +10,16 @@ export default defineConfig({
   resolve: {
     alias: {
       // En desarrollo, usar código fuente para HMR al editar paquetes
-      '@maurotaliente/react-ui-base': path.join(packagesDir, 'ui-base/src'),
-      '@maurotaliente/react-form': path.join(packagesDir, 'form/src'),
-      '@maurotaliente/react-ui': path.join(packagesDir, 'ui/src'),
-      '@maurotaliente/react-styles': path.join(packagesDir, 'styles/src'),
-      '@maurotaliente/react-theme': path.join(packagesDir, 'theme/src'),
-      '@maurotaliente/react-context': path.join(packagesDir, 'context/src'),
-      '@maurotaliente/react-helpers': path.join(packagesDir, 'helpers/src'),
-      '@maurotaliente/react-hooks': path.join(packagesDir, 'hooks/src'),
-      '@maurotaliente/react-networking': path.join(packagesDir, 'networking/src'),
-      '@maurotaliente/react-persistence': path.join(packagesDir, 'persistence/src'),
+      '@react33/react-ui-base': path.join(packagesDir, 'ui-base/src'),
+      '@react33/react-form': path.join(packagesDir, 'form/src'),
+      '@react33/react-ui': path.join(packagesDir, 'ui/src'),
+      '@react33/react-styles': path.join(packagesDir, 'styles/src'),
+      '@react33/react-theme': path.join(packagesDir, 'theme/src'),
+      '@react33/react-context': path.join(packagesDir, 'context/src'),
+      '@react33/react-helpers': path.join(packagesDir, 'helpers/src'),
+      '@react33/react-hooks': path.join(packagesDir, 'hooks/src'),
+      '@react33/react-networking': path.join(packagesDir, 'networking/src'),
+      '@react33/react-persistence': path.join(packagesDir, 'persistence/src'),
     },
   },
 });

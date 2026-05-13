@@ -1,4 +1,4 @@
-# @maurotaliente/react-hooks
+# @react33/react-hooks
 
 React hooks: timer, viewport, route query, media.
 

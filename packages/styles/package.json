@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-styles",
+  "name": "@react33/react-styles",
   "version": "0.0.1",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
@@ -54,7 +54,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-helpers": "workspace:*",
+    "@react33/react-helpers": "workspace:*",
     "chokidar": "^4.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

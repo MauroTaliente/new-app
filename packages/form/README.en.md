@@ -1,6 +1,6 @@
-# @maurotaliente/react-form
+# @react33/react-form
 
-Form framework consumed by app code (and by `@maurotaliente/react-ui` for the concrete inputs).
+Form framework consumed by app code (and by `@react33/react-ui` for the concrete inputs).
 
 ## Exports
 
@@ -9,20 +9,20 @@ Form framework consumed by app code (and by `@maurotaliente/react-ui` for the co
 - `InputFrame` — visual shell shared by inputs (border, focus state, indicators, clear button, right actions)
 - `InputOptions` and option helpers (`normalizeActiveIndex`, `moveActiveIndex`, `pickActiveOption`, `splitInputSegments`, `readOptionText`, `readOptionLabel`, `resolveOptionsDirection`)
 - Types: `FormApi`, `FormConfig`, `FormInputApi`, `FromInputCustomApi`, `FromInputNativeApi`, `HtmlOmittedProps`, `Values`, `Errors`, `ValidatorsRules`, etc.
-- Re-exported from `@maurotaliente/react-ui-base`: `Button`, `Icon`, `Overlay`
+- Re-exported from `@react33/react-ui-base`: `Button`, `Icon`, `Overlay`
 
 ## Install
 
 ```bash
-pnpm add @maurotaliente/react-form @maurotaliente/react-styles
+pnpm add @react33/react-form @react33/react-styles
 ```
 
-`@maurotaliente/react-ui-base` is pulled transitively — no need to install it explicitly.
+`@react33/react-ui-base` is pulled transitively — no need to install it explicitly.
 
 ## Use
 
 ```tsx
-import { Form, Field, InputFrame, Button } from '@maurotaliente/react-form';
+import { Form, Field, InputFrame, Button } from '@react33/react-form';
 
 function MyForm() {
   return (
@@ -52,7 +52,7 @@ function MyForm() {
 }
 ```
 
-For batteries-included inputs (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) install `@maurotaliente/react-ui`.
+For batteries-included inputs (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) install `@react33/react-ui`.
 
 ## License
 

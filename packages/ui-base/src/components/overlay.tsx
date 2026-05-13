@@ -2,7 +2,7 @@
 
 import { forwardRef, type ForwardedRef, type ReactNode } from 'react';
 import { AnimatePresence, type HTMLMotionProps, motion } from 'motion/react';
-import { cn } from '@maurotaliente/react-styles';
+import { cn } from '@react33/react-styles';
 import { Icon } from './icon';
 
 export interface OverlayProps extends Omit<HTMLMotionProps<'div'>, 'children'> {

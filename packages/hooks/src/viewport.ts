@@ -1,7 +1,7 @@
 'use client';
 
 import { useIsomorphicLayoutEffect } from './layout.js';
-import { mergeDeepRight, isObject } from '@maurotaliente/react-helpers';
+import { mergeDeepRight, isObject } from '@react33/react-helpers';
 import { useEffect, useMemo, useState } from 'react';
 
 /** Parse simple CSS lengths (`px`, `rem`, unitless) to pixels (root `rem` = 16px by default). */
@@ -103,7 +103,7 @@ export function useActiveBreakpoint(screen: Record<string, string>) {
 }
 
 /**
- * Merge nested config by active width key (deep merge via `@maurotaliente/react-helpers`).
+ * Merge nested config by active width key (deep merge via `@react33/react-helpers`).
  */
 export function useAdaptiveValueBySize<T>(
   bpData: Record<number, T>,

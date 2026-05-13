@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { newContext } from '@maurotaliente/react-context';
+import { newContext } from '@react33/react-context';
 import { applyThemeToDocument, mountThemeToDocument, unmountThemeFromDocument } from './dom.js';
 
 export type CreateThemeRuntimeOptions<T extends string> = {
@@ -22,7 +22,7 @@ export type ThemeProviderProps<T extends string> = {
  *
  * @example
  * ```tsx
- * import { createThemeRuntime } from '@maurotaliente/react-theme';
+ * import { createThemeRuntime } from '@react33/react-theme';
  * import { styles, type ThemeName } from './theme/styles.generated';
  *
  * const theme = createThemeRuntime<ThemeName>({ defaultTheme: styles.meta.defaultTheme });

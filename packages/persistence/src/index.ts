@@ -43,4 +43,4 @@ export {
   createLoadRequestPropsFromAuthProfiles,
 } from './http-auth-load';
 
-export type { AuthProfile } from '@maurotaliente/react-networking';
+export type { AuthProfile } from '@react33/react-networking';

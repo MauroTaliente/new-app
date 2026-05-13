@@ -1,6 +1,6 @@
 # Default theme CSS
 
-Shipped with `@maurotaliente/react-styles` so `react-styles-generate` works without extra arguments.
+Shipped with `@react33/react-styles` so `react-styles-generate` works without extra arguments.
 
 Edit these files to change library defaults, or pass `--from-css <your-app/src/theme>` to use your app’s CSS as the source of truth.
 

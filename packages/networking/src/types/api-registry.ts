@@ -1,6 +1,6 @@
 import type { LoadRequestProps, Request, RequestProps } from './models';
 
-/** Where the raw token string is read from (implemented in `@maurotaliente/react-persistence` or app). */
+/** Where the raw token string is read from (implemented in `@react33/react-persistence` or app). */
 export type AuthProfileStorage = 'cookie' | 'localStorage' | 'sessionStorage';
 
 /**

@@ -1,4 +1,4 @@
-# `@maurotaliente/react-context`
+# `@react33/react-context`
 
 `newContext` builds a **state** context and a **dispatch** context from your reducer and initial values. The dispatcher reference stays stable across updates; consumers use generated hooks such as `useFooState` and `useFooUpdater`.
 

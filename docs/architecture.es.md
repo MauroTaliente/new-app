@@ -18,20 +18,20 @@ Sirve para elegir el entry correcto y no importar código solo-cliente en RSC o 
 
 | Paquete | Seguro en RSC / layout servidor | Componentes cliente (`'use client'`) | Notas |
 |---------|--------------------------------|-------------------------------------|--------|
-| `@maurotaliente/react-helpers` | Sí | Sí | Utilidades puras |
-| `@maurotaliente/react-context` | No (contexto React) | Sí | Solo cliente |
-| `@maurotaliente/react-styles` | Sí (tipos, `buildStyles`, tokens) | Sí (`useBuildStyles`, etc. en client) | El `styles` generado es código de app |
-| `@maurotaliente/react-networking` | Sí: `request`, `createApiRegistry`, `fetch.server` | Sí: `useAsyncFetch`, `fetch.client` | No importar `fetch.client` en servidor |
-| `@maurotaliente/react-persistence` | Sí: auth loaders, cookie store sin hooks | Sí: hooks `*.client.tsx` | Los hooks usan `useAsyncFetch` |
-| `@maurotaliente/react-hooks` | Depende del hook | Sí en general | `next-route-query` requiere cliente Next |
-| `@maurotaliente/react-i18n` | Sí: `getLocale`, `browser` (con APIs inyectadas en tests) | Sí: `@maurotaliente/react-i18n/next` (`next.client`) | `@maurotaliente/react-i18n/next/server` para loaders servidor |
-| `@maurotaliente/react-theme` | Pasar `value` desde servidor; DOM no-op sin `document` | Sí: `createThemeRuntime` | Ver README del paquete para SSR |
+| `@react33/react-helpers` | Sí | Sí | Utilidades puras |
+| `@react33/react-context` | No (contexto React) | Sí | Solo cliente |
+| `@react33/react-styles` | Sí (tipos, `buildStyles`, tokens) | Sí (`useBuildStyles`, etc. en client) | El `styles` generado es código de app |
+| `@react33/react-networking` | Sí: `request`, `createApiRegistry`, `fetch.server` | Sí: `useAsyncFetch`, `fetch.client` | No importar `fetch.client` en servidor |
+| `@react33/react-persistence` | Sí: auth loaders, cookie store sin hooks | Sí: hooks `*.client.tsx` | Los hooks usan `useAsyncFetch` |
+| `@react33/react-hooks` | Depende del hook | Sí en general | `next-route-query` requiere cliente Next |
+| `@react33/react-i18n` | Sí: `getLocale`, `browser` (con APIs inyectadas en tests) | Sí: `@react33/react-i18n/next` (`next.client`) | `@react33/react-i18n/next/server` para loaders servidor |
+| `@react33/react-theme` | Pasar `value` desde servidor; DOM no-op sin `document` | Sí: `createThemeRuntime` | Ver README del paquete para SSR |
 
 **Regla:** archivos `*.client.tsx` y exports de `fetch.client` = **solo navegador + React cliente**.
 
 ## Contexto React y re-renders
 
-`@maurotaliente/react-context` expone **`newContext`** con **`StateContext`** y **`DispatchContext`** separados para que el identity del dispatch sea estable. Eso evita un antipatrón habitual, pero **cualquier hook que lea el estado completo sigue re-renderizando cuando cambia cualquier parte de ese estado**—React no ofrece “selectores” nativos para contexto.
+`@react33/react-context` expone **`newContext`** con **`StateContext`** y **`DispatchContext`** separados para que el identity del dispatch sea estable. Eso evita un antipatrón habitual, pero **cualquier hook que lea el estado completo sigue re-renderizando cuando cambia cualquier parte de ese estado**—React no ofrece “selectores” nativos para contexto.
 
 **Patrones prácticos:**
 
@@ -39,7 +39,7 @@ Sirve para elegir el entry correcto y no importar código solo-cliente en RSC o 
 - En árboles calientes, **partí el estado** en varios providers o varios pares contexto/dispatch para que las hojas no dependan de slices ajenos.
 - **No** asumas que separar dispatch del estado evita re-renders ante cada dispatch; quien usa el hook de estado sigue viendo el store completo.
 
-Ver [README de @maurotaliente/react-context](../packages/context/README.es.md) para un ejemplo mínimo estilo selector.
+Ver [README de @react33/react-context](../packages/context/README.es.md) para un ejemplo mínimo estilo selector.
 
 ## Convenciones recomendadas: loading / error / éxito
 
@@ -78,11 +78,11 @@ Mismo modelo mental que `useAsyncFetch`: `loading`, `error`, `data`. Usá `initD
 
 ## TypeScript: entrada pública
 
-Qué tipos importar desde `@maurotaliente/react-networking`, `@maurotaliente/react-persistence`, etc.: [typescript.es.md](typescript.es.md).
+Qué tipos importar desde `@react33/react-networking`, `@react33/react-persistence`, etc.: [typescript.es.md](typescript.es.md).
 
 ## Versionado (workspace)
 
-Paquetes `@maurotaliente/react-*` en **0.0.x** alineados. Cambios rompientes: [CHANGELOG.md](../CHANGELOG.md).
+Paquetes `@react33/react-*` en **0.0.x** alineados. Cambios rompientes: [CHANGELOG.md](../CHANGELOG.md).
 
 ## Rendimiento
 

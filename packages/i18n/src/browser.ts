@@ -1,4 +1,4 @@
-import { parseDocumentCookie } from '@maurotaliente/react-persistence';
+import { parseDocumentCookie } from '@react33/react-persistence';
 
 export type ResolveInitialLocaleOptions = {
   /** Fallback when nothing else matches. */

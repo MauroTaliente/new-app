@@ -6,7 +6,7 @@ import {
   type ElementRef,
 } from 'react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
 
 export const popoverStyles = buildStyles({
   content: [

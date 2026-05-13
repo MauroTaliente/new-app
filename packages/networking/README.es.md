@@ -1,4 +1,4 @@
-# @maurotaliente/react-networking (Español)
+# @react33/react-networking (Español)
 
 Utilidades HTTP para navegador y servidor, hook **`useAsyncFetch`** (una petición en vuelo por instancia), **bus de eventos**, y generación de **registro de APIs** desde `lib.config.json`.
 

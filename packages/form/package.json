@@ -1,9 +1,9 @@
 {
-  "name": "@maurotaliente/react-form",
+  "name": "@react33/react-form",
   "version": "0.0.1",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
-  "description": "Form framework: Form, Field, InputFrame, InputOptions and types. Headless and unopinionated about concrete inputs; pair with @maurotaliente/react-ui or your own.",
+  "description": "Form framework: Form, Field, InputFrame, InputOptions and types. Headless and unopinionated about concrete inputs; pair with @react33/react-ui or your own.",
   "keywords": [
     "react",
     "form",
@@ -41,18 +41,18 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @maurotaliente/react-ui-base --external @maurotaliente/react-styles --external @maurotaliente/react-helpers --external @maurotaliente/react-hooks --external @maurotaliente/react-context --external @maurotaliente/react-networking --external @tabler/icons-react --external motion",
+    "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @react33/react-ui-base --external @react33/react-styles --external @react33/react-helpers --external @react33/react-hooks --external @react33/react-context --external @react33/react-networking --external @tabler/icons-react --external motion",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-context": "workspace:*",
-    "@maurotaliente/react-helpers": "workspace:*",
-    "@maurotaliente/react-hooks": "workspace:*",
-    "@maurotaliente/react-networking": "workspace:*",
-    "@maurotaliente/react-styles": "workspace:*",
-    "@maurotaliente/react-ui-base": "workspace:*",
+    "@react33/react-context": "workspace:*",
+    "@react33/react-helpers": "workspace:*",
+    "@react33/react-hooks": "workspace:*",
+    "@react33/react-networking": "workspace:*",
+    "@react33/react-styles": "workspace:*",
+    "@react33/react-ui-base": "workspace:*",
     "ts-essentials": "^10.0.4"
   },
   "peerDependencies": {

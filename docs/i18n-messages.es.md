@@ -1,6 +1,6 @@
 # i18n: mensajes, `formatMessage` y tipado
 
-El paquete `@maurotaliente/react-i18n` ofrece formato ICU en **texto plano** con **`formatMessage(locale, pattern, values?)`** e interpolación **rica** con **`ct`**. La resolución de locale (`getLocale`, helpers de navegador, adaptadores Next) va aparte: acá se trata la **forma** de los mensajes y **TypeScript**.
+El paquete `@react33/react-i18n` ofrece formato ICU en **texto plano** con **`formatMessage(locale, pattern, values?)`** e interpolación **rica** con **`ct`**. La resolución de locale (`getLocale`, helpers de navegador, adaptadores Next) va aparte: acá se trata la **forma** de los mensajes y **TypeScript**.
 
 ## Cuándo usar cada API
 
@@ -25,7 +25,7 @@ Carga perezosa: **`import()` dinámico** por trozos de locale si importa el tama
 Usá **`defineMessages`** para marcar un objeto `const` como fuente de mensajes sin cambiar el runtime:
 
 ```ts
-import { defineMessages, formatMessage } from '@maurotaliente/react-i18n';
+import { defineMessages, formatMessage } from '@react33/react-i18n';
 
 const labels = defineMessages({
   greeting: 'Hola, {name}!',
@@ -39,4 +39,4 @@ const s = formatMessage('es', labels.greeting, { name: 'Ada' });
 
 ## Next.js y componentes servidor
 
-Los loaders solo-servidor y los adaptadores `next.client` están en **`@maurotaliente/react-i18n/next`** y **`@maurotaliente/react-i18n/next/server`** (ver README del paquete). Los **diccionarios** deberían ser serializables (solo strings en rutas `formatMessage`); **`ct`** es para componentes cliente donde tienen sentido nodos React.
+Los loaders solo-servidor y los adaptadores `next.client` están en **`@react33/react-i18n/next`** y **`@react33/react-i18n/next/server`** (ver README del paquete). Los **diccionarios** deberían ser serializables (solo strings en rutas `formatMessage`); **`ct`** es para componentes cliente donde tienen sentido nodos React.

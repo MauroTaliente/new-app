@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-networking",
+  "name": "@react33/react-networking",
   "version": "0.0.1",
   "description": "HTTP helpers, useAsyncFetch (one in-flight request per instance), and event bus",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-helpers": "workspace:*",
+    "@react33/react-helpers": "workspace:*",
     "ts-essentials": "^10.0.4",
     "use-memo-one": "^1.1.3"
   },

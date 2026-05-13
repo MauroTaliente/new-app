@@ -12,7 +12,7 @@ import {
   type InputDatePickerProps,
   type InputTextProps,
   type InputSliderProps,
-} from '@maurotaliente/react-ui';
+} from '@react33/react-ui';
 import { InputPropRow, type InputPropRowConfig } from './input-prop-row';
 
 type DemoFormValues = {

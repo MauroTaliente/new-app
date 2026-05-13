@@ -1,16 +1,16 @@
-# @maurotaliente/react-helpers
+# @react33/react-helpers
 
-Utilidades sin dependencia de React: guards, `mergeDeepRight`, JSON seguro, lectura/escritura por rutas con segmentos `a/b` (y opcional `[índice]`), y helpers de fechas / calendario. Las usan otros paquetes `@maurotaliente/*`.
+Utilidades sin dependencia de React: guards, `mergeDeepRight`, JSON seguro, lectura/escritura por rutas con segmentos `a/b` (y opcional `[índice]`), y helpers de fechas / calendario. Las usan otros paquetes `@react33/*`.
 
 ## Instalación (monorepo)
 
-`"@maurotaliente/react-helpers": "workspace:*"`
+`"@react33/react-helpers": "workspace:*"`
 
 Desde npm (tras publicar): mismo nombre con rango semver.
 
 ## Entry
 
-`import { … } from '@maurotaliente/react-helpers'`
+`import { … } from '@react33/react-helpers'`
 
 ## Resumen
 
@@ -29,4 +29,4 @@ La API completa está en `src/shared.ts` (incluye JSDoc en `mergeDeepRight`).
 
 ## Tests
 
-`pnpm --filter @maurotaliente/react-helpers test`
+`pnpm --filter @react33/react-helpers test`

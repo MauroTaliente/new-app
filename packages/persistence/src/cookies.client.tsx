@@ -1,7 +1,7 @@
 'use client';
 
-import { useAsyncFetch, HttpCode } from '@maurotaliente/react-networking';
-import type { Action, DynamicOptions } from '@maurotaliente/react-networking';
+import { useAsyncFetch, HttpCode } from '@react33/react-networking';
+import type { Action, DynamicOptions } from '@react33/react-networking';
 import type { CookieClientOptions } from './cookie-browser';
 import { getCookie, putCookie, setCookie } from './cookie-browser';
 

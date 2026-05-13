@@ -1,5 +1,5 @@
 {
-  "name": "@maurotaliente/react-i18n",
+  "name": "@react33/react-i18n",
   "version": "0.0.1",
   "description": "Typed dictionaries, rich string interpolation (ct), browser locale resolution, optional Next.js adapters",
   "license": "MIT",
@@ -50,8 +50,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@maurotaliente/react-helpers": "workspace:*",
-    "@maurotaliente/react-persistence": "workspace:*",
+    "@react33/react-helpers": "workspace:*",
+    "@react33/react-persistence": "workspace:*",
     "intl-messageformat": "^11.2.0",
     "server-only": "^0.0.1"
   },

@@ -24,7 +24,7 @@ export function OverviewPanel({
         </h2>
         <p className="mt-space-sm max-w-3xl text-text-200 text-(length:--text-md)">
           Esta app queda como entorno de integracion para{' '}
-          <code className={codeClassName}>@maurotaliente/react-ui</code>. Cada componente tendra
+          <code className={codeClassName}>@react33/react-ui</code>. Cada componente tendra
           su propio showcase con estados reales, mientras el tema sigue siendo global para validar
           tokens, contraste y comportamiento.
         </p>

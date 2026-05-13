@@ -1,6 +1,6 @@
-# `@maurotaliente/react-theme`
+# `@react33/react-theme`
 
-React theme **runtime**: in-memory state (context) + **DOM sync** (`body` / `documentElement` / `data-theme`), with **`onThemeChange`** for persistence (`@maurotaliente/react-persistence`, cookies, Server Actions, etc.).
+React theme **runtime**: in-memory state (context) + **DOM sync** (`body` / `documentElement` / `data-theme`), with **`onThemeChange`** for persistence (`@react33/react-persistence`, cookies, Server Actions, etc.).
 
 Theme **names** are defined in **CSS → `react-styles-generate` → `styles.generated.ts`** (single source of truth).
 
@@ -10,18 +10,18 @@ Alongside `libStyles`, **`libTheme`** shares **`libPersistence`** with **`libI18
 
 ## Internal dependencies (monorepo)
 
-- `@maurotaliente/react-context` — theme state
-- `@maurotaliente/react-styles` — `ExtractThemeName` / `ExtractDefaultTheme` aligned with generated `styles`
+- `@react33/react-context` — theme state
+- `@react33/react-styles` — `ExtractThemeName` / `ExtractDefaultTheme` aligned with generated `styles`
 
-Typical install in an app that already uses `@maurotaliente/react-styles` and `@maurotaliente/react-persistence`:
+Typical install in an app that already uses `@react33/react-styles` and `@react33/react-persistence`:
 
 ```json
 {
   "dependencies": {
-    "@maurotaliente/react-theme": "workspace:*",
-    "@maurotaliente/react-styles": "workspace:*",
-    "@maurotaliente/react-persistence": "workspace:*",
-    "@maurotaliente/react-context": "workspace:*"
+    "@react33/react-theme": "workspace:*",
+    "@react33/react-styles": "workspace:*",
+    "@react33/react-persistence": "workspace:*",
+    "@react33/react-context": "workspace:*"
   }
 }
 ```
@@ -29,7 +29,7 @@ Typical install in an app that already uses `@maurotaliente/react-styles` and `@
 ## Usage
 
 ```tsx
-import { createThemeRuntime, type ExtractThemeName } from '@maurotaliente/react-theme';
+import { createThemeRuntime, type ExtractThemeName } from '@react33/react-theme';
 import { styles } from './theme/styles.generated';
 
 type ThemeName = ExtractThemeName<typeof styles>;
@@ -51,11 +51,11 @@ export const { ThemeProvider, ThemeBodySync, useTheme } = createThemeRuntime<The
 
 ## Next.js / SSR
 
-`@maurotaliente/react-theme` does **not** import `next/headers`. Patterns:
+`@react33/react-theme` does **not** import `next/headers`. Patterns:
 
 ### A — Cookie readable on the client (like the Vite demo)
 
-Client entry: `getInitialTheme(defaultTheme)` + `onThemeChange` writing cookie / `localStorage` via `@maurotaliente/react-persistence`.
+Client entry: `getInitialTheme(defaultTheme)` + `onThemeChange` writing cookie / `localStorage` via `@react33/react-persistence`.
 
 ### B — Value resolved on the server (RSC layout)
 
@@ -73,10 +73,10 @@ Read only on the server: pass **`value={theme}`** from the layout; in **`onTheme
 |--------|------|
 | `createThemeRuntime` | Factory: `ThemeProvider`, `ThemeBodySync`, `useTheme`, … |
 | `applyThemeToDocument` / `mountThemeToDocument` / … | DOM primitives (tests, advanced cases) |
-| `ExtractThemeName`, `ExtractDefaultTheme` | Re-exported from `@maurotaliente/react-styles` |
+| `ExtractThemeName`, `ExtractDefaultTheme` | Re-exported from `@react33/react-styles` |
 
 ## Tests
 
 ```bash
-pnpm --filter @maurotaliente/react-theme test
+pnpm --filter @react33/react-theme test
 ```

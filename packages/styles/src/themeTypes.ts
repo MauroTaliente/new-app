@@ -4,7 +4,7 @@
  * @example
  * ```ts
  * import { styles } from './theme/styles.generated';
- * import type { ExtractThemeName } from '@maurotaliente/react-styles';
+ * import type { ExtractThemeName } from '@react33/react-styles';
  * type ThemeName = ExtractThemeName<typeof styles>;
  * ```
  */

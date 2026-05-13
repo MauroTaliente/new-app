@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef, type ForwardedRef, type JSX, type RefAttributes } from 'react';
-import { isFunction } from '@maurotaliente/react-helpers';
+import { isFunction } from '@react33/react-helpers';
 import {
   useFormApi,
   type FormProps,

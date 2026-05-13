@@ -1,4 +1,4 @@
-import { cn } from '@maurotaliente/react-styles';
+import { cn } from '@react33/react-styles';
 
 export type DemoTheme = 'light' | 'dark';
 

@@ -1,4 +1,4 @@
-# `@maurotaliente/react-context`
+# `@react33/react-context`
 
 `newContext` arma un contexto de **estado** y uno de **dispatch** a partir de tu reducer y valores iniciales. La referencia del dispatch se mantiene estable; los consumidores usan hooks generados como `useFooState` y `useFooUpdater`.
 

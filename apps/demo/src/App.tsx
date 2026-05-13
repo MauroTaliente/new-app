@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { buildStyles } from '@maurotaliente/react-styles';
-import { Button } from '@maurotaliente/react-ui';
+import { buildStyles } from '@react33/react-styles';
+import { Button } from '@react33/react-ui';
 import { ButtonPanel } from './demo/button-panel';
 import { FormPanel } from './demo/form-panel';
 import { OverlaysPanel } from './demo/overlays-panel';
@@ -98,7 +98,7 @@ export default function App() {
         <header className={shellStyles.hero}>
           <div className="flex flex-col gap-space-md lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <span className={shellStyles.badge}>@maurotaliente/react-ui</span>
+              <span className={shellStyles.badge}>@react33/react-ui</span>
               <h1 className="mt-space-sm text-(length:--text-3xl) font-bold tracking-tight text-text-100">
                 Component demo
               </h1>

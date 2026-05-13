@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useMemo, useCallback } from 'use-memo-one';
-import { isDeepEqual } from '@maurotaliente/react-helpers';
+import { isDeepEqual } from '@react33/react-helpers';
 import { shouldRetryAfterHttpFailure, sleepMs } from '../helpers';
 import {
   buildRequestCacheKey,

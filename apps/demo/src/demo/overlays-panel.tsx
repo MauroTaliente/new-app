@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { buildStyles } from '@maurotaliente/react-styles';
+import { buildStyles } from '@react33/react-styles';
 import {
   Button,
   Dialog,
@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
   SimpleTooltip,
   TooltipProvider,
-} from '@maurotaliente/react-ui';
+} from '@react33/react-ui';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -33,7 +33,7 @@ import {
   ToastTitle,
   ToastViewport,
   useToaster,
-} from '@maurotaliente/react-ui';
+} from '@react33/react-ui';
 
 interface OverlaysPanelProps {
   sectionClassName: string;
@@ -119,7 +119,7 @@ export function OverlaysPanel({
                 <DialogTitle>Confirmar publicación</DialogTitle>
                 <DialogDescription>
                   Vas a publicar los 12 paquetes a npm bajo el scope{' '}
-                  <code className={codeClassName}>@maurotaliente</code>. ¿Continuar?
+                  <code className={codeClassName}>@react33</code>. ¿Continuar?
                 </DialogDescription>
                 <DialogFooter>
                   <DialogClose asChild>
@@ -234,11 +234,11 @@ export function OverlaysPanel({
               </TabsList>
               <TabsContent value="install">
                 <code className={codeClassName}>
-                  pnpm add @maurotaliente/react-ui @maurotaliente/react-styles
+                  pnpm add @react33/react-ui @react33/react-styles
                 </code>
               </TabsContent>
               <TabsContent value="use">
-                <code className={codeClassName}>{`import { Dialog, Button } from '@maurotaliente/react-ui';`}</code>
+                <code className={codeClassName}>{`import { Dialog, Button } from '@react33/react-ui';`}</code>
               </TabsContent>
               <TabsContent value="testing">
                 <code className={codeClassName}>pnpm test</code>

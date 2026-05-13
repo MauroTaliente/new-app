@@ -1,4 +1,4 @@
-import { cn } from '@maurotaliente/react-styles';
+import { cn } from '@react33/react-styles';
 import { usePokemonRequest } from './api/apis.client.generated';
 
 type PokemonListResponse = {
@@ -36,7 +36,7 @@ export function PokemonDemo() {
       )}
     >
       <h2 className="text-(length:--text-xl) font-semibold text-text-100 p-space-lg">
-        @maurotaliente/react-networking + PokeAPI
+        @react33/react-networking + PokeAPI
       </h2>
       <p className="px-space-lg pb-space-md text-sm text-text-200">
         Generated hook <code className="bg-bg-300 px-space-xs rounded-input">usePokemonRequest</code> in{' '}

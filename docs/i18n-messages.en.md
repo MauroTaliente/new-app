@@ -1,6 +1,6 @@
 # i18n: messages, `formatMessage`, and typing
 
-The `@maurotaliente/react-i18n` package provides **plain-string** ICU formatting via **`formatMessage(locale, pattern, values?)`**, and **rich** interpolation via **`ct`**. Locale resolution (`getLocale`, browser helpers, Next adapters) stays separate—this page is about **message shape** and **TypeScript**.
+The `@react33/react-i18n` package provides **plain-string** ICU formatting via **`formatMessage(locale, pattern, values?)`**, and **rich** interpolation via **`ct`**. Locale resolution (`getLocale`, browser helpers, Next adapters) stays separate—this page is about **message shape** and **TypeScript**.
 
 ## When to use what
 
@@ -25,7 +25,7 @@ Lazy-loading: use **dynamic `import()`** for locale chunks if bundle size matter
 Use **`defineMessages`** to mark a const object as your message source without changing runtime behavior:
 
 ```ts
-import { defineMessages, formatMessage } from '@maurotaliente/react-i18n';
+import { defineMessages, formatMessage } from '@react33/react-i18n';
 
 const labels = defineMessages({
   greeting: 'Hello, {name}!',
@@ -39,4 +39,4 @@ const s = formatMessage('en', labels.greeting, { name: 'Ada' });
 
 ## Next.js and server components
 
-Server-only loaders and `next.client` adapters live under **`@maurotaliente/react-i18n/next`** and **`@maurotaliente/react-i18n/next/server`** (see package README). Keep **dictionaries** serializable (strings only in `formatMessage` paths); **`ct`** is for client components where React nodes are allowed.
+Server-only loaders and `next.client` adapters live under **`@react33/react-i18n/next`** and **`@react33/react-i18n/next/server`** (see package README). Keep **dictionaries** serializable (strings only in `formatMessage` paths); **`ct`** is for client components where React nodes are allowed.

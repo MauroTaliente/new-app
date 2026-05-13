@@ -1,4 +1,4 @@
-# `@maurotaliente/react-ui`
+# `@react33/react-ui`
 
 ## Uso con Tailwind v4
 
@@ -6,7 +6,7 @@ Si tu app usa Tailwind v4, debes incluir este paquete en el escaneo para que se 
 
 ```css
 @import "tailwindcss";
-@source "../node_modules/@maurotaliente/react-ui";
+@source "../node_modules/@react33/react-ui";
 ```
 
 Ajustá la ruta según la ubicación de tu CSS (ej. `./node_modules/` si el CSS está en la raíz del proyecto).
@@ -18,8 +18,8 @@ Este paquete es la **capa visual y de interacción** para aplicaciones internas:
 Objetivos:
 
 - **Suficientemente completo** para dashboards reales (formularios, modales, tabla más adelante, etc.).
-- **Poco acoplado** a la infra de estilos: **utilidades Tailwind v4** + **`buildStyles`** desde `@maurotaliente/react-styles` (sin `cva` por defecto), no un API semántico en `react-styles`.
-- **Progresivo**: cada componente migrado puede exigir pequeños ajustes en `@maurotaliente/react-styles` (variables CSS / `@theme`) para que las apps y `apps/demo` compartan el mismo preset.
+- **Poco acoplado** a la infra de estilos: **utilidades Tailwind v4** + **`buildStyles`** desde `@react33/react-styles` (sin `cva` por defecto), no un API semántico en `react-styles`.
+- **Progresivo**: cada componente migrado puede exigir pequeños ajustes en `@react33/react-styles` (variables CSS / `@theme`) para que las apps y `apps/demo` compartan el mismo preset.
 
 ## Drag and drop y animación (`dnd-kit` vs `motion`)
 
@@ -49,7 +49,7 @@ Siguiendo el criterio usado en `vb-lucy-admin-app`, separamos responsabilidades:
    **Sin APIs de Next.js** (`next/link`, `next/image`, etc.). Enlaces y media con elementos normales o patrones composables (`asChild`, render props).
 
 5. **Lógica del monorepo**  
-   Usar `@maurotaliente/react-helpers`, `react-context`, `react-hooks`, `react-networking`, `react-i18n` cuando haga falta para comportamiento—no reglas de negocio de una app concreta.
+   Usar `@react33/react-helpers`, `react-context`, `react-hooks`, `react-networking`, `react-i18n` cuando haga falta para comportamiento—no reglas de negocio de una app concreta.
 
 6. **API pública**  
    Solo rutas estables publicadas vía `package.json` `exports` y `src/index.ts`. Los consumidores nunca dependen de `_legacy`.
@@ -74,7 +74,7 @@ Las mismas reglas están en **`.cursor/rules/react-ui.mdc`** (`globs: packages/u
 ### `Button`
 
 - **Archivo**: `src/components/atoms/button.tsx` → `src/components/atoms/index.ts` → `src/index.ts`.
-- **Implementación**: **`buttonStyles`** (`buildStyles` en módulo) + **`resolvedStyles`** (por render: `root` = base + variant + size, `area` opcional). Clases Tailwind/tokens desde `@maurotaliente/react-styles`. Base con `transition-colors`, `outline-none`, `disabled:opacity-50`, `disabled:cursor-not-allowed`. Renderiza `<button>` o `<a>` cuando hay `href`; `rel` por defecto `noopener noreferrer` si `target="_blank"`. Props `disabled` con `aria-disabled` en enlaces.
+- **Implementación**: **`buttonStyles`** (`buildStyles` en módulo) + **`resolvedStyles`** (por render: `root` = base + variant + size, `area` opcional). Clases Tailwind/tokens desde `@react33/react-styles`. Base con `transition-colors`, `outline-none`, `disabled:opacity-50`, `disabled:cursor-not-allowed`. Renderiza `<button>` o `<a>` cuando hay `href`; `rel` por defecto `noopener noreferrer` si `target="_blank"`. Props `disabled` con `aria-disabled` en enlaces.
 - **Exportaciones**: `Button`, `buttonStyles`, `ButtonVariant`, `ButtonSize`, `CommonButtonProps`, `ButtonProps`, `ButtonElement`.
 - **Variantes** (`variant`): `main`, `outline`, `subtle`, `link`, `destructive`.
 - **Modificadores**: `active` para estado persistente y `min` para quitar alto, ancho mínimo y padding del tamaño elegido.

@@ -1,4 +1,4 @@
-# `@maurotaliente/react-generate` (Español)
+# `@react33/react-generate` (Español)
 
 ## `react-generate`
 
@@ -14,4 +14,4 @@ react-generate
 react-generate --config ./lib.config.json
 ```
 
-Hace falta tener **`@maurotaliente/react-styles`** y **`@maurotaliente/react-networking`** compilados (`dist/`).
+Hace falta tener **`@react33/react-styles`** y **`@react33/react-networking`** compilados (`dist/`).

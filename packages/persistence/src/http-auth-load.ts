@@ -1,5 +1,5 @@
-import type { AuthProfile, LoadRequestProps, RequestProps } from '@maurotaliente/react-networking';
-import { buildHeadersFromTokenTemplate, mergeRequestProps } from '@maurotaliente/react-networking';
+import type { AuthProfile, LoadRequestProps, RequestProps } from '@react33/react-networking';
+import { buildHeadersFromTokenTemplate, mergeRequestProps } from '@react33/react-networking';
 import { parseDocumentCookie } from './cookie-browser';
 import { getLocalStorage, getSessionStorage } from './storage';
 

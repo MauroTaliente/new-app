@@ -1,4 +1,4 @@
-# @maurotaliente/react-networking
+# @react33/react-networking
 
 HTTP utilities for the browser and server, a **single in-flight request per `useAsyncFetch` instance**, and a small **event bus** (independent of fetch).
 
@@ -70,7 +70,7 @@ For apps that already use `lib.config.json`, declare **`libNetworking.apis` as a
 
 Set **`libNetworking.output`** in `lib.config.json` (path relative to the config file) for the server-safe module, or pass **`--output`** on the CLI (CLI wins). Optional **`libNetworking.hooksOutput`** overrides the client hooks path; otherwise it is derived next to `apis.generated.ts` as **`apis.client.generated.tsx`**.
 
-Then run the generator (after `@maurotaliente/react-networking` is built):
+Then run the generator (after `@react33/react-networking` is built):
 
 ```bash
 react-networking-generate --config lib.config.json
@@ -85,7 +85,7 @@ It writes **two modules**:
 
 Use **`apis.generated.ts`** from server code, route handlers, and non-React callers; import **`use*Request`** only from client components (Next.js: avoid pulling hooks into server modules). The `satisfies` form preserves literal API keys on `definitions`. Re-run when `lib.config.json` changes.
 
-Programmatic use: `import { generateApisModuleSource, generateApisHooksModuleSource, deriveHooksGeneratedPath, readLibNetworkingOutputPaths } from '@maurotaliente/react-networking/generate'`.
+Programmatic use: `import { generateApisModuleSource, generateApisHooksModuleSource, deriveHooksGeneratedPath, readLibNetworkingOutputPaths } from '@react33/react-networking/generate'`.
 
 Pure helpers (no storage I/O):
 
@@ -94,7 +94,7 @@ Pure helpers (no storage I/O):
 
 ### `AuthProfile` (serializable contract)
 
-Defined in this package for typing and docs; **reading** cookies/storage is implemented in `@maurotaliente/react-persistence` (this package does not depend on persistence).
+Defined in this package for typing and docs; **reading** cookies/storage is implemented in `@react33/react-persistence` (this package does not depend on persistence).
 
 - **`storage`**: `'cookie' | 'localStorage' | 'sessionStorage'`
 - **`key`**: cookie name or storage key
@@ -109,11 +109,11 @@ import {
   createApiRegistry,
   type ApiClientConfigBody,
   type AuthProfile,
-} from '@maurotaliente/react-networking';
+} from '@react33/react-networking';
 import {
   createLoadRequestPropsFromAuthProfile,
   createLoadRequestPropsFromAuthProfiles,
-} from '@maurotaliente/react-persistence';
+} from '@react33/react-persistence';
 
 const authMain: AuthProfile = {
   storage: 'cookie',
@@ -171,8 +171,8 @@ For **HMAC, two custom headers, or non-stored secrets**, pass a custom `LoadRequ
 2. In the module where you call `createApiRegistry` or `createDataFlow`, pass a `load` (shared) or `loads[apiName]` (per client) that reads the env and merges headers:
 
    ```ts
-   import type { LoadRequestProps } from '@maurotaliente/react-networking';
-   import { mergeRequestProps } from '@maurotaliente/react-networking';
+   import type { LoadRequestProps } from '@react33/react-networking';
+   import { mergeRequestProps } from '@react33/react-networking';
 
    const apiKey = import.meta.env.VITE_MY_API_KEY; // or process.env.MY_API_KEY
 
@@ -183,7 +183,7 @@ For **HMAC, two custom headers, or non-stored secrets**, pass a custom `LoadRequ
    ```
 
 3. If **codegen or build steps** generate hooks from `lib.config.json`, treat the JSON as **non-secret metadata only** (API name, base URL, *name* of the header such as `"X-Api-Key"`). The **value** always comes from env in hand-written or templated TS that references `import.meta.env` / `process.env`—never inline the key into generated files from JSON.
-4. Tokens **stored** in cookies or `localStorage` / `sessionStorage` are covered by **`AuthProfile`** and `@maurotaliente/react-persistence`’s `createLoadRequestPropsFromAuthProfile`. Static API keys from env are not: use a custom `load` as above.
+4. Tokens **stored** in cookies or `localStorage` / `sessionStorage` are covered by **`AuthProfile`** and `@react33/react-persistence`’s `createLoadRequestPropsFromAuthProfile`. Static API keys from env are not: use a custom `load` as above.
 
 **Summary:** required API key = **env + `LoadRequestProps`** (`mergeRequestProps`). Config files can describe *that* an API needs a key; they must not contain the key itself.
 

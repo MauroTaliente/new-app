@@ -12,15 +12,15 @@ A **shared toolkit** for React apps (internal products, demos, or greenfield UIs
 
 ```mermaid
 flowchart TB
-  helpers["@maurotaliente/react-helpers"]
-  context["@maurotaliente/react-context"]
-  styles["@maurotaliente/react-styles"]
-  networking["@maurotaliente/react-networking"]
-  persistence["@maurotaliente/react-persistence"]
-  hooks["@maurotaliente/react-hooks"]
-  i18n["@maurotaliente/react-i18n"]
-  theme["@maurotaliente/react-theme"]
-  generate["@maurotaliente/react-generate"]
+  helpers["@react33/react-helpers"]
+  context["@react33/react-context"]
+  styles["@react33/react-styles"]
+  networking["@react33/react-networking"]
+  persistence["@react33/react-persistence"]
+  hooks["@react33/react-hooks"]
+  i18n["@react33/react-i18n"]
+  theme["@react33/react-theme"]
+  generate["@react33/react-generate"]
   helpers --> hooks
   helpers --> persistence
   helpers --> i18n
@@ -39,20 +39,20 @@ Use this to pick the right entry and avoid importing client-only code into RSC o
 
 | Package | Safe in RSC / server layout | Client components (`'use client'`) | Notes |
 |---------|----------------------------|-----------------------------------|--------|
-| `@maurotaliente/react-helpers` | Yes | Yes | Pure JS utilities |
-| `@maurotaliente/react-context` | No (React context) | Yes | Uses client-only context |
-| `@maurotaliente/react-styles` | Yes (types, `buildStyles`, tokens) | Yes (`useBuildStyles`, `useCssVariable` in `styles.client`) | Generated `styles` import is app code |
-| `@maurotaliente/react-networking` | Yes: `request`, `createApiRegistry`, `fetch.server` | Yes: `useAsyncFetch`, `fetch.client` | Do not import `fetch.client` / hooks in server files |
-| `@maurotaliente/react-persistence` | Yes: `http-auth-load`, cookie store helpers without hooks | Yes: `*.client.tsx` hooks | Hooks wrap `useAsyncFetch` |
-| `@maurotaliente/react-hooks` | Only hooks that do not touch `window` if you know usage | Yes | `next-route-query` needs Next client |
-| `@maurotaliente/react-i18n` | Yes: `getLocale`, `browser` (with injected APIs in tests) | Yes: `@maurotaliente/react-i18n/next` (`next.client`) | `@maurotaliente/react-i18n/next/server` for server-only loaders |
-| `@maurotaliente/react-theme` | Provide `value` from server; DOM helpers are no-ops if `document` missing | Yes: `createThemeRuntime` | See package README for SSR patterns |
+| `@react33/react-helpers` | Yes | Yes | Pure JS utilities |
+| `@react33/react-context` | No (React context) | Yes | Uses client-only context |
+| `@react33/react-styles` | Yes (types, `buildStyles`, tokens) | Yes (`useBuildStyles`, `useCssVariable` in `styles.client`) | Generated `styles` import is app code |
+| `@react33/react-networking` | Yes: `request`, `createApiRegistry`, `fetch.server` | Yes: `useAsyncFetch`, `fetch.client` | Do not import `fetch.client` / hooks in server files |
+| `@react33/react-persistence` | Yes: `http-auth-load`, cookie store helpers without hooks | Yes: `*.client.tsx` hooks | Hooks wrap `useAsyncFetch` |
+| `@react33/react-hooks` | Only hooks that do not touch `window` if you know usage | Yes | `next-route-query` needs Next client |
+| `@react33/react-i18n` | Yes: `getLocale`, `browser` (with injected APIs in tests) | Yes: `@react33/react-i18n/next` (`next.client`) | `@react33/react-i18n/next/server` for server-only loaders |
+| `@react33/react-theme` | Provide `value` from server; DOM helpers are no-ops if `document` missing | Yes: `createThemeRuntime` | See package README for SSR patterns |
 
 **Rule of thumb:** anything under a `*.client.tsx` file or re-exported from `fetch.client` is **browser + React client** only.
 
 ## React context and re-renders
 
-`@maurotaliente/react-context` exposes **`newContext`** with **separate** `StateContext` and `DispatchContext` so updates to the dispatcher identity stay stable. That avoids one common pitfall, but **any hook that reads the full state still re-renders when any slice of that state changes**—React has no built-in “selector” API for context.
+`@react33/react-context` exposes **`newContext`** with **separate** `StateContext` and `DispatchContext` so updates to the dispatcher identity stay stable. That avoids one common pitfall, but **any hook that reads the full state still re-renders when any slice of that state changes**—React has no built-in “selector” API for context.
 
 **Practical patterns:**
 
@@ -60,7 +60,7 @@ Use this to pick the right entry and avoid importing client-only code into RSC o
 - For hot trees, **split state** into multiple providers or multiple context pairs so leaves do not subscribe to unrelated slices.
 - **Do not** assume that splitting dispatch from state alone prevents re-renders on every dispatch; consumers that call the state hook still see the full store.
 
-See [@maurotaliente/react-context README](../packages/context/README.en.md) for a minimal selector-style example.
+See [@react33/react-context README](../packages/context/README.en.md) for a minimal selector-style example.
 
 ## Recommended conventions: loading / error / success
 
@@ -99,15 +99,15 @@ Treat them like `useAsyncFetch`: `loading`, `error`, `data` (stored value). Init
 
 ## TypeScript entry points
 
-For which types to import from `@maurotaliente/react-networking`, `@maurotaliente/react-persistence`, and related packages, see [typescript.en.md](typescript.en.md).
+For which types to import from `@react33/react-networking`, `@react33/react-persistence`, and related packages, see [typescript.en.md](typescript.en.md).
 
 ## Versioning (workspace)
 
-All `@maurotaliente/react-*` packages use **0.0.x** in lockstep for now. Breaking changes should be noted in [CHANGELOG.md](../CHANGELOG.md) with migration hints. When publishing to npm independently, align minor bumps across packages that share types.
+All `@react33/react-*` packages use **0.0.x** in lockstep for now. Breaking changes should be noted in [CHANGELOG.md](../CHANGELOG.md) with migration hints. When publishing to npm independently, align minor bumps across packages that share types.
 
 ## Performance expectations
 
 - **Networking:** one logical in-flight request per `useAsyncFetch` **instance** (last trigger wins). For parallel hook instances, optionally use the same **`requestCache: 'global'`** (or the same custom **`RequestCache`** reference) to dedupe/TTL across instances with the same key; otherwise use **multiple hook instances** without a shared cache.
-- **Bundle:** import from package entry points; tree-shaking depends on your bundler. Heavy features (e.g. wide `helpers`)—import only what you use from `@maurotaliente/react-helpers`.
+- **Bundle:** import from package entry points; tree-shaking depends on your bundler. Heavy features (e.g. wide `helpers`)—import only what you use from `@react33/react-helpers`.
 
 See [performance.en.md](performance.en.md) for a short rationale and when to add another data library.

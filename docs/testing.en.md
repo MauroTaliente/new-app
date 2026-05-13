@@ -21,7 +21,7 @@ Use the **`*.spec.ts`** suffix (or **`*.spec.tsx`** if the test file contains JS
 
 Vitest accepts **both**; this is a **team style** choice.
 
-## Reference: `@maurotaliente/react-hooks`
+## Reference: `@react33/react-hooks`
 
 - Config: `packages/hooks/vitest.config.ts`
-- Command: `pnpm --filter @maurotaliente/react-hooks test`
+- Command: `pnpm --filter @react33/react-hooks test`

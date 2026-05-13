@@ -1,4 +1,4 @@
-# `@maurotaliente/react-context`
+# `@react33/react-context`
 
 Typed `newContext` helper: separate state and dispatch contexts for React apps.
 

@@ -6,7 +6,7 @@ import {
   type ElementRef,
 } from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { buildStyles, cn, type ClassValue } from '@maurotaliente/react-styles';
+import { buildStyles, cn, type ClassValue } from '@react33/react-styles';
 
 export const tabsStyles = buildStyles({
   root: 'flex flex-col gap-space-md',
