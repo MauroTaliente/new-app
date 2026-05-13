@@ -2,11 +2,27 @@
   "name": "@maurotaliente/react-helpers",
   "version": "0.0.1",
   "license": "MIT",
+  "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
+  "description": "Type guards, deep utilities, path resolvers and helpers shared across the library.",
+  "keywords": ["react", "utilities", "helpers", "type-guards", "date"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maurotaliente/new-app.git",
+    "directory": "packages/helpers"
+  },
+  "homepage": "https://github.com/maurotaliente/new-app/tree/main/packages/helpers#readme",
+  "bugs": {
+    "url": "https://github.com/maurotaliente/new-app/issues"
+  },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.en.md",
+    "README.es.md"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -21,6 +37,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
+    "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"
   },

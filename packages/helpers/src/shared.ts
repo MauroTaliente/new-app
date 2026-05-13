@@ -14,10 +14,24 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   );
 }
 
-/** Deep-merge `right` onto `left` (right wins on conflicts). Plain values replace. */
+/**
+ * Deep-merge `right` onto `left` (right wins on conflicts). Plain values replace.
+ * Arrays merge index-by-index (same idea as Ramda `mergeDeepRight`), so nested error
+ * shapes and similar structures compose like the legacy form stack.
+ */
 export function mergeDeepRight<L, R>(left: L, right: R): L & R {
   if (right === null || right === undefined) return left as L & R;
   if (left === null || left === undefined) return right as L & R;
+
+  if (isArray(left) && isArray(right)) {
+    const len = Math.max(left.length, right.length);
+    const out: unknown[] = [];
+    for (let i = 0; i < len; i++) {
+      out[i] = mergeDeepRight(left[i], right[i]);
+    }
+    return out as L & R;
+  }
+
   if (!isObject(left) || !isObject(right)) return right as L & R;
 
   const out = { ...left } as Record<string, unknown>;
@@ -25,6 +39,8 @@ export function mergeDeepRight<L, R>(left: L, right: R): L & R {
     const rv = (right as Record<string, unknown>)[key];
     const lv = out[key];
     if (isObject(lv) && isObject(rv)) {
+      out[key] = mergeDeepRight(lv, rv);
+    } else if (isArray(lv) && isArray(rv)) {
       out[key] = mergeDeepRight(lv, rv);
     } else {
       out[key] = rv;
@@ -201,6 +217,158 @@ export function formatTimestamp(
   })();
 
   return new Intl.DateTimeFormat(locale, opts).format(date);
+}
+
+export type DateLike = Date | string | number;
+export type DatePair<T = Date | null> = [T, T];
+export type CalendarMonthCell = {
+  date: Date;
+  day: number;
+  isoKey: string;
+  monthOffset: -1 | 0 | 1;
+  isCurrentMonth: boolean;
+};
+
+export type CalendarMonthGrid = {
+  month: Date;
+  weeks: CalendarMonthCell[][];
+};
+
+export function isValidDate(value: unknown): value is Date {
+  return value instanceof Date && !Number.isNaN(value.getTime());
+}
+
+export function toDateSafe(value: unknown): Date | null {
+  if (value === null || value === undefined || value === '') return null;
+  if (isValidDate(value)) return new Date(value.getTime());
+  if (isString(value) || isNumber(value)) {
+    const date = new Date(value);
+    return isValidDate(date) ? date : null;
+  }
+  return null;
+}
+
+export function toStartOfDay(value: DateLike): Date {
+  const date = toDateSafe(value) ?? new Date(0);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+}
+
+export function toIsoDateTime(value: DateLike): string {
+  const date = toDateSafe(value);
+  if (!date) return '';
+  return date.toISOString();
+}
+
+export function toLocalDateKey(value: DateLike): string {
+  const date = toStartOfDay(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function isSameLocalDay(a?: DateLike | null, b?: DateLike | null): boolean {
+  if (!a || !b) return false;
+  return toLocalDateKey(a) === toLocalDateKey(b);
+}
+
+export function isBeforeLocalDay(a?: DateLike | null, b?: DateLike | null): boolean {
+  if (!a || !b) return false;
+  return toStartOfDay(a).getTime() < toStartOfDay(b).getTime();
+}
+
+export function isAfterLocalDay(a?: DateLike | null, b?: DateLike | null): boolean {
+  if (!a || !b) return false;
+  return toStartOfDay(a).getTime() > toStartOfDay(b).getTime();
+}
+
+export function normalizeDateRange<T extends DateLike | null>(start: T, end: T): DatePair<T> {
+  if (!start || !end) return [start, end];
+  return isAfterLocalDay(start, end) ? [end, start] : [start, end];
+}
+
+export function addMonthsSafe(value: DateLike, amount: number): Date {
+  const base = toDateSafe(value) ?? new Date();
+  return new Date(base.getFullYear(), base.getMonth() + amount, 1);
+}
+
+export function getMonthStart(value: DateLike): Date {
+  const date = toDateSafe(value) ?? new Date();
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+export function getMonthEnd(value: DateLike): Date {
+  const date = toDateSafe(value) ?? new Date();
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+export function getMonthDays(value: DateLike): number {
+  return getMonthEnd(value).getDate();
+}
+
+export function clampDate(value: DateLike, min?: DateLike | null, max?: DateLike | null): Date {
+  const date = toStartOfDay(value);
+  const minDate = min ? toStartOfDay(min) : null;
+  const maxDate = max ? toStartOfDay(max) : null;
+  if (minDate && date.getTime() < minDate.getTime()) return minDate;
+  if (maxDate && date.getTime() > maxDate.getTime()) return maxDate;
+  return date;
+}
+
+export function buildCalendarMonth(
+  month: DateLike,
+  weekStartsOn: 0 | 1 = 1,
+): CalendarMonthGrid {
+  const target = getMonthStart(month);
+  const year = target.getFullYear();
+  const monthIndex = target.getMonth();
+  const firstWeekday = target.getDay();
+  const leading = (firstWeekday - weekStartsOn + 7) % 7;
+  const daysInMonth = getMonthDays(target);
+  const previousMonthDate = new Date(year, monthIndex, 0);
+  const daysInPreviousMonth = previousMonthDate.getDate();
+
+  const cells: CalendarMonthCell[] = [];
+  for (let i = leading; i > 0; i -= 1) {
+    const date = new Date(year, monthIndex - 1, daysInPreviousMonth - i + 1);
+    cells.push({
+      date,
+      day: date.getDate(),
+      isoKey: toLocalDateKey(date),
+      monthOffset: -1,
+      isCurrentMonth: false,
+    });
+  }
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = new Date(year, monthIndex, day);
+    cells.push({
+      date,
+      day,
+      isoKey: toLocalDateKey(date),
+      monthOffset: 0,
+      isCurrentMonth: true,
+    });
+  }
+
+  while (cells.length < 42) {
+    const day = cells.length - (leading + daysInMonth) + 1;
+    const date = new Date(year, monthIndex + 1, day);
+    cells.push({
+      date,
+      day: date.getDate(),
+      isoKey: toLocalDateKey(date),
+      monthOffset: 1,
+      isCurrentMonth: false,
+    });
+  }
+
+  const weeks: CalendarMonthCell[][] = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7));
+  }
+
+  return { month: target, weeks };
 }
 
 // DEEPS
