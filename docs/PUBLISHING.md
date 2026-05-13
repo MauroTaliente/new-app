@@ -14,6 +14,10 @@ Packages live under the scope **`@maurotaliente`** with a **`react-`** name pref
    pnpm test
    ```
 
+## Pack audit and manual order
+
+For a **checklist** (pre-flight, flags), **explicit publish order** when you publish packages one at a time, and a **summary of `pnpm pack` tarball contents** per package, see [npm-publish-checklist.md](npm-publish-checklist.md).
+
 ## Publish all workspace packages
 
 From the repository root:
