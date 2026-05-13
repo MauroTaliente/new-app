@@ -1,0 +1,49 @@
+@layer utilities {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px var(--color-bg-300) inset !important;
+    -webkit-text-fill-color: var(--color-text-200) !important;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+
+  .scrollbar-stable {
+    /* scrollbar-gutter: stable both-edges; */
+  }
+
+  .scrollbar-hidden {
+    -ms-overflow-style: none; /* IE/Edge legacy */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  /* Opt-in themed scrollbar (adapts with CSS variables + dark mode) */
+  .scrollbar-themed {
+    scrollbar-width: thin;            /* Firefox */
+    scrollbar-color: var(--color-border-200) transparent;
+  }
+  .scrollbar-themed::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-themed::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  .scrollbar-themed::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-200);
+    border-radius: 9999px;
+    border: 2px solid transparent;   /* space around thumb */
+    background-clip: content-box;
+  }
+  .scrollbar-themed:hover::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-100);
+  }
+}

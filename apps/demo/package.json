@@ -13,12 +13,16 @@
   },
   "dependencies": {
     "@maurotaliente/react-context": "workspace:*",
+    "@maurotaliente/react-form": "workspace:*",
     "@maurotaliente/react-generate": "workspace:*",
     "@maurotaliente/react-helpers": "workspace:*",
+    "@maurotaliente/react-hooks": "workspace:*",
     "@maurotaliente/react-networking": "workspace:*",
     "@maurotaliente/react-persistence": "workspace:*",
     "@maurotaliente/react-styles": "workspace:*",
     "@maurotaliente/react-theme": "workspace:*",
+    "@maurotaliente/react-ui": "workspace:*",
+    "@maurotaliente/react-ui-base": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

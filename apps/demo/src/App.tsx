@@ -1,237 +1,181 @@
-import { cn, buildStyles, useBuildStyles } from '@maurotaliente/react-styles';
+import { useEffect, useState } from 'react';
+import { buildStyles } from '@maurotaliente/react-styles';
+import { Button } from '@maurotaliente/react-ui';
+import { ButtonPanel } from './demo/button-panel';
+import { FormPanel } from './demo/form-panel';
+import { OverlaysPanel } from './demo/overlays-panel';
+import { OverviewPanel } from './demo/overview-panel';
+import { type DemoTheme, ThemeSwitch } from './demo/theme-switch';
 import { useTheme } from './theme/runtime';
-import { apis } from './api/apis.generated';
-import { PokemonDemo } from './PokemonDemo';
 
-/** Mismo tipo que `export const apis` en `apis.generated.ts` — `keyof` = nombres de API del config. */
-export type DemoAppApis = typeof apis;
+const shellStyles = buildStyles({
+  page: 'min-h-screen bg-bg-100 text-text-100',
+  frame: 'mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-space-lg px-space-lg py-space-lg lg:px-space-2xl',
+  hero: [
+    'rounded-card border border-border-100 bg-bg-200 shadow-card',
+    'px-space-lg py-space-lg lg:px-space-xl lg:py-space-xl',
+  ],
+  layout: 'grid gap-space-lg lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start',
+  sidebar: 'rounded-card border border-border-100 bg-bg-200 p-space-md shadow-card lg:sticky lg:top-space-lg',
+  panel: 'rounded-card border border-border-100 bg-bg-200 p-space-lg shadow-card',
+  section: 'flex flex-col gap-space-lg',
+  group: 'flex flex-col gap-space-sm',
+  row: 'flex flex-wrap items-center gap-space-sm',
+  badge: 'inline-flex items-center rounded-badge bg-bg-300 px-space-sm py-space-xs text-xs font-medium text-text-200',
+  code: 'rounded-input bg-bg-300 px-space-xs py-space-2xs text-text-100',
+} as const);
 
-/* buildStyles: define estilos reutilizables con tokens del @theme */
-const cardStyles = buildStyles({
-  base: [
-    'rounded-card',
-    'border border-border-100 border-(length:--border-card)',
-    'bg-bg-200 shadow-card',
-    'p-space-lg transition-all duration-normal',
-    'text-text-100',
-  ],
-  hover: 'hover:bg-bg-300 hover:shadow-dropdown',
-});
+type DemoView = 'overview' | 'button' | 'form' | 'overlays';
+const DEFAULT_VIEW: DemoView = 'button';
 
-const buttonStyles = buildStyles({
-  primary: [
-    'rounded-button',
-    'border-(length:--border-card) border-accent-100',
-    'bg-accent-100 text-white shadow-button',
-    'px-space-lg py-space-md font-medium',
-    'transition-all duration-fast hover:opacity-90 active:scale-[0.98]',
-  ],
-  secondary: [
-    'rounded-button',
-    'border border-border-100 border-(length:--border-card)',
-    'bg-bg-200 text-text-100',
-    'px-space-lg py-space-md font-medium',
-    'transition-all duration-fast hover:bg-bg-300',
-  ],
-});
+function isDemoView(value: string | null): value is DemoView {
+  return (
+    value === 'overview' ||
+    value === 'button' ||
+    value === 'form' ||
+    value === 'overlays'
+  );
+}
 
-const badgeStyles = buildStyles({
-  base: [
-    'rounded-badge',
-    'bg-bg-300 text-text-200',
-    'px-space-sm py-space-xs text-xs font-medium',
-  ],
-});
+function getViewFromUrl(): DemoView {
+  if (typeof window === 'undefined') {
+    return DEFAULT_VIEW;
+  }
+  const page = new URLSearchParams(window.location.search).get('page');
+  return isDemoView(page) ? page : DEFAULT_VIEW;
+}
+
+const menuItems: Array<{ id: DemoView; label: string; summary: string; }> = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    summary: 'Intro y cambio de tema',
+  },
+  {
+    id: 'button',
+    label: 'Button',
+    summary: 'Variantes, tamanos y estados',
+  },
+  {
+    id: 'form',
+    label: 'Form',
+    summary: 'Form, Field e inputs',
+  },
+  {
+    id: 'overlays',
+    label: 'Overlays',
+    summary: 'Dialog, Popover, Tooltip, Tabs, Toast',
+  },
+];
+
 
 export default function App() {
   const [currentTheme, setTheme] = useTheme();
-  const styles = useBuildStyles(cardStyles);
-  const btnStyles = useBuildStyles(buttonStyles);
-  const badge = useBuildStyles(badgeStyles);
+  const [view, setView] = useState<DemoView>(() => getViewFromUrl());
+
+  useEffect(() => {
+    const onPopState = () => {
+      setView(getViewFromUrl());
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+    };
+  }, []);
+
+  const handleViewChange = (nextView: DemoView) => {
+    setView(nextView);
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', nextView);
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`;
+    window.history.pushState({}, '', nextUrl);
+  };
 
   return (
-    <div className="min-h-screen bg-bg-100 font-sans">
-      <div className="max-w-screen-lg mx-auto p-space-xl space-y-space-2xl">
-        {/* Hero */}
-        <header className="flex flex-wrap items-start justify-between gap-space-lg">
-          <div>
-            <h1
-              className="text-(length:--text-2xl) font-bold leading-tight text-text-100"
-            >
-              Design System Demo
-            </h1>
-            <p className="text-text-200 mt-space-sm text-(length:--text-md)">
-              Misma estructura de tokens, distintos valores por producto. Botones, cards y más usan{' '}
-              <code className="bg-bg-300 px-space-xs rounded-input">
-                radius.button
-              </code>
-              ,{' '}
-              <code className="bg-bg-300 px-space-xs rounded-input">
-                shadow.card
-              </code>
-              , etc.
-            </p>
-          </div>
-          <div className="flex gap-space-xs shrink-0">
-            <button
-              type="button"
-              onClick={() => setTheme('light')}
-              title="Light"
-              className={cn(
-                'rounded-full p-2 transition-colors duration-fast',
-                currentTheme === 'light'
-                  ? 'bg-bg-200 text-accent-100 ring-2 ring-accent-100'
-                  : 'text-text-300 hover:bg-bg-200',
-              )}
-              aria-pressed={currentTheme === 'light'}
-            >
-              <span className="sr-only">Light</span>
-              <span aria-hidden>☀</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setTheme('dark')}
-              title="Dark"
-              className={cn(
-                'rounded-full p-2 transition-colors duration-fast',
-                currentTheme === 'dark'
-                  ? 'bg-bg-200 text-accent-100 ring-2 ring-accent-100'
-                  : 'text-text-300 hover:bg-bg-200',
-              )}
-              aria-pressed={currentTheme === 'dark'}
-            >
-              <span className="sr-only">Dark</span>
-              <span aria-hidden>🌙</span>
-            </button>
+    <div className={shellStyles.page}>
+      <div className={shellStyles.frame}>
+        <header className={shellStyles.hero}>
+          <div className="flex flex-col gap-space-md lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <span className={shellStyles.badge}>@maurotaliente/react-ui</span>
+              <h1 className="mt-space-sm text-(length:--text-3xl) font-bold tracking-tight text-text-100">
+                Component demo
+              </h1>
+              <p className="mt-space-sm text-text-200 text-(length:--text-md)">
+                El objetivo ahora es revisar el paquete componente por componente, con una demo mas
+                comoda para migrar, validar estados y detectar roturas de tema sin depender de un
+                archivo unico gigante.
+              </p>
+            </div>
+            <div>
+              <ThemeSwitch currentTheme={currentTheme} setTheme={setTheme} />
+            </div>
           </div>
         </header>
 
-        {/* Stats row con bordes */}
-        <section
-          className={cn(
-            'flex flex-wrap gap-space-lg p-space-lg',
-            'bg-bg-200 rounded-card',
-            'border border-border-100',
-            'shadow-card',
-          )}
-        >
-          <div className="flex-1 min-w-[120px] p-space-md rounded-md">
-            <div className="text-2xl font-bold text-accent-100">80%</div>
-            <div className="text-sm text-text-300">Convención compartida</div>
-          </div>
-          <div
-            className={cn(
-              'flex-1 min-w-[120px] pl-space-lg p-space-md rounded-md',
-              'border-l border-border-200 border-(length:--border-row)',
-            )}
-          >
-            <div className="text-2xl font-bold text-text-100">100%</div>
-            <div className="text-sm text-text-300">Tokens configurables</div>
-          </div>
-          <div
-            className={cn(
-              'flex-1 min-w-[120px] pl-space-lg p-space-md rounded-md',
-              'border-l border-border-200 border-(length:--border-row)',
-            )}
-          >
-            <div className="text-2xl font-bold text-text-100">∞</div>
-            <div className="text-sm text-text-300">Productos posibles</div>
-          </div>
-        </section>
-
-        {/* Cards grid */}
-        <section>
-          <h2
-            className="text-(length:--text-xl) font-semibold text-text-100 mb-space-lg"
-          >
-            Cards con component aliases
-          </h2>
-          <div className="grid gap-space-lg sm:grid-cols-2">
-            <article className={cn(cardStyles.base, cardStyles.hover)}>
-              <div className="flex items-center justify-between mb-space-md">
-                <h3 className="text-lg font-semibold text-accent-100">buildStyles</h3>
-                <span className={badge.base}>API</span>
-              </div>
-              <p className="text-text-200 text-sm">
-                Define objetos de estilos con tokens semánticos. Los componentes consumen{' '}
-                <code className="bg-bg-300">radius.card</code>,{' '}
-                <code className="bg-bg-300">shadow.card</code> — mismos nombres, distintos
-                valores por marca.
+        <div className={shellStyles.layout}>
+          <aside className={shellStyles.sidebar}>
+            <div className="mb-space-md">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-300">
+                Menu
               </p>
-            </article>
-            <article className={cn(styles.base, 'hover:shadow-dropdown')}>
-              <div className="flex items-center justify-between mb-space-md">
-                <h3 className="text-lg font-semibold text-accent-100">useBuildStyles</h3>
-                <span className={badge.base}>Hook</span>
-              </div>
-              <p className="text-text-200 text-sm">
-                Mismo patrón vía hook cuando las clases dependen de estado o props. Ideal para
-                variantes dinámicas y componentes condicionales.
-              </p>
-            </article>
-          </div>
-        </section>
+              <h2 className="mt-space-xs text-lg font-semibold text-text-100">Componentes</h2>
+            </div>
 
-        {/* Buttons */}
-        <section>
-          <h2
-            className="text-(length:--text-xl) font-semibold text-text-100 mb-space-lg"
-          >
-            Botones
-          </h2>
-          <div className="flex flex-wrap gap-space-lg">
-            <button type="button" className={btnStyles.primary}>
-              Primary
-            </button>
-            <button type="button" className={btnStyles.secondary}>
-              Secondary
-            </button>
-            <button
-              type="button"
-              className={cn(btnStyles.secondary, 'rounded-pill px-space-lg')}
-            >
-              Pill shape
-            </button>
-          </div>
-        </section>
+            <nav className="flex flex-col gap-space-xs" aria-label="Demo sections">
+              {menuItems.map((item) => (
+                <Button
+                  key={item.id}
+                  type="button"
+                  variant="subtle"
+                  active={view === item.id}
+                  className="h-auto items-start justify-start px-space-md py-space-sm text-left"
+                  onClick={() => handleViewChange(item.id)}
+                >
+                  <span className="flex flex-col items-start gap-space-2xs">
+                    <span className="text-sm font-semibold">{item.label}</span>
+                    <span className="text-xs text-text-300">{item.summary}</span>
+                  </span>
+                </Button>
+              ))}
+            </nav>
+          </aside>
 
-        <PokemonDemo />
-
-        {/* Row con borde - listado */}
-        <section
-          className={cn(
-            'bg-bg-200 rounded-card shadow-card',
-            'overflow-hidden',
-          )}
-        >
-          <h2
-            className="text-(length:--text-xl) font-semibold text-text-100 p-space-lg"
-          >
-            Lista con border.row
-          </h2>
-          <ul>
-            {['Tokens', 'Theme', 'Palette'].map((item, i) => (
-              <li
-                key={item}
-                className={cn(
-                  'flex items-center justify-between px-space-lg py-space-md',
-                  'border-b border-border-200 border-(length:--border-row)',
-                  i === 0 && 'border-t-0',
-                )}
-              >
-                <span className="text-text-100">{item}</span>
-                <span className={badge.base}>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Footer */}
-        <footer className="flex flex-wrap items-center gap-space-md py-space-lg text-text-300 text-sm">
-          <span>Theme actual: {currentTheme}</span>
-          <span>·</span>
-          <span>Tokens: palette → theme → tokens</span>
-        </footer>
+          <main className={shellStyles.panel}>
+            {view === 'overview' ? (
+              <OverviewPanel
+                currentTheme={currentTheme}
+                setTheme={setTheme}
+                badgeClassName={shellStyles.badge}
+                codeClassName={shellStyles.code}
+                sectionClassName={shellStyles.section}
+                panelClassName={shellStyles.panel}
+              />
+            ) : view === 'form' ? (
+              <FormPanel
+                codeClassName={shellStyles.code}
+                badgeClassName={shellStyles.badge}
+                panelClassName={shellStyles.panel}
+                sectionClassName={shellStyles.section}
+              />
+            ) : view === 'overlays' ? (
+              <OverlaysPanel
+                codeClassName={shellStyles.code}
+                badgeClassName={shellStyles.badge}
+                panelClassName={shellStyles.panel}
+                sectionClassName={shellStyles.section}
+              />
+            ) : (
+              <ButtonPanel
+                sectionClassName={shellStyles.section}
+                panelClassName={shellStyles.panel}
+                badgeClassName={shellStyles.badge}
+                codeClassName={shellStyles.code}
+              />
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

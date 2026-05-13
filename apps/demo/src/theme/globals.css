@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@import './pallet.css';
+@import './theme.css';
+@import './tokens.css';
+@import './utils.css';
+@import './components.css';

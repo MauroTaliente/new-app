@@ -1,188 +1,371 @@
-/*
-  Design tokens — source of truth for react-styles-generate.
-*/
-@theme inline {
-  /* Generator meta (optional) */
-  --theme-default: dark;
-  --theme-cols: 12;
-/* Colors */
-  --color-bg-100: var(--color-bg-100);
-  --color-bg-200: var(--color-bg-200);
-  --color-bg-300: var(--color-bg-300);
-  --color-text-100: var(--color-text-100);
-  --color-text-200: var(--color-text-200);
-  --color-text-300: var(--color-text-300);
-  --color-border-100: var(--color-border-100);
-  --color-border-200: var(--color-border-200);
-  --color-accent-100: var(--color-accent-100);
-  --color-neutral-050: var(--color-neutral-050);
-  --color-demo-accent: var(--color-accent-100);
-/* Screen */
-  --screen-xs: 30rem;
-  --screen-sm: 40rem;
-  --screen-md: 48rem;
-  --screen-lg: 64rem;
-  --breakpoint-xs: 30rem;
-  --breakpoint-sm: 40rem;
-  --breakpoint-md: 48rem;
-  --breakpoint-lg: 64rem;
-  --container-xs: 30rem;
-  --container-sm: 40rem;
-  --container-md: 48rem;
-  --container-lg: 64rem;
-/* Space */
-  --space-0: 0;
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 2.5rem;
-  --space-3xl: 3rem;
-/* Spacing (gap, p, m - aliases for space) */
-  --spacing-space-0: 0;
-  --spacing-space-xs: 0.25rem;
-  --spacing-space-sm: 0.5rem;
-  --spacing-space-md: 1rem;
-  --spacing-space-lg: 1.5rem;
-  --spacing-space-xl: 2rem;
-  --spacing-space-2xl: 2.5rem;
-  --spacing-space-3xl: 3rem;
-/* Radius */
-  --radius-none: 0;
-  --radius-xs: 0.125rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-full: 9999px;
-/* Radius (component aliases) */
-  --radius-button: var(--radius-sm);
-  --radius-card: var(--radius-md);
-  --radius-input: var(--radius-sm);
-  --radius-badge: var(--radius-full);
-  --radius-pill: var(--radius-full);
-  --radius-modal: var(--radius-lg);
-  --radius-avatar: var(--radius-full);
-/* Border */
-  --border-width-none: 0;
-  --border-width-thin: 1px;
-  --border-width-default: 1px;
-  --border-width-thick: 2px;
-/* Border (component aliases) */
-  --border-button: var(--border-width-default);
-  --border-card: var(--border-width-default);
-  --border-input: var(--border-width-default);
-  --border-row: var(--border-width-thin);
-  --border-divider: var(--border-width-thin);
-/* Shadow */
-  --shadow-none: none;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.07);
-  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.12);
-/* Shadow (component aliases) */
-  --shadow-card: var(--shadow-sm);
-  --shadow-button: var(--shadow-sm);
-  --shadow-dropdown: var(--shadow-md);
-  --shadow-modal: var(--shadow-lg);
-/* Duration */
-  --duration-instant: 0ms;
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-/* Easing */
-  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-in: cubic-bezier(0.4, 0, 1, 1);
-  --easing-out: cubic-bezier(0, 0, 0.2, 1);
-  --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-/* Z-index */
-  --z-dropdown: 1000;
-  --z-sticky: 1100;
-  --z-modal: 1200;
-  --z-overlay: 1300;
-  --z-toast: 1400;
-/* Text */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-/* Font */
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: ui-monospace, 'Cascadia Code', monospace;
-/* Leading */
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
-  --leading-loose: 2;
-/* Weight */
-  --weight-normal: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-/* Line */
-  --line-width: 0.0625rem;
-/* Glass (uses radius) */
-  --glass-none: 0;
-  --glass-xs: 0.125rem;
-  --glass-sm: 0.25rem;
-  --glass-md: 0.5rem;
-  --glass-lg: 0.75rem;
-  --glass-xl: 1rem;
-  --glass-full: 9999px;
-}
 
-/* Utilities */
-@layer utilities {
-.xs\:grid-cols-1 { @apply xs:grid-cols-1; }
-.xs\:grid-cols-2 { @apply xs:grid-cols-2; }
-.xs\:grid-cols-3 { @apply xs:grid-cols-3; }
-.xs\:grid-cols-4 { @apply xs:grid-cols-4; }
-.xs\:grid-cols-5 { @apply xs:grid-cols-5; }
-.xs\:grid-cols-6 { @apply xs:grid-cols-6; }
-.xs\:grid-cols-7 { @apply xs:grid-cols-7; }
-.xs\:grid-cols-8 { @apply xs:grid-cols-8; }
-.xs\:grid-cols-9 { @apply xs:grid-cols-9; }
-.xs\:grid-cols-10 { @apply xs:grid-cols-10; }
-.xs\:grid-cols-11 { @apply xs:grid-cols-11; }
-.xs\:grid-cols-12 { @apply xs:grid-cols-12; }
-.sm\:grid-cols-1 { @apply sm:grid-cols-1; }
-.sm\:grid-cols-2 { @apply sm:grid-cols-2; }
-.sm\:grid-cols-3 { @apply sm:grid-cols-3; }
-.sm\:grid-cols-4 { @apply sm:grid-cols-4; }
-.sm\:grid-cols-5 { @apply sm:grid-cols-5; }
-.sm\:grid-cols-6 { @apply sm:grid-cols-6; }
-.sm\:grid-cols-7 { @apply sm:grid-cols-7; }
-.sm\:grid-cols-8 { @apply sm:grid-cols-8; }
-.sm\:grid-cols-9 { @apply sm:grid-cols-9; }
-.sm\:grid-cols-10 { @apply sm:grid-cols-10; }
-.sm\:grid-cols-11 { @apply sm:grid-cols-11; }
-.sm\:grid-cols-12 { @apply sm:grid-cols-12; }
-.md\:grid-cols-1 { @apply md:grid-cols-1; }
-.md\:grid-cols-2 { @apply md:grid-cols-2; }
-.md\:grid-cols-3 { @apply md:grid-cols-3; }
-.md\:grid-cols-4 { @apply md:grid-cols-4; }
-.md\:grid-cols-5 { @apply md:grid-cols-5; }
-.md\:grid-cols-6 { @apply md:grid-cols-6; }
-.md\:grid-cols-7 { @apply md:grid-cols-7; }
-.md\:grid-cols-8 { @apply md:grid-cols-8; }
-.md\:grid-cols-9 { @apply md:grid-cols-9; }
-.md\:grid-cols-10 { @apply md:grid-cols-10; }
-.md\:grid-cols-11 { @apply md:grid-cols-11; }
-.md\:grid-cols-12 { @apply md:grid-cols-12; }
-.lg\:grid-cols-1 { @apply lg:grid-cols-1; }
-.lg\:grid-cols-2 { @apply lg:grid-cols-2; }
-.lg\:grid-cols-3 { @apply lg:grid-cols-3; }
-.lg\:grid-cols-4 { @apply lg:grid-cols-4; }
-.lg\:grid-cols-5 { @apply lg:grid-cols-5; }
-.lg\:grid-cols-6 { @apply lg:grid-cols-6; }
-.lg\:grid-cols-7 { @apply lg:grid-cols-7; }
-.lg\:grid-cols-8 { @apply lg:grid-cols-8; }
-.lg\:grid-cols-9 { @apply lg:grid-cols-9; }
-.lg\:grid-cols-10 { @apply lg:grid-cols-10; }
-.lg\:grid-cols-11 { @apply lg:grid-cols-11; }
-.lg\:grid-cols-12 { @apply lg:grid-cols-12; }
-}
+
+@theme inline {
+  /* Colors */
+    --color-bg-100: var(--color-bg-100);
+    --color-bg-200: var(--color-bg-200);
+    --color-bg-300: var(--color-bg-300);
+    --color-bg-100-alt: var(--color-bg-100-alt);
+    --color-bg-200-alt: var(--color-bg-200-alt);
+    --color-bg-300-alt: var(--color-bg-300-alt);
+    --color-text-100: var(--color-text-100);
+    --color-text-200: var(--color-text-200);
+    --color-text-300: var(--color-text-300);
+    --color-text-100-alt: var(--color-text-100-alt);
+    --color-text-200-alt: var(--color-text-200-alt);
+    --color-text-300-alt: var(--color-text-300-alt);
+    --color-border-100: var(--color-border-100);
+    --color-border-200: var(--color-border-200);
+    --color-border-300: var(--color-border-300);
+    --color-border-100-alt: var(--color-border-100-alt);
+    --color-border-200-alt: var(--color-border-200-alt);
+    --color-border-300-alt: var(--color-border-300-alt);
+    --color-brand-bg-100: var(--color-brand-bg-100);
+    --color-brand-bg-200: var(--color-brand-bg-200);
+    --color-brand-bg-300: var(--color-brand-bg-300);
+    --color-brand-100: var(--color-brand-100);
+    --color-brand-200: var(--color-brand-200);
+    --color-brand-300: var(--color-brand-300);
+    --color-brand-outline: var(--color-brand-outline);
+    --color-accent-alt-100: var(--color-accent-alt-100);
+    --color-accent-alt-200: var(--color-accent-alt-200);
+    --color-accent-100: var(--color-accent-100);
+    --color-accent-200: var(--color-accent-200);
+    --color-accent-300: var(--color-accent-300);
+    --color-accent-outline: var(--color-accent-outline);
+    --color-disabled-bg: var(--color-disabled-bg);
+    --color-disabled-text: var(--color-disabled-text);
+    --color-disabled-border: var(--color-disabled-border);
+    --color-graysc-100: var(--color-graysc-100);
+    --color-graysc-200: var(--color-graysc-200);
+    --color-graysc-300: var(--color-graysc-300);
+    --color-positive-100: var(--color-positive-100);
+    --color-positive-200: var(--color-positive-200);
+    --color-positive-300: var(--color-positive-300);
+    --color-note-100: var(--color-note-100);
+    --color-note-200: var(--color-note-200);
+    --color-note-300: var(--color-note-300);
+    --color-advice-100: var(--color-advice-100);
+    --color-advice-200: var(--color-advice-200);
+    --color-advice-300: var(--color-advice-300);
+    --color-negative-100: var(--color-negative-100);
+    --color-negative-200: var(--color-negative-200);
+    --color-negative-300: var(--color-negative-300);
+    --color-context-100: var(--color-context-100);
+    --color-context-200: var(--color-context-200);
+    --color-context-300: var(--color-context-300);
+    --color-glass-bg-100: var(--color-glass-bg-100);
+    --color-glass-bg-200: var(--color-glass-bg-200);
+    --color-glass-bg-300: var(--color-glass-bg-300);
+    --color-glass-bg-400: var(--color-glass-bg-400);
+    --color-glass-bg-500: var(--color-glass-bg-500);
+    --color-glass-bg-600: var(--color-glass-bg-600);
+    --color-glass-bg-700: var(--color-glass-bg-700);
+    --color-glass-bg-800: var(--color-glass-bg-800);
+    --color-glass-bg-900: var(--color-glass-bg-900);
+    --color-glass-border-100: var(--color-glass-border-100);
+    --color-glass-border-200: var(--color-glass-border-200);
+    --color-glass-border-300: var(--color-glass-border-300);
+    --color-blue-050: var(--color-blue-050);
+    --color-blue-100: var(--color-blue-100);
+    --color-blue-200: var(--color-blue-200);
+    --color-blue-300: var(--color-blue-300);
+    --color-blue-400: var(--color-blue-400);
+    --color-blue-500: var(--color-blue-500);
+    --color-blue-600: var(--color-blue-600);
+    --color-blue-700: var(--color-blue-700);
+    --color-blue-800: var(--color-blue-800);
+    --color-blue-900: var(--color-blue-900);
+    --color-green-050: var(--color-green-050);
+    --color-green-100: var(--color-green-100);
+    --color-green-200: var(--color-green-200);
+    --color-green-300: var(--color-green-300);
+    --color-green-400: var(--color-green-400);
+    --color-green-500: var(--color-green-500);
+    --color-green-600: var(--color-green-600);
+    --color-green-700: var(--color-green-700);
+    --color-green-800: var(--color-green-800);
+    --color-green-900: var(--color-green-900);
+    --color-neutral-000: var(--color-neutral-000);
+    --color-neutral-050: var(--color-neutral-050);
+    --color-neutral-100: var(--color-neutral-100);
+    --color-neutral-200: var(--color-neutral-200);
+    --color-neutral-300: var(--color-neutral-300);
+    --color-neutral-400: var(--color-neutral-400);
+    --color-neutral-500: var(--color-neutral-500);
+    --color-neutral-600: var(--color-neutral-600);
+    --color-neutral-700: var(--color-neutral-700);
+    --color-neutral-800: var(--color-neutral-800);
+    --color-neutral-850: var(--color-neutral-850);
+    --color-neutral-900: var(--color-neutral-900);
+    --color-yellow-050: var(--color-yellow-050);
+    --color-yellow-100: var(--color-yellow-100);
+    --color-yellow-200: var(--color-yellow-200);
+    --color-yellow-300: var(--color-yellow-300);
+    --color-yellow-400: var(--color-yellow-400);
+    --color-yellow-500: var(--color-yellow-500);
+    --color-yellow-600: var(--color-yellow-600);
+    --color-yellow-700: var(--color-yellow-700);
+    --color-yellow-800: var(--color-yellow-800);
+    --color-yellow-900: var(--color-yellow-900);
+    --color-red-050: var(--color-red-050);
+    --color-red-100: var(--color-red-100);
+    --color-red-200: var(--color-red-200);
+    --color-red-300: var(--color-red-300);
+    --color-red-400: var(--color-red-400);
+    --color-red-500: var(--color-red-500);
+    --color-red-600: var(--color-red-600);
+    --color-red-700: var(--color-red-700);
+    --color-red-800: var(--color-red-800);
+    --color-red-900: var(--color-red-900);
+    --color-orange-050: var(--color-orange-050);
+    --color-orange-100: var(--color-orange-100);
+    --color-orange-200: var(--color-orange-200);
+    --color-orange-300: var(--color-orange-300);
+    --color-orange-400: var(--color-orange-400);
+    --color-orange-500: var(--color-orange-500);
+    --color-orange-600: var(--color-orange-600);
+    --color-orange-700: var(--color-orange-700);
+    --color-orange-800: var(--color-orange-800);
+    --color-orange-900: var(--color-orange-900);
+    --color-violet-050: var(--color-violet-050);
+    --color-violet-100: var(--color-violet-100);
+    --color-violet-200: var(--color-violet-200);
+    --color-violet-300: var(--color-violet-300);
+    --color-violet-400: var(--color-violet-400);
+    --color-violet-500: var(--color-violet-500);
+    --color-violet-600: var(--color-violet-600);
+    --color-violet-700: var(--color-violet-700);
+    --color-violet-800: var(--color-violet-800);
+    --color-violet-900: var(--color-violet-900);
+    --color-glass-white-050: var(--color-glass-white-050);
+    --color-glass-white-100: var(--color-glass-white-100);
+    --color-glass-white-200: var(--color-glass-white-200);
+    --color-glass-white-300: var(--color-glass-white-300);
+    --color-glass-white-400: var(--color-glass-white-400);
+    --color-glass-white-500: var(--color-glass-white-500);
+    --color-glass-white-600: var(--color-glass-white-600);
+    --color-glass-white-700: var(--color-glass-white-700);
+    --color-glass-white-800: var(--color-glass-white-800);
+    --color-glass-white-900: var(--color-glass-white-900);
+    --color-glass-black-050: var(--color-glass-black-050);
+    --color-glass-black-100: var(--color-glass-black-100);
+    --color-glass-black-200: var(--color-glass-black-200);
+    --color-glass-black-300: var(--color-glass-black-300);
+    --color-glass-black-400: var(--color-glass-black-400);
+    --color-glass-black-500: var(--color-glass-black-500);
+    --color-glass-black-600: var(--color-glass-black-600);
+    --color-glass-black-700: var(--color-glass-black-700);
+    --color-glass-black-800: var(--color-glass-black-800);
+    --color-glass-black-900: var(--color-glass-black-900);
+  /* Screen */
+    --screen-*: initial;
+    --screen-xs: 30rem;
+    --screen-sm: 40rem;
+    --screen-md: 48rem;
+    --screen-lg: 64rem;
+    --screen-xl: 80rem;
+    --screen-2xl: 96rem;
+    --screen-3xl: 120rem;
+    --screen-4xl: 160rem;
+    --screen-5xl: 240rem;
+    --breakpoint-*: initial;
+    --breakpoint-xs: 30rem;
+    --breakpoint-sm: 40rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
+    --breakpoint-3xl: 120rem;
+    --breakpoint-4xl: 160rem;
+    --breakpoint-5xl: 240rem;
+    --container-*: initial;
+    --container-xs: 30rem;
+    --container-sm: 40rem;
+    --container-md: 48rem;
+    --container-lg: 64rem;
+    --container-xl: 80rem;
+    --container-2xl: 96rem;
+    --container-3xl: 120rem;
+    --container-4xl: 160rem;
+    --container-5xl: 240rem;
+  /* Space
+     4pt/8pt-inspired scale: small UI nudges + larger layout rhythm. */
+    --space-0: 0;
+    --space-2xs: 0.125rem;
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 2.5rem;
+    --space-3xl: 3rem;
+    --space-4xl: 4rem;
+    --space-5xl: 6rem;
+  /* Spacing aliases for gap / padding / margin utilities */
+    --spacing-space-0: 0;
+    --spacing-space-2xs: 0.125rem;
+    --spacing-space-xs: 0.25rem;
+    --spacing-space-sm: 0.5rem;
+    --spacing-space-md: 1rem;
+    --spacing-space-lg: 1.5rem;
+    --spacing-space-xl: 2rem;
+    --spacing-space-2xl: 2.5rem;
+    --spacing-space-3xl: 3rem;
+    --spacing-space-4xl: 4rem;
+    --spacing-space-5xl: 6rem;
+  /* Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+  /* Font */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-bs: 1rem;
+    --text-md: 1.125rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 1.875rem;
+    --text-3xl: 2.25rem;
+    --text-4xl: 3rem;
+    --text-5xl: 3.75rem;
+    --font-sans: 'Inter', sans-serif;
+    --font-display: 'Lexend', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  /* Components */
+    --line-width: 0.0625rem;
+    --line-gap: 0.25rem;
+    --line-offset-start: 3rem;
+    --line-offset-end: 3rem;
+    --line-fade-start: 3rem;
+    --line-fade-end: 3rem;
+    --glass-sm: 0.25rem;
+    --glass-md: 0.5rem;
+    --glass-lg: 0.75rem;
+    --glass-xl: 1rem;
+  }
+  /* Utilities */
+  @layer utilities {
+  .grid-cols-1 { @apply grid-cols-1; }
+  .grid-cols-2 { @apply grid-cols-2; }
+  .grid-cols-3 { @apply grid-cols-3; }
+  .grid-cols-4 { @apply grid-cols-4; }
+  .grid-cols-5 { @apply grid-cols-5; }
+  .grid-cols-6 { @apply grid-cols-6; }
+  .grid-cols-7 { @apply grid-cols-7; }
+  .grid-cols-8 { @apply grid-cols-8; }
+  .grid-cols-9 { @apply grid-cols-9; }
+  .grid-cols-10 { @apply grid-cols-10; }
+  .grid-cols-11 { @apply grid-cols-11; }
+  .grid-cols-12 { @apply grid-cols-12; }
+  .xs\:grid-cols-1 { @apply xs:grid-cols-1; }
+  .xs\:grid-cols-2 { @apply xs:grid-cols-2; }
+  .xs\:grid-cols-3 { @apply xs:grid-cols-3; }
+  .xs\:grid-cols-4 { @apply xs:grid-cols-4; }
+  .xs\:grid-cols-5 { @apply xs:grid-cols-5; }
+  .xs\:grid-cols-6 { @apply xs:grid-cols-6; }
+  .xs\:grid-cols-7 { @apply xs:grid-cols-7; }
+  .xs\:grid-cols-8 { @apply xs:grid-cols-8; }
+  .xs\:grid-cols-9 { @apply xs:grid-cols-9; }
+  .xs\:grid-cols-10 { @apply xs:grid-cols-10; }
+  .xs\:grid-cols-11 { @apply xs:grid-cols-11; }
+  .xs\:grid-cols-12 { @apply xs:grid-cols-12; }
+  .sm\:grid-cols-1 { @apply sm:grid-cols-1; }
+  .sm\:grid-cols-2 { @apply sm:grid-cols-2; }
+  .sm\:grid-cols-3 { @apply sm:grid-cols-3; }
+  .sm\:grid-cols-4 { @apply sm:grid-cols-4; }
+  .sm\:grid-cols-5 { @apply sm:grid-cols-5; }
+  .sm\:grid-cols-6 { @apply sm:grid-cols-6; }
+  .sm\:grid-cols-7 { @apply sm:grid-cols-7; }
+  .sm\:grid-cols-8 { @apply sm:grid-cols-8; }
+  .sm\:grid-cols-9 { @apply sm:grid-cols-9; }
+  .sm\:grid-cols-10 { @apply sm:grid-cols-10; }
+  .sm\:grid-cols-11 { @apply sm:grid-cols-11; }
+  .sm\:grid-cols-12 { @apply sm:grid-cols-12; }
+  .md\:grid-cols-1 { @apply md:grid-cols-1; }
+  .md\:grid-cols-2 { @apply md:grid-cols-2; }
+  .md\:grid-cols-3 { @apply md:grid-cols-3; }
+  .md\:grid-cols-4 { @apply md:grid-cols-4; }
+  .md\:grid-cols-5 { @apply md:grid-cols-5; }
+  .md\:grid-cols-6 { @apply md:grid-cols-6; }
+  .md\:grid-cols-7 { @apply md:grid-cols-7; }
+  .md\:grid-cols-8 { @apply md:grid-cols-8; }
+  .md\:grid-cols-9 { @apply md:grid-cols-9; }
+  .md\:grid-cols-10 { @apply md:grid-cols-10; }
+  .md\:grid-cols-11 { @apply md:grid-cols-11; }
+  .md\:grid-cols-12 { @apply md:grid-cols-12; }
+  .lg\:grid-cols-1 { @apply lg:grid-cols-1; }
+  .lg\:grid-cols-2 { @apply lg:grid-cols-2; }
+  .lg\:grid-cols-3 { @apply lg:grid-cols-3; }
+  .lg\:grid-cols-4 { @apply lg:grid-cols-4; }
+  .lg\:grid-cols-5 { @apply lg:grid-cols-5; }
+  .lg\:grid-cols-6 { @apply lg:grid-cols-6; }
+  .lg\:grid-cols-7 { @apply lg:grid-cols-7; }
+  .lg\:grid-cols-8 { @apply lg:grid-cols-8; }
+  .lg\:grid-cols-9 { @apply lg:grid-cols-9; }
+  .lg\:grid-cols-10 { @apply lg:grid-cols-10; }
+  .lg\:grid-cols-11 { @apply lg:grid-cols-11; }
+  .lg\:grid-cols-12 { @apply lg:grid-cols-12; }
+  .xl\:grid-cols-1 { @apply xl:grid-cols-1; }
+  .xl\:grid-cols-2 { @apply xl:grid-cols-2; }
+  .xl\:grid-cols-3 { @apply xl:grid-cols-3; }
+  .xl\:grid-cols-4 { @apply xl:grid-cols-4; }
+  .xl\:grid-cols-5 { @apply xl:grid-cols-5; }
+  .xl\:grid-cols-6 { @apply xl:grid-cols-6; }
+  .xl\:grid-cols-7 { @apply xl:grid-cols-7; }
+  .xl\:grid-cols-8 { @apply xl:grid-cols-8; }
+  .xl\:grid-cols-9 { @apply xl:grid-cols-9; }
+  .xl\:grid-cols-10 { @apply xl:grid-cols-10; }
+  .xl\:grid-cols-11 { @apply xl:grid-cols-11; }
+  .xl\:grid-cols-12 { @apply xl:grid-cols-12; }
+  .\32xl\:grid-cols-1 { @apply 2xl:grid-cols-1; }
+  .\32xl\:grid-cols-2 { @apply 2xl:grid-cols-2; }
+  .\32xl\:grid-cols-3 { @apply 2xl:grid-cols-3; }
+  .\32xl\:grid-cols-4 { @apply 2xl:grid-cols-4; }
+  .\32xl\:grid-cols-5 { @apply 2xl:grid-cols-5; }
+  .\32xl\:grid-cols-6 { @apply 2xl:grid-cols-6; }
+  .\32xl\:grid-cols-7 { @apply 2xl:grid-cols-7; }
+  .\32xl\:grid-cols-8 { @apply 2xl:grid-cols-8; }
+  .\32xl\:grid-cols-9 { @apply 2xl:grid-cols-9; }
+  .\32xl\:grid-cols-10 { @apply 2xl:grid-cols-10; }
+  .\32xl\:grid-cols-11 { @apply 2xl:grid-cols-11; }
+  .\32xl\:grid-cols-12 { @apply 2xl:grid-cols-12; }
+  .\33xl\:grid-cols-1 { @apply 3xl:grid-cols-1; }
+  .\33xl\:grid-cols-2 { @apply 3xl:grid-cols-2; }
+  .\33xl\:grid-cols-3 { @apply 3xl:grid-cols-3; }
+  .\33xl\:grid-cols-4 { @apply 3xl:grid-cols-4; }
+  .\33xl\:grid-cols-5 { @apply 3xl:grid-cols-5; }
+  .\33xl\:grid-cols-6 { @apply 3xl:grid-cols-6; }
+  .\33xl\:grid-cols-7 { @apply 3xl:grid-cols-7; }
+  .\33xl\:grid-cols-8 { @apply 3xl:grid-cols-8; }
+  .\33xl\:grid-cols-9 { @apply 3xl:grid-cols-9; }
+  .\33xl\:grid-cols-10 { @apply 3xl:grid-cols-10; }
+  .\33xl\:grid-cols-11 { @apply 3xl:grid-cols-11; }
+  .\33xl\:grid-cols-12 { @apply 3xl:grid-cols-12; }
+  .\34xl\:grid-cols-1 { @apply 4xl:grid-cols-1; }
+  .\34xl\:grid-cols-2 { @apply 4xl:grid-cols-2; }
+  .\34xl\:grid-cols-3 { @apply 4xl:grid-cols-3; }
+  .\34xl\:grid-cols-4 { @apply 4xl:grid-cols-4; }
+  .\34xl\:grid-cols-5 { @apply 4xl:grid-cols-5; }
+  .\34xl\:grid-cols-6 { @apply 4xl:grid-cols-6; }
+  .\34xl\:grid-cols-7 { @apply 4xl:grid-cols-7; }
+  .\34xl\:grid-cols-8 { @apply 4xl:grid-cols-8; }
+  .\34xl\:grid-cols-9 { @apply 4xl:grid-cols-9; }
+  .\34xl\:grid-cols-10 { @apply 4xl:grid-cols-10; }
+  .\34xl\:grid-cols-11 { @apply 4xl:grid-cols-11; }
+  .\34xl\:grid-cols-12 { @apply 4xl:grid-cols-12; }
+  .\35xl\:grid-cols-1 { @apply 5xl:grid-cols-1; }
+  .\35xl\:grid-cols-2 { @apply 5xl:grid-cols-2; }
+  .\35xl\:grid-cols-3 { @apply 5xl:grid-cols-3; }
+  .\35xl\:grid-cols-4 { @apply 5xl:grid-cols-4; }
+  .\35xl\:grid-cols-5 { @apply 5xl:grid-cols-5; }
+  .\35xl\:grid-cols-6 { @apply 5xl:grid-cols-6; }
+  .\35xl\:grid-cols-7 { @apply 5xl:grid-cols-7; }
+  .\35xl\:grid-cols-8 { @apply 5xl:grid-cols-8; }
+  .\35xl\:grid-cols-9 { @apply 5xl:grid-cols-9; }
+  .\35xl\:grid-cols-10 { @apply 5xl:grid-cols-10; }
+  .\35xl\:grid-cols-11 { @apply 5xl:grid-cols-11; }
+  .\35xl\:grid-cols-12 { @apply 5xl:grid-cols-12; }
+  }
+  

@@ -1,64 +1,80 @@
-/*
-  Auto-generated from theme JSON. Do not edit directly.
-*/
 @custom-variant light (&:where(.light, .light *));
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant active (&.active);
 
 @layer base {
   /* Light mode */
   .light {
-    --color-bg-100: var(--color-neutral-050);
-    --color-bg-200: var(--color-neutral-100);
-    --color-bg-300: var(--color-neutral-200);
-    --color-bg-100-alt: var(--color-neutral-900);
-    --color-bg-200-alt: var(--color-neutral-850);
-    --color-bg-300-alt: var(--color-neutral-800);
-    --color-text-100: var(--color-neutral-800);
-    --color-text-200: var(--color-neutral-700);
-    --color-text-300: var(--color-neutral-600);
-    --color-text-100-alt: var(--color-neutral-050);
-    --color-text-200-alt: var(--color-neutral-200);
-    --color-text-300-alt: var(--color-neutral-400);
-    --color-border-100: var(--color-neutral-400);
-    --color-border-200: var(--color-neutral-300);
-    --color-border-300: var(--color-neutral-200);
-    --color-border-100-alt: var(--color-neutral-600);
-    --color-border-200-alt: var(--color-neutral-500);
-    --color-border-300-alt: var(--color-neutral-400);
-    --color-brand-bg-100: var(--color-blue-100);
-    --color-brand-bg-200: var(--color-blue-300);
-    --color-brand-bg-300: var(--color-blue-400);
-    --color-brand-100: var(--color-blue-600);
-    --color-brand-200: var(--color-blue-700);
-    --color-brand-300: var(--color-blue-800);
-    --color-brand-outline: var(--color-blue-400);
-    --color-accent-bg-100: var(--color-neutral-200);
-    --color-accent-bg-200: var(--color-neutral-100);
-    --color-accent-100: var(--color-violet-600);
-    --color-accent-200: var(--color-violet-500);
-    --color-accent-300: var(--color-violet-400);
-    --color-accent-outline: var(--color-violet-400);
+    --color-bg-100: var(--color-neutral-050); /* primary surface (main UI background) */
+    --color-bg-200: var(--color-neutral-100); /* secondary surface (containers, cards) */
+    --color-bg-300: var(--color-neutral-200); /* contextual background (sections, subtle contrast) */
+
+    --color-bg-100-alt: var(
+      --color-neutral-900
+    ); /* inverted surface (used in light-on-dark sections) */
+    --color-bg-200-alt: var(--color-neutral-850); /* inverted secondary surface */
+    --color-bg-300-alt: var(--color-neutral-800); /* inverted contextual background */
+
+    --color-text-100: var(--color-neutral-800); /* primary text (headings, titles) */
+    --color-text-200: var(--color-neutral-700); /* secondary text (body, paragraphs) */
+    --color-text-300: var(--color-neutral-600); /* tertiary text (labels, hints, muted) */
+
+    --color-text-100-alt: var(--color-neutral-050); /* inverted primary text (on dark surfaces) */
+    --color-text-200-alt: var(--color-neutral-200); /* inverted secondary text */
+    --color-text-300-alt: var(--color-neutral-400); /* inverted tertiary text */
+
+    --color-border-100: var(--color-neutral-400); /* primary border (cards, sections) */
+    --color-border-200: var(--color-neutral-300); /* secondary border (inputs, dividers) */
+    --color-border-300: var(--color-neutral-200); /* tertiary border (muted, subtle lines) */
+
+    --color-border-100-alt: var(--color-neutral-600); /* inverted primary border (on dark bg) */
+    --color-border-200-alt: var(--color-neutral-500); /* inverted secondary border */
+    --color-border-300-alt: var(--color-neutral-400); /* inverted tertiary border */
+
+    --color-brand-bg-100: var(--color-blue-100); /* subtle brand background */
+    --color-brand-bg-200: var(--color-blue-300); /* soft brand surface */
+    --color-brand-bg-300: var(--color-blue-400); /* mid-level background or states */
+
+    --color-brand-100: var(--color-blue-600); /* main brand color */
+    --color-brand-200: var(--color-blue-700); /* hover / strong brand */
+    --color-brand-300: var(--color-blue-800); /* pressed / active */
+    --color-brand-outline: var(--color-blue-400); /* for border emphasis */
+
+    --color-accent-alt-100: var(--color-neutral-050); /* subtle accent on dark */
+    --color-accent-alt-200: var(--color-neutral-100); /* soft highlight zones */
+    --color-accent-100: var(--color-blue-600); /* same main accent */
+    --color-accent-200: var(--color-blue-500); /* badge, chip, hover */
+    --color-accent-300: var(--color-blue-300); /* pressed / active accent */
+    --color-accent-outline: var(--color-blue-400); /* outline or border for accent actions */
+
     --color-disabled-bg: var(--color-neutral-200);
     --color-disabled-text: var(--color-neutral-400);
     --color-disabled-border: var(--color-neutral-300);
+
     --color-graysc-100: var(--color-neutral-500);
     --color-graysc-200: var(--color-neutral-400);
     --color-graysc-300: var(--color-neutral-300);
+
     --color-positive-100: var(--color-green-500);
     --color-positive-200: var(--color-green-400);
     --color-positive-300: var(--color-green-300);
+
     --color-note-100: var(--color-yellow-500);
     --color-note-200: var(--color-yellow-400);
     --color-note-300: var(--color-yellow-300);
+
     --color-advice-100: var(--color-orange-500);
     --color-advice-200: var(--color-orange-400);
     --color-advice-300: var(--color-orange-300);
+
     --color-negative-100: var(--color-red-500);
     --color-negative-200: var(--color-red-400);
     --color-negative-300: var(--color-red-300);
+
     --color-context-100: var(--color-violet-500);
     --color-context-200: var(--color-violet-400);
     --color-context-300: var(--color-violet-300);
+
     --color-glass-bg-100: var(--color-glass-white-100);
     --color-glass-bg-200: var(--color-glass-white-200);
     --color-glass-bg-300: var(--color-glass-white-300);
@@ -68,88 +84,81 @@
     --color-glass-bg-700: var(--color-glass-white-700);
     --color-glass-bg-800: var(--color-glass-white-800);
     --color-glass-bg-900: var(--color-glass-white-900);
+
     --color-glass-border-100: var(--color-glass-white-100);
     --color-glass-border-200: var(--color-glass-white-200);
     --color-glass-border-300: var(--color-glass-white-300);
-    --radius-button: var(--radius-sm);
-    --glass-button: var(--radius-sm);
-    --radius-card: var(--radius-md);
-    --glass-card: var(--radius-md);
-    --radius-input: var(--radius-sm);
-    --glass-input: var(--radius-sm);
-    --radius-badge: var(--radius-full);
-    --glass-badge: var(--radius-full);
-    --radius-pill: var(--radius-full);
-    --glass-pill: var(--radius-full);
-    --radius-modal: var(--radius-lg);
-    --glass-modal: var(--radius-lg);
-    --radius-avatar: var(--radius-full);
-    --glass-avatar: var(--radius-full);
-    --border-button: var(--border-width-default);
-    --border-card: var(--border-width-default);
-    --border-input: var(--border-width-default);
-    --border-row: var(--border-width-thin);
-    --border-divider: var(--border-width-thin);
-    --shadow-card: var(--shadow-sm);
-    --shadow-button: var(--shadow-sm);
-    --shadow-dropdown: var(--shadow-md);
-    --shadow-modal: var(--shadow-lg);
   }
-
   /* Dark mode */
   .dark {
-    --color-bg-100: var(--color-neutral-850);
-    --color-bg-200: var(--color-neutral-900);
-    --color-bg-300: var(--color-neutral-950);
-    --color-bg-100-alt: var(--color-neutral-050);
-    --color-bg-200-alt: var(--color-neutral-100);
-    --color-bg-300-alt: var(--color-neutral-200);
-    --color-text-100: var(--color-neutral-050);
-    --color-text-200: var(--color-neutral-200);
-    --color-text-300: var(--color-neutral-400);
-    --color-text-100-alt: var(--color-neutral-900);
-    --color-text-200-alt: var(--color-neutral-800);
-    --color-text-300-alt: var(--color-neutral-600);
-    --color-border-100: var(--color-neutral-700);
-    --color-border-200: var(--color-neutral-800);
-    --color-border-300: var(--color-neutral-850);
-    --color-border-100-alt: var(--color-neutral-400);
-    --color-border-200-alt: var(--color-neutral-300);
-    --color-border-300-alt: var(--color-neutral-200);
-    --color-brand-bg-100: var(--color-blue-900);
-    --color-brand-bg-200: var(--color-blue-800);
-    --color-brand-bg-300: var(--color-blue-700);
-    --color-brand-100: var(--color-blue-500);
-    --color-brand-200: var(--color-blue-400);
-    --color-brand-300: var(--color-blue-300);
-    --color-brand-outline: var(--color-blue-400);
-    --color-accent-bg-100: var(--color-neutral-800);
-    --color-accent-bg-200: var(--color-neutral-850);
-    --color-accent-100: var(--color-violet-500);
-    --color-accent-200: var(--color-violet-400);
-    --color-accent-300: var(--color-violet-600);
-    --color-accent-outline: var(--color-violet-400);
+    --color-bg-100: var(--color-neutral-850); /* primary dark surface */
+    --color-bg-200: var(--color-neutral-900); /* secondary dark surface */
+    --color-bg-300: var(--color-neutral-950); /* contextual dark background */
+
+    --color-bg-100-alt: var(--color-neutral-050); /* inverted (light-on-dark sections) */
+    --color-bg-200-alt: var(--color-neutral-100); /* inverted secondary */
+    --color-bg-300-alt: var(--color-neutral-200); /* inverted contextual */
+
+    --color-text-100: var(--color-neutral-050); /* primary light text */
+    --color-text-200: var(--color-neutral-200); /* secondary light text */
+    --color-text-300: var(--color-neutral-400); /* muted light text */
+
+    --color-text-100-alt: var(--color-neutral-900); /* inverted text (on light surfaces) */
+    --color-text-200-alt: var(--color-neutral-800); /* inverted secondary text */
+    --color-text-300-alt: var(--color-neutral-600); /* inverted tertiary text */
+
+    --color-border-100: var(--color-neutral-700); /* primary border on dark */
+    --color-border-200: var(--color-neutral-800); /* secondary border (inputs, dividers) */
+    --color-border-300: var(--color-neutral-850); /* tertiary border (muted, subtle lines) */
+
+    --color-border-100-alt: var(--color-neutral-400); /* inverted border on light */
+    --color-border-200-alt: var(--color-neutral-300); /* inverted secondary border */
+    --color-border-300-alt: var(--color-neutral-200); /* inverted tertiary border */
+
+    --color-brand-bg-100: var(--color-blue-900); /* subtle dark brand background */
+    --color-brand-bg-200: var(--color-blue-800); /* soft dark brand */
+    --color-brand-bg-300: var(--color-blue-700); /* mid-level dark background or states */
+
+    --color-brand-100: var(--color-blue-500); /* stays consistent */
+    --color-brand-200: var(--color-blue-400); /* lighter hover on dark */
+    --color-brand-300: var(--color-blue-300); /* pressed / active */
+    --color-brand-outline: var(--color-blue-400); /* for border emphasis */
+
+    --color-accent-alt-100: var(--color-neutral-050); /* subtle accent on dark */
+    --color-accent-alt-200: var(--color-neutral-100); /* soft highlight zones */
+    --color-accent-100: var(--color-blue-500); /* same main accent */
+    --color-accent-200: var(--color-blue-600); /* badge, chip, hover */
+    --color-accent-300: var(--color-blue-700); /* pressed / active accent */
+    --color-accent-outline: var(--color-blue-400); /* outline or border for accent actions */
+
     --color-disabled-bg: var(--color-neutral-900);
     --color-disabled-text: var(--color-neutral-700);
     --color-disabled-border: var(--color-neutral-800);
+
     --color-graysc-100: var(--color-neutral-500);
     --color-graysc-200: var(--color-neutral-700);
     --color-graysc-300: var(--color-neutral-800);
+
     --color-positive-100: var(--color-green-500);
     --color-positive-200: var(--color-green-700);
     --color-positive-300: var(--color-green-800);
+
     --color-note-100: var(--color-yellow-500);
     --color-note-200: var(--color-yellow-700);
     --color-note-300: var(--color-yellow-800);
+
     --color-advice-100: var(--color-orange-500);
     --color-advice-200: var(--color-orange-700);
     --color-advice-300: var(--color-orange-800);
+
     --color-negative-100: var(--color-red-500);
     --color-negative-200: var(--color-red-700);
     --color-negative-300: var(--color-red-800);
+
     --color-context-100: var(--color-violet-500);
     --color-context-200: var(--color-violet-700);
     --color-context-300: var(--color-violet-800);
+
     --color-glass-bg-100: var(--color-glass-black-100);
     --color-glass-bg-200: var(--color-glass-black-200);
     --color-glass-bg-300: var(--color-glass-black-300);
@@ -159,31 +168,9 @@
     --color-glass-bg-700: var(--color-glass-black-700);
     --color-glass-bg-800: var(--color-glass-black-800);
     --color-glass-bg-900: var(--color-glass-black-900);
+
     --color-glass-border-100: var(--color-glass-black-100);
     --color-glass-border-200: var(--color-glass-black-200);
     --color-glass-border-300: var(--color-glass-black-300);
-    --radius-button: var(--radius-sm);
-    --glass-button: var(--radius-sm);
-    --radius-card: var(--radius-md);
-    --glass-card: var(--radius-md);
-    --radius-input: var(--radius-sm);
-    --glass-input: var(--radius-sm);
-    --radius-badge: var(--radius-full);
-    --glass-badge: var(--radius-full);
-    --radius-pill: var(--radius-full);
-    --glass-pill: var(--radius-full);
-    --radius-modal: var(--radius-lg);
-    --glass-modal: var(--radius-lg);
-    --radius-avatar: var(--radius-full);
-    --glass-avatar: var(--radius-full);
-    --border-button: var(--border-width-default);
-    --border-card: var(--border-width-default);
-    --border-input: var(--border-width-default);
-    --border-row: var(--border-width-thin);
-    --border-divider: var(--border-width-thin);
-    --shadow-card: var(--shadow-sm);
-    --shadow-button: var(--shadow-sm);
-    --shadow-dropdown: var(--shadow-md);
-    --shadow-modal: var(--shadow-lg);
   }
 }
