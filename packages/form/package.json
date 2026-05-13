@@ -1,0 +1,72 @@
+{
+  "name": "@maurotaliente/react-form",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
+  "description": "Form framework: Form, Field, InputFrame, InputOptions and types. Headless and unopinionated about concrete inputs; pair with @maurotaliente/react-ui or your own.",
+  "keywords": [
+    "react",
+    "form",
+    "validation",
+    "field",
+    "input",
+    "input-frame",
+    "form-state"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maurotaliente/new-app.git",
+    "directory": "packages/form"
+  },
+  "homepage": "https://github.com/maurotaliente/new-app/tree/main/packages/form#readme",
+  "bugs": {
+    "url": "https://github.com/maurotaliente/new-app/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @maurotaliente/react-ui-base --external @maurotaliente/react-styles --external @maurotaliente/react-helpers --external @maurotaliente/react-hooks --external @maurotaliente/react-context --external @maurotaliente/react-networking --external @tabler/icons-react --external motion",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@maurotaliente/react-context": "workspace:*",
+    "@maurotaliente/react-helpers": "workspace:*",
+    "@maurotaliente/react-hooks": "workspace:*",
+    "@maurotaliente/react-networking": "workspace:*",
+    "@maurotaliente/react-styles": "workspace:*",
+    "@maurotaliente/react-ui-base": "workspace:*",
+    "ts-essentials": "^10.0.4"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "^19",
+    "happy-dom": "^15.11.7",
+    "react": "^19",
+    "react-dom": "^19",
+    "tsup": "^8.4.0",
+    "typescript": "^5",
+    "vitest": "^3.0.0"
+  }
+}
