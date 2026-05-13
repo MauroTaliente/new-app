@@ -20,7 +20,7 @@ describe('createVersionedStorageApi', () => {
     expect(api.getLocal({ name: 'k', initData: { a: 0 } })).toEqual({ a: 1 });
   });
 
-  it('migrates legacy plain object (v0) through two steps', () => {
+  it('migrates plain object (v0) through two steps', () => {
     localStorage.setItem('prefs', JSON.stringify({ theme: 'dark' }));
 
     const api = createVersionedStorageApi(localStorage, {
@@ -133,7 +133,7 @@ describe('createVersionedStorageApi', () => {
     vi.useRealTimers();
   });
 
-  it('does not expire legacy envelope without savedAt when ttlMs is set', () => {
+  it('does not expire envelope without savedAt when ttlMs is set', () => {
     localStorage.setItem('k', JSON.stringify({ _v: 1, data: { a: 1 } }));
 
     const api = createVersionedStorageApi(localStorage, {

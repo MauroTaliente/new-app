@@ -34,10 +34,8 @@ function isEnvelope(value: unknown): value is VersionedEnvelope {
   );
 }
 
-/**
- * Legacy: plain string stored without JSON quotes (see `storage.ts`).
- */
-function tryLegacyPlainString<T>(raw: string, initData: T | undefined): T | undefined {
+/** safeStringify writes strings without JSON quotes; when JSON.parse fails, treat raw as plain string. */
+function parsePlainString<T>(raw: string, initData: T | undefined): T | undefined {
   if (typeof initData !== 'string' || !raw.length) return undefined;
   try {
     JSON.parse(raw);
@@ -58,14 +56,14 @@ export type VersionedStorageOptions = {
   migrations: Record<number, (prev: unknown) => unknown>;
   /**
    * When set to a positive number, writes include `savedAt` and reads drop the key
-   * when `Date.now() > savedAt + ttlMs`. Entries **without** `savedAt` (legacy) are not expired.
+   * when `Date.now() > savedAt + ttlMs`. Entries without `savedAt` are never expired.
    */
   ttlMs?: number;
 };
 
 /**
  * Storage API that wraps persisted values as `{ _v, data }` and runs migrations on read.
- * Legacy values without `_v` are treated as version `0` (whole parsed value is `data`).
+ * Values without `_v` are treated as version 0 (whole parsed value is `data`).
  */
 function envelopeForWrite<T>(
   data: T,
@@ -162,8 +160,8 @@ export function createVersionedStorageApi(storage: Storage, options: VersionedSt
     if (parsed === null) {
       const raw = storage.getItem(name);
       if (raw === null || raw === '') return initData as T;
-      const legacy = tryLegacyPlainString(raw, initData);
-      if (legacy !== undefined) return legacy;
+      const plain = parsePlainString(raw, initData);
+      if (plain !== undefined) return plain;
       return initData as T;
     }
 

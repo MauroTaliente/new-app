@@ -4,12 +4,12 @@ Browser storage (localStorage, sessionStorage, cookies) and optional Next.js coo
 
 ## Versioned storage (`createVersionedStorageApi`)
 
-For keys whose JSON shape evolves over time, persist **`{ _v: number, data: T }`** (optional **`savedAt`** when using TTL) and register **one-step migrators** `migrations[k]` from version `k` to `k + 1`. Legacy values **without** `_v` are read as **version 0** (the whole parsed value is treated as `data`).
+For keys whose JSON shape evolves over time, persist **`{ _v: number, data: T }`** (optional **`savedAt`** when using TTL) and register **one-step migrators** `migrations[k]` from version `k` to `k + 1`. Values **without** `_v` are read as **version 0** (the whole parsed value is treated as `data`).
 
 - **`getLocal` / `setLocal` / `putLocal`** match the same ergonomics as `createStorageApi`, but `data` is the domain payload (not the envelope).
 - After a successful migration, the latest envelope is **written back** (write-through).
 - If a migration throws, or stored `_v` is **greater** than `currentVersion`, reads fall back to **`initData`** (safe default).
-- Optional **`ttlMs`:** when set to a positive number, writes include `savedAt` (epoch ms). Reads **remove** the key and return `initData` when the entry is older than `ttlMs`. Legacy envelopes **without** `savedAt` are **not** expired.
+- Optional **`ttlMs`:** when set to a positive number, writes include `savedAt` (epoch ms). Reads **remove** the key and return `initData` when the entry is older than `ttlMs`. Envelopes **without** `savedAt` are **not** expired.
 
 ## Cross-tab updates
 

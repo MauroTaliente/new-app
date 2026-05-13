@@ -9,7 +9,7 @@ Para claves cuyo JSON cambia en el tiempo, persistí **`{ _v: number, data: T }`
 - **`getLocal` / `setLocal` / `putLocal`** misma ergonomía que `createStorageApi`, pero `data` es el payload de dominio.
 - Tras migrar, se reescribe el envelope actual (write-through).
 - Si una migración lanza error, o `_v` guardado es **mayor** que `currentVersion`, se usa **`initData`**.
-- Opcional **`ttlMs`:** si es un número positivo, los writes incluyen `savedAt` (ms epoch). Las lecturas **borran** la clave y devuelven `initData` si el dato es más viejo que `ttlMs`. Envelopes viejos **sin** `savedAt` **no** expiran.
+- Opcional **`ttlMs`:** si es un número positivo, los writes incluyen `savedAt` (ms epoch). Las lecturas **borran** la clave y devuelven `initData` si el dato es más viejo que `ttlMs`. Envelopes **sin** `savedAt` **no** expiran.
 
 ## Cambios entre pestañas
 

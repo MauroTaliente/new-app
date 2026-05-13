@@ -54,6 +54,18 @@ function buildSetCookieString(name: string, value: string, write: CookieWriteOpt
   return segments.join('; ');
 }
 
+/** safeStringify writes strings without JSON quotes; when JSON.parse fails, treat raw as plain string. */
+function parsePlainString<T>(raw: string, initData: T | undefined): T | undefined {
+  if (typeof initData !== 'string' || !raw.length) return undefined;
+  try {
+    JSON.parse(raw);
+    return undefined;
+  } catch {
+    if (/^[a-zA-Z0-9_-]+$/.test(raw)) return raw as T;
+    return undefined;
+  }
+}
+
 export function getCookie<T>(options: CookieClientOptions<T>): T | undefined {
   const { name, initData } = options;
   if (!name || typeof document === 'undefined') return initData as T | undefined;
@@ -61,7 +73,11 @@ export function getCookie<T>(options: CookieClientOptions<T>): T | undefined {
   const raw = cookies[name];
   if (raw === undefined) return initData as T | undefined;
   const rawData = safeParse<T>(raw, null);
-  if (rawData === null) return initData as T | undefined;
+  if (rawData === null) {
+    const plain = parsePlainString(raw, initData);
+    if (plain !== undefined) return plain;
+    return initData as T | undefined;
+  }
   if (
     initData !== undefined &&
     typeof initData === 'object' &&

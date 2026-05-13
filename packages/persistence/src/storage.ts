@@ -15,7 +15,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** Round-trip with `safeParse` / JSON.parse. `safeStringify` returned raw strings (not valid JSON). */
+/** JSON round-trip; falls back to safeStringify for non-JSON-serializable values. */
 function serializeStorageValue(value: unknown): string {
   try {
     return JSON.stringify(value);
@@ -24,11 +24,8 @@ function serializeStorageValue(value: unknown): string {
   }
 }
 
-/**
- * Legacy: values written with `safeStringify` for string params were stored without JSON quotes
- * (e.g. `light` instead of `"light"`), so JSON.parse failed and reads fell back to initData.
- */
-function tryLegacyPlainString<T>(raw: string, initData: T | undefined): T | undefined {
+/** safeStringify writes strings without JSON quotes; when JSON.parse fails, treat raw as plain string. */
+function parsePlainString<T>(raw: string, initData: T | undefined): T | undefined {
   if (typeof initData !== 'string' || !raw.length) return undefined;
   try {
     JSON.parse(raw);
@@ -46,8 +43,8 @@ export function createStorageApi(storage: Storage) {
     if (raw === null || raw === '') return initData as T;
     const parsed = safeParse<unknown>(raw, null);
     if (parsed === null) {
-      const legacy = tryLegacyPlainString(raw, initData);
-      if (legacy !== undefined) return legacy;
+      const plain = parsePlainString(raw, initData);
+      if (plain !== undefined) return plain;
       return initData as T;
     }
     if (isPlainObject(initData) && isPlainObject(parsed)) {
