@@ -41,7 +41,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @react33/react-ui-base --external @react33/react-styles --external @react33/react-helpers --external @react33/react-hooks --external @react33/react-context --external @react33/react-networking --external @tabler/icons-react --external motion",
+    "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @react33/react-ui-base --external @react33/react-styles --external @react33/react-helpers --external @react33/react-hooks --external @react33/react-context --external @react33/react-networking --external @tabler/icons-react --external motion --external zod",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -56,7 +56,13 @@
     "ts-essentials": "^10.0.4"
   },
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "zod": "^3.23.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
@@ -67,6 +73,7 @@
     "react-dom": "^19",
     "tsup": "^8.4.0",
     "typescript": "^5",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "zod": "^3.24.0"
   }
 }
