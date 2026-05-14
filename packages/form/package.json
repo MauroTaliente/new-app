@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-form",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Form framework: Form, Field, InputFrame, InputOptions and types. Headless and unopinionated about concrete inputs; pair with @react33/react-ui or your own.",
