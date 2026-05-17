@@ -3,7 +3,11 @@ node_modules/
 
 # Build outputs
 dist/
+coverage/
 *.tsbuildinfo
+
+# Test runners
+**/.vite/
 
 # Generated from CSS (demo app)
 apps/demo/src/theme/styles.generated.ts
@@ -20,3 +24,5 @@ apps/demo/src/theme/styles.generated.ts
 *.swp
 *.swo
 .DS_Store
+# Local AI runtime state
+.atl/

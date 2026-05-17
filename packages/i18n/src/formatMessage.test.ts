@@ -2,6 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { formatMessage } from './formatMessage.js';
 
 describe('formatMessage', () => {
+  it('acepta pattern sin values', () => {
+    expect(formatMessage('en', 'Plain text')).toBe('Plain text');
+  });
+
   it('interpolates named placeholders', () => {
     expect(formatMessage('en', 'Hello {name}', { name: 'Ada' })).toBe('Hello Ada');
   });

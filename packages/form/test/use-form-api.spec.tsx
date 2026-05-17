@@ -1,18 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useFormApi } from '../src/components/organisms/form/use-form-api';
+import { useFormApi, type FormConfig } from '../src/components/organisms/form/use-form-api';
 
 interface SignupValues {
   email: string;
   age: number;
 }
 
-const baseConfig = (overrides: Partial<Parameters<typeof useFormApi>[0]> = {}) =>
-  ({
-    space: 'signup',
-    initialValues: { email: '', age: 0 } as SignupValues,
-    ...overrides,
-  });
+const baseConfig = (overrides: Partial<FormConfig<SignupValues>> = {}): FormConfig<SignupValues> => ({
+  space: 'signup',
+  initialValues: { email: '', age: 0 },
+  ...overrides,
+});
 
 describe('useFormApi', () => {
   it('connect() exposes initial values', () => {
@@ -97,7 +96,7 @@ describe('useFormApi', () => {
     );
 
     act(() => {
-      result.current[1].submit(new Event('submit') as unknown as Event, 'unit');
+      result.current[1].submit(document.createElement('form'), 'unit');
     });
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
@@ -118,7 +117,7 @@ describe('useFormApi', () => {
     );
 
     act(() => {
-      result.current[1].submit(new Event('submit') as unknown as Event, 'unit');
+      result.current[1].submit(document.createElement('form'), 'unit');
     });
     expect(onReject).toHaveBeenCalledTimes(1);
     expect(onSubmit).not.toHaveBeenCalled();

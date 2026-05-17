@@ -10,23 +10,32 @@ const reactGenerateBin = resolve(__dirname, '../dist/bin/react-generate.js');
 const stylesDefaults = resolve(__dirname, '../../styles/defaults');
 
 describe('react-generate CLI (integration)', () => {
+  it('--help sale 0 e imprime usage', () => {
+    const r = spawnSync(process.execPath, [reactGenerateBin, '--help'], {
+      encoding: 'utf-8',
+    });
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('react-styles-generate');
+    expect(r.stdout).toContain('react-networking-generate');
+  });
+
   it('writes styles.generated.ts, apis.generated.ts, and apis.client.generated.tsx', () => {
-    const tmp = mkdtempSync(join(tmpdir(), 'lib-gen-'));
+    const tmp = mkdtempSync(join(tmpdir(), 'react33-gen-'));
     try {
       const config = {
-        libStyles: {
+        react33Styles: {
           fromCss: stylesDefaults,
           domainsOrder: ['tokens', 'palette', 'theme'],
           output: './out/styles.generated.ts',
         },
-        libNetworking: {
+        react33Networking: {
           output: './out/apis.generated.ts',
           apis: {
             integrationtest: { url: 'https://example.com/api' },
           },
         },
       };
-      writeFileSync(join(tmp, 'lib.config.json'), JSON.stringify(config, null, 2));
+      writeFileSync(join(tmp, 'react33.config.json'), JSON.stringify(config, null, 2));
 
       const r = spawnSync(process.execPath, [reactGenerateBin], {
         cwd: tmp,

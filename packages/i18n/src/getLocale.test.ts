@@ -11,6 +11,11 @@ describe('getLocale', () => {
     expect(getLocale(dictionaries, undefined, 'es', 'shared')).toEqual({ hi: 'hola' });
   });
 
+  it('picks fallback when lang es null o desconocido', () => {
+    expect(getLocale(dictionaries, null, 'es', 'shared')).toEqual({ hi: 'hola' });
+    expect(getLocale(dictionaries, 'fr', 'es', 'shared')).toEqual({ hi: 'hola' });
+  });
+
   it('picks requested lang', () => {
     expect(getLocale(dictionaries, 'en', 'es', 'shared')).toEqual({ hi: 'hi' });
   });

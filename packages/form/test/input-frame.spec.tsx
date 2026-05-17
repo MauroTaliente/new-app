@@ -33,13 +33,15 @@ describe('InputFrame', () => {
     expect(onClear).toHaveBeenCalledTimes(1);
   });
 
-  it('indicators container is non-interactive (pointer-events-none)', () => {
+  it('indicators container is non-interactive and anchored top-right', () => {
     const { container } = render(
-      <InputFrame indicators="all" showError>
+      <InputFrame indicators="all" showSuccess showError={false}>
         <input />
       </InputFrame>,
     );
     const indicators = container.querySelector('[class*="pointer-events-none"]');
     expect(indicators).toBeTruthy();
+    expect(indicators?.className).toContain('right-2');
+    expect(indicators?.className).toContain('top-[0.6125rem]');
   });
 });

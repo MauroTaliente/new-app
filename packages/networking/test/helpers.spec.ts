@@ -6,6 +6,7 @@ import {
   buildRequestBody,
   joinResponses,
 } from '../src/helpers.js';
+import { buildPathUrl, resolveOpenApiRequest } from '../src/path-url.js';
 import HttpCode from '../src/types/http-status-code.js';
 
 describe('shouldRetryAfterHttpFailure', () => {
@@ -47,6 +48,30 @@ describe('buildRequestUrl', () => {
 
   it('returns url unchanged for POST with body', () => {
     expect(buildRequestUrl('https://x.test/api', 'POST', { a: 1 })).toBe('https://x.test/api');
+  });
+});
+
+describe('buildPathUrl', () => {
+  it('substitutes path params', () => {
+    expect(buildPathUrl('/v1/trips/{tripId}', { tripId: 'abc-123' })).toBe('/v1/trips/abc-123');
+  });
+
+  it('throws when param missing', () => {
+    expect(() => buildPathUrl('/v1/trips/{tripId}', {})).toThrow(/missing path param/);
+  });
+});
+
+describe('resolveOpenApiRequest', () => {
+  it('maps query for GET', () => {
+    expect(
+      resolveOpenApiRequest('/v1/trips', 'GET', { query: { page: 1 } }),
+    ).toEqual({ url: '/v1/trips', body: { page: 1 } });
+  });
+
+  it('maps body for POST', () => {
+    expect(
+      resolveOpenApiRequest('/v1/auth/login', 'POST', { body: { email: 'a@b.c' } }),
+    ).toEqual({ url: '/v1/auth/login', body: { email: 'a@b.c' } });
   });
 });
 

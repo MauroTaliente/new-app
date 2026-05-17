@@ -149,6 +149,89 @@ describe('useAsyncFetch', () => {
     });
   });
 
+  it('fetchOnMount runs once without watch-driven refetch', async () => {
+    const action = vi.fn(async () => ({ status: HttpCode.OK, data: { n: 1 } }));
+
+    const { result, rerender } = renderHook(
+      ({ dep }) =>
+        useAsyncFetch(
+          {
+            name: 'mount-once',
+            fetchOnMount: true,
+            mapWatchToParams: () => ({ dep }),
+            action,
+          },
+          [dep],
+        ),
+      { initialProps: { dep: 1 } },
+    );
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ n: 1 });
+    });
+    expect(action).toHaveBeenCalledTimes(1);
+
+    rerender({ dep: 2 });
+    await waitFor(() => {
+      expect(result.current.params).toEqual({ dep: 2 });
+    });
+    expect(action).toHaveBeenCalledTimes(1);
+  });
+
+  it('mapWatchToParams syncs params without network', async () => {
+    const action = vi.fn(async () => ({ status: HttpCode.OK, data: {} }));
+
+    const { result, rerender } = renderHook(
+      ({ id }) =>
+        useAsyncFetch(
+          {
+            name: 'sync-only',
+            mapWatchToParams: () => ({ id }),
+            action,
+          },
+          [id],
+        ),
+      { initialProps: { id: 'a' } },
+    );
+
+    expect(action).not.toHaveBeenCalled();
+    expect(result.current.params).toEqual({ id: 'a' });
+
+    rerender({ id: 'b' });
+    expect(result.current.params).toEqual({ id: 'b' });
+    expect(action).not.toHaveBeenCalled();
+  });
+
+  it('resetDataOnWatchChange resets data without network', async () => {
+    const action = vi.fn(async () => ({ status: HttpCode.OK, data: { loaded: true } }));
+
+    const { result, rerender } = renderHook(
+      ({ key }) =>
+        useAsyncFetch(
+          {
+            name: 'reset-data',
+            initData: { empty: true },
+            resetDataOnWatchChange: true,
+            mapWatchToParams: () => ({ key }),
+            action,
+          },
+          [key],
+        ),
+      { initialProps: { key: 1 } },
+    );
+
+    act(() => {
+      result.current.trigger({ key: 1 });
+    });
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ loaded: true });
+    });
+
+    rerender({ key: 2 });
+    expect(result.current.data).toEqual({ empty: true });
+    expect(action).toHaveBeenCalledTimes(1);
+  });
+
   it('accepts a custom RequestCache instance', async () => {
     const myCache = createRequestCache();
     const { result } = renderHook(() =>

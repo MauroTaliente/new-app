@@ -9,6 +9,8 @@
     "dev": "pnpm run -r --parallel dev",
     "clean": "pnpm -r exec rm -rf dist",
     "test": "pnpm run -r --filter \"./packages/*\" test && pnpm --filter demo test",
+    "typecheck": "pnpm run -r --filter \"./packages/*\" --if-present typecheck && pnpm --filter demo --if-present typecheck",
+    "test:coverage": "pnpm run -r --filter \"./packages/*\" --if-present test:coverage",
     "generate": "pnpm run --filter demo generate",
     "publish:packages": "pnpm publish -r --filter './packages/*'"
   },

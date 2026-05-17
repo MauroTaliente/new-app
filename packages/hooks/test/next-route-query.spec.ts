@@ -10,25 +10,9 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams('foo=bar&n=7&flag=true'),
 }));
 
-import { useRouteQuery, getObjectWithTag, removeTagFromObject } from '../src/next-route-query.js';
+import { useRouteQuery } from '../src/next-route-query.js';
 
-describe('getObjectWithTag', () => {
-  it('prefija claves con tag y sep', () => {
-    expect(getObjectWithTag({ a: 1, b: 2 }, 'f', '_')).toEqual({ f_a: 1, f_b: 2 });
-  });
-});
-
-describe('removeTagFromObject', () => {
-  it('quita el prefijo de las claves', () => {
-    expect(removeTagFromObject({ f_a: 1, f_b: 2 }, 'f', '_')).toEqual({ a: 1, b: 2 });
-  });
-
-  it('deja claves sin prefijo intactas', () => {
-    expect(removeTagFromObject({ f_a: 1, other: 3 }, 'f', '_')).toEqual({ a: 1, other: 3 });
-  });
-});
-
-describe('useRouteQuery', () => {
+describe('useRouteQuery (next)', () => {
   beforeEach(() => {
     push.mockClear();
     replace.mockClear();
@@ -56,5 +40,35 @@ describe('useRouteQuery', () => {
     const { result } = renderHook(() => useRouteQuery());
     const g = result.current.getGroup({ foo: '', n: 0, flag: false });
     expect(g).toEqual({ foo: 'bar', n: 7, flag: true });
+  });
+
+  it('add con push usa router.push', () => {
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ extra: '1' }, 'push'));
+    expect(push).toHaveBeenCalledWith(expect.stringContaining('extra=1'), { scroll: false });
+  });
+
+  it('set con replace usa router.replace', () => {
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.set({ only: 'x' }, 'replace'));
+    expect(replace).toHaveBeenCalledWith(expect.stringContaining('only=x'), { scroll: false });
+  });
+
+  it('no navega si la URL final ya coincide (silent)', () => {
+    window.history.replaceState(null, '', '/test?foo=bar');
+    const spy = vi.spyOn(window.history, 'replaceState');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ foo: 'bar' }));
+    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it('clean navega al pathname sin query', () => {
+    window.history.replaceState(null, '', '/test?foo=bar');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.clean());
+    expect(replace).toHaveBeenCalledWith('/test', { scroll: false });
   });
 });
