@@ -398,7 +398,9 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
   const ref = (receivedRef || innerRef) as RefObject<HTMLFormElementExtended<T>>;
   // states
   const [attempts, setAttempts] = useState(0);
-  const [values, setValues] = useState<T>({} as T);
+  const [values, setValues] = useState<T>(
+    () => (initialValues ?? emptyValues ?? {}) as T,
+  );
   const [toucheds, setToucheds] = useState<Toucheds>({});
   const [focuses, setFocuses] = useState<Focuses>({});
   const valuesRef = useRef<T>({} as T);
@@ -462,15 +464,18 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
   }, [onChange]);
 
   // helpers
-  const syncValues = useCallback((values: T) => {
-    if (syncInitialValues || !memo.startSync) {
-      setValues((pre) => {
-        const nextValues = activeValuesOnly ? getActives(pre, values) : values;
-        if (isDeepEqual(pre, nextValues)) return pre;
-        return nextValues;
-      });
-    }
-  }, [syncInitialValues, activeValuesOnly]);
+  const syncValues = useCallback(
+    (next: T, options?: { force?: boolean }) => {
+      if (options?.force || syncInitialValues || !memo.startSync) {
+        setValues((pre) => {
+          const nextValues = activeValuesOnly ? getActives(pre, next) : next;
+          if (isDeepEqual(pre, nextValues)) return pre;
+          return nextValues;
+        });
+      }
+    },
+    [syncInitialValues, activeValuesOnly],
+  );
 
   // Register queued fields after commit to avoid setState during render.
   useEffect(() => {
@@ -488,43 +493,6 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
 
     return () => { };
   });
-
-  // listen values changes and set history
-  useEffect(() => {
-    const hasValuesChanged = !isDeepEqual(lastValuesRef.current, values);
-    lastValuesRef.current = values;
-    if (!hasValuesChanged) return () => { };
-
-    const last = memo.history[0] || {};
-    const hasBack = !isDeepEqual(values, last);
-    if (hasBack) {
-      const newHistory = [values, ...memo.history].slice(0, undoLimit);
-      memo.history = newHistory;
-    }
-
-    // If the user edits after undo, redo history is no longer valid.
-    const isBranchingEdit =
-      hasBack &&
-      memo.lastChange.method !== 'undo' &&
-      memo.lastChange.method !== 'redo' &&
-      memo.lastChange.method !== 'register';
-    if (isBranchingEdit && !isEmptyArray(memo.future)) {
-      memo.future = [];
-    }
-
-    const shouldScheduleLazy =
-      memo.startSync &&
-      !!memo.lastChange.name &&
-      memo.lastChange.method !== 'register';
-
-    if (shouldScheduleLazy) {
-      if (!memo.startLazy) memo.startLazy = true;
-      lazyTimer.resetTimer();
-    }
-    const activeApi = ref.current?.api;
-    if (activeApi) onChangeRef.current(activeApi);
-    return () => { };
-  }, [values, ref]);
 
   // listen initValues changes
   useEffect(() => {
@@ -544,7 +512,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       status === HttpCode.NO_CONTENT
     ) {
       setToucheds((pre) => getActives(pre, initialToucheds, false, 'over'));
-      syncValues((emptyValues || initialValues) as T);
+      syncValues((emptyValues || initialValues) as T, { force: true });
     }
     return () => { };
   }, [status]);
@@ -872,6 +840,41 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       connectNative,
     ],
   );
+
+  // listen values changes and set history (runs after `api` exists so onChange gets current values)
+  useEffect(() => {
+    const hasValuesChanged = !isDeepEqual(lastValuesRef.current, values);
+    lastValuesRef.current = values;
+    if (!hasValuesChanged) return () => { };
+
+    const last = memo.history[0] || {};
+    const hasBack = !isDeepEqual(values, last);
+    if (hasBack) {
+      const newHistory = [values, ...memo.history].slice(0, undoLimit);
+      memo.history = newHistory;
+    }
+
+    const isBranchingEdit =
+      hasBack &&
+      memo.lastChange.method !== 'undo' &&
+      memo.lastChange.method !== 'redo' &&
+      memo.lastChange.method !== 'register';
+    if (isBranchingEdit && !isEmptyArray(memo.future)) {
+      memo.future = [];
+    }
+
+    const shouldScheduleLazy =
+      memo.startSync &&
+      !!memo.lastChange.name &&
+      memo.lastChange.method !== 'register';
+
+    if (shouldScheduleLazy) {
+      if (!memo.startLazy) memo.startLazy = true;
+      lazyTimer.resetTimer();
+    }
+    if (ref.current) onChangeRef.current(api);
+    return () => { };
+  }, [values, ref, api]);
 
   // Save the latest API on the form ref and trigger onReady once.
   useEffect(() => {

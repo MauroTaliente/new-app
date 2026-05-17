@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.npmjs.com/package/@react33/react-config/react33.config.schema.json",
+  "title": "react33.config — react33Styles, react33I18n, react33Theme, react33Networking",
+  "description": "Root schema for react33.config.json. Published by @react33/react-config. Optional $schema key, or associate via .vscode/settings.json (json.schemas).",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Opcional si el editor ya asocia react33.config.json vía workspace (ver @react33/react-config). Si lo declarás: ./node_modules/@react33/react-config/react33.config.schema.json"
+    },
+    "react33Styles": {
+      "$ref": "#/$defs/react33Styles"
+    },
+    "react33I18n": {
+      "$ref": "#/$defs/react33I18n"
+    },
+    "react33Theme": {
+      "$ref": "#/$defs/react33Theme"
+    },
+    "react33Networking": {
+      "$ref": "#/$defs/react33Networking"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "react33Networking": {
+      "type": "object",
+      "description": "Generated API registry and client hooks (@react33/react-networking). Paths are relative to react33.config.json.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Path for apis.generated.ts (createApiRegistry, apis, *Request). Overrides CLI default when --output is omitted."
+        },
+        "hooksOutput": {
+          "type": "string",
+          "description": "Optional path for the client hooks module. If omitted, derived from output (e.g. apis.client.generated.tsx next to apis.generated.ts)."
+        },
+        "apis": {
+          "type": "object",
+          "description": "Map of API name -> { url, headers?, cache?, credentials? }.",
+          "additionalProperties": true
+        },
+        "openApi": {
+          "$ref": "#/$defs/react33OpenApi"
+        }
+      },
+      "additionalProperties": true
+    },
+    "react33OpenApi": {
+      "type": "object",
+      "description": "OpenAPI 3.1+ codegen (@react33/react-networking). Paths relative to react33.config.json.",
+      "properties": {
+        "files": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "input": { "type": "string" },
+              "scope": { "type": "string" },
+              "basePath": { "type": "string" },
+              "client": {
+                "type": "object",
+                "description": "HTTP client overrides when apis.<scope> is omitted (OpenAPI-first). url comes from servers[0] + basePath.",
+                "properties": {
+                  "headers": { "type": "object", "additionalProperties": { "type": "string" } },
+                  "cache": { "type": "string" },
+                  "credentials": { "type": "string" }
+                }
+              },
+              "typesOutput": { "type": "string" },
+              "zodOutput": { "type": "string" },
+              "sdkOutput": { "type": "string" },
+              "hooksOutput": { "type": "string" },
+              "initData": {
+                "type": "object",
+                "properties": {
+                  "input": { "type": "string" },
+                  "generate": { "type": "boolean" }
+                }
+              },
+              "validate": {
+                "description": "Runtime Zod validation for SDK params/response.",
+                "oneOf": [
+                  { "type": "boolean" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "params": { "type": "boolean" },
+                      "response": { "type": "boolean" },
+                      "mode": { "type": "string", "enum": ["log", "strict"] }
+                    }
+                  }
+                ]
+              },
+              "include": { "type": "object" },
+              "exclude": { "type": "object" },
+              "operations": {
+                "type": "object",
+                "description": "Per operationId: fetchOnMount, verbose, initData, validate, security.",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "fetchOnMount": { "type": "boolean" },
+                    "verbose": { "type": "boolean" },
+                    "initData": { "oneOf": [{ "type": "string" }, { "type": "boolean", "const": false }] },
+                    "security": { "type": "string", "const": "public" },
+                    "validate": {
+                      "oneOf": [
+                        { "type": "boolean" },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "params": { "type": "boolean" },
+                            "response": { "type": "boolean" },
+                            "mode": { "type": "string", "enum": ["log", "strict"] }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "defaults": { "type": "object" }
+            },
+            "required": ["input", "scope", "typesOutput", "zodOutput", "sdkOutput", "hooksOutput"]
+          }
+        }
+      },
+      "required": ["files"]
+    },
+    "react33Persistence": {
+      "type": "object",
+      "description": "Claves y modo de persistencia en browser compartidos por locale (react33I18n) y tema (react33Theme).",
+      "properties": {
+        "cookieName": {
+          "type": "string",
+          "description": "Nombre de la cookie cuando el backend activo es cookie."
+        },
+        "localStorageKey": {
+          "type": "string",
+          "description": "Clave de localStorage cuando el backend activo es localStorage."
+        },
+        "persistenceMode": {
+          "type": "string",
+          "enum": ["localStorage", "cookie"],
+          "description": "Backend por defecto si la app soporta ambos; variables de entorno (p. ej. VITE_*_PERSISTENCE) pueden sobreescribir."
+        }
+      },
+      "additionalProperties": true
+    },
+    "react33I18n": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/react33Persistence"
+        },
+        {
+          "type": "object",
+          "description": "Locale: convención de rutas y mensajes (ver @react33/react-i18n).",
+          "properties": {
+            "defaultLocale": {
+              "type": "string",
+              "description": "Locale por defecto (fallback)."
+            },
+            "locales": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Códigos de idioma permitidos."
+            },
+            "localesDirectory": {
+              "type": "string",
+              "description": "Carpeta de módulos por idioma (relativa a react33.config.json)."
+            },
+            "urlLocalePattern": {
+              "type": "string",
+              "description": "Regex (string) sobre pathname; primer grupo de captura = locale."
+            },
+            "generatedTypesOutput": {
+              "type": "string",
+              "description": "Reservado para tipos generados (p. ej. locales.generated.ts)."
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "react33Theme": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/react33Persistence"
+        },
+        {
+          "type": "object",
+          "description": "Tema: opciones extra de escritura de cookie. defaultTheme suele venir de styles.meta generado.",
+          "properties": {
+            "cookiePath": {
+              "type": "string",
+              "default": "/",
+              "description": "Atributo Path de Set-Cookie."
+            },
+            "cookieMaxAgeSeconds": {
+              "type": "number",
+              "default": 31536000,
+              "description": "Max-Age del cookie de tema (~1 año por defecto)."
+            },
+            "cookieSameSite": {
+              "type": "string",
+              "enum": ["strict", "lax", "none"],
+              "default": "lax"
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "react33Styles": {
+      "type": "object",
+      "description": "Paths are relative to the config file directory.",
+      "properties": {
+        "fromCss": {
+          "type": "string",
+          "description": "Directory containing *.css source files."
+        },
+        "domainsOrder": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Cascade order (file stems without .css). Overrides alphabetical discovery."
+        },
+        "output": {
+          "type": "string",
+          "description": "Output path for the generated .ts file."
+        },
+        "outputDir": {
+          "type": "string",
+          "description": "Output directory (used with outputFile)."
+        },
+        "outputFile": {
+          "type": "string",
+          "default": "styles.generated.ts",
+          "description": "Generated filename when using outputDir."
+        },
+        "excludeStems": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Stems to skip when auto-discovering CSS files (ignored if domainsOrder is set)."
+        },
+        "banner": {
+          "type": "string",
+          "description": "First line(s) of the generated TypeScript file."
+        },
+        "verbose": {
+          "type": "boolean",
+          "description": "Log resolved config, fromCss, domain order, and output path."
+        },
+        "watch": {
+          "type": "boolean",
+          "description": "Watch fromCss for changes and regenerate (same as CLI --watch). Use CLI --no-watch to force a one-off run when this is true."
+        },
+        "metaSourceStem": {
+          "type": "string",
+          "description": "Which CSS stem provides @theme meta (defaultTheme, cols). Default: tokens, else first domain."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

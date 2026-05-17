@@ -37,8 +37,9 @@ const useAsyncFetch = <Params, Data, Response = null>(
   {
     name,
     state,
-    params: baseParams,
-    auto = false,
+    fetchOnMount = false,
+    mapWatchToParams,
+    resetDataOnWatchChange = false,
     prevent = false,
     retries = 0,
     retryDelayMs = 0,
@@ -61,20 +62,23 @@ const useAsyncFetch = <Params, Data, Response = null>(
     cacheTtlMs,
     scope,
   }: DynamicOptions<Params, Data, Response>,
-  watch: readonly unknown[],
+  watch: readonly unknown[] = [],
 ) => {
-  const memo = useMemo(() => ({
-    author: 'unknown',
-    initMount: false,
-    localMeta: { ...emptyMeta },
-    loading: initLoading || auto || false,
-    params: baseParams,
-    isRepeated: false,
-    isFirst: true,
-    data: initData as ResponseOrData<Data, Response>,
-    onFinal,
-    error: undefined as unknown,
-  }), []);
+  const memo = useMemo(
+    () => ({
+      author: 'unknown',
+      watchSynced: false,
+      localMeta: { ...emptyMeta },
+      loading: initLoading || fetchOnMount || false,
+      params: undefined as Params | undefined,
+      isRepeated: false,
+      isFirst: true,
+      data: initData as ResponseOrData<Data, Response>,
+      onFinal,
+      error: undefined as unknown,
+    }),
+    [],
+  );
 
   const remoteMeta = state?.recordList?.[name];
   const meta: StaticMeta = remoteMeta || memo.localMeta;
@@ -85,6 +89,9 @@ const useAsyncFetch = <Params, Data, Response = null>(
 
   const [endCount, setEndCount] = useState(0);
   const [status, setStatus] = useState<HttpCode>(0);
+  /** Bumps on watch sync so `memo.params` / `memo.data` updates are visible in render. */
+  const [syncRevision, setSyncRevision] = useState(0);
+  void syncRevision;
 
   const optsRef = useRef({
     name,
@@ -105,6 +112,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     cacheKey,
     cacheTtlMs,
     scope,
+    initData,
   });
 
   optsRef.current = {
@@ -126,16 +134,24 @@ const useAsyncFetch = <Params, Data, Response = null>(
     cacheKey,
     cacheTtlMs,
     scope,
+    initData,
   };
 
-  const trigger = useCallback((newParams: any, onFinalCb: any, newAuthor = '') => {
-    memo.isRepeated = isDeepEqual(memo.params, newParams);
-    if (memo.isRepeated && memo.loading) return;
-    memo.params = newParams;
-    memo.author = newAuthor;
-    memo.onFinal = onFinalCb || (() => { });
-    setCount((pre) => pre + 1);
-  }, []) as DynamicModel<Params, Data, Response>['trigger'];
+  const trigger = useCallback(
+    (newParams?: Params, onFinalCb?: ((model: DynamicModel<Params, Data, Response>) => void) | null, newAuthor = '') => {
+      if (newParams !== undefined) {
+        memo.isRepeated = isDeepEqual(memo.params, newParams);
+        memo.params = newParams;
+      } else {
+        memo.isRepeated = false;
+      }
+      if (memo.isRepeated && memo.loading) return;
+      memo.author = newAuthor;
+      memo.onFinal = onFinalCb || (() => { });
+      setCount((pre) => pre + 1);
+    },
+    [],
+  ) as DynamicModel<Params, Data, Response>['trigger'];
 
   const initialLoading = Boolean(memo.loading && meta.success === 0);
   const hasLoadedOnce = meta.success > 0;
@@ -213,18 +229,22 @@ const useAsyncFetch = <Params, Data, Response = null>(
   }, [endCount]);
 
   useEffect(() => {
-    if (auto) {
-      memo.isRepeated = isDeepEqual(memo.params, baseParams);
-      if (memo.isRepeated && memo.loading && memo.initMount) return;
-      memo.params = baseParams;
-      memo.author = 'unknown';
-      setCount((pre) => pre + 1);
+    if (mapWatchToParams) {
+      memo.params = mapWatchToParams(watch);
     }
-    if (!memo.initMount) {
-      memo.initMount = true;
+    if (resetDataOnWatchChange && memo.watchSynced) {
+      memo.data = optsRef.current.initData as ResponseOrData<Data, Response>;
     }
+    memo.watchSynced = true;
+    setSyncRevision((r) => r + 1);
     return () => { };
   }, [...watch]);
+
+  useEffect(() => {
+    if (!fetchOnMount) return;
+    setCount((pre) => pre + 1);
+    return () => { };
+  }, []);
 
   useEffect(() => {
     if (count <= endCount) return;

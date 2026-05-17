@@ -1,9 +1,0 @@
-{
-  "$schema": "./lib.config.schema.json",
-  "libStyles": {
-    "fromCss": "./defaults",
-    "domainsOrder": ["tokens", "palette", "theme"],
-    "outputDir": "./dist/generated",
-    "outputFile": "styles.generated.ts"
-  }
-}

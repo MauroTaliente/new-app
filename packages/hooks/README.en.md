@@ -44,6 +44,23 @@ See [docs/testing.en.md](../../docs/testing.en.md) for `.spec` vs `.test`.
 
 Requires `next` in the app that imports this entry.
 
+## React Router entry (`@react33/react-hooks/router`)
+
+Same API as the Next entry, for Vite/SPA dashboards with **React Router v6+** (`react-router-dom`).
+
+```ts
+import { useRouteQuery } from '@react33/react-hooks/router';
+```
+
+Wrap the app with `BrowserRouter` / `RouterProvider` so `useNavigate` and `useSearchParams` are available.
+
+| Export | Notes |
+|--------|--------|
+| `useRouteQuery` | URL query ↔ state (`push` / `replace` / `silent`) |
+| `getObjectWithTag`, `removeTagFromObject` | Query helpers |
+
+Requires `react-router-dom` in the app that imports this entry.
+
 ## Out of scope (by design)
 
 App-specific request wiring lives in **`@react33/react-networking`** (`useAsyncFetch`, generated `use*Request`). Theme and locale live in **`@react33/react-theme`**, **`@react33/react-persistence`**, and **`@react33/react-i18n`**.

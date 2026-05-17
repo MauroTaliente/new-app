@@ -4,9 +4,9 @@ Runtime de tema para React: **memoria** (context) + **sync DOM** (`body` / `docu
 
 La **definición** de nombres de tema sigue en **CSS → `react-styles-generate` → `styles.generated.ts`** (una sola fuente de verdad).
 
-## `lib.config.json` — `libTheme`
+## `react33.config.json` — `react33Theme`
 
-Junto a `libStyles`, **`libTheme`** comparte **`libPersistence`** con **`libI18n`** (mismas claves posibles). Opcionalmente podés sobreescribir la escritura de cookie (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); si no, el demo / tu app usa **defaults en código** (p. ej. path `/`, ~1 año, `lax`). El **nombre del tema por defecto** sigue en **`styles.meta.defaultTheme`** (generado).
+Junto a `react33Styles`, **`react33Theme`** comparte **`react33Persistence`** con **`react33I18n`** (mismas claves posibles). Opcionalmente podés sobreescribir la escritura de cookie (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); si no, el demo / tu app usa **defaults en código** (p. ej. path `/`, ~1 año, `lax`). El **nombre del tema por defecto** sigue en **`styles.meta.defaultTheme`** (generado).
 
 ## Dependencias internas (recomendado en monorepo)
 

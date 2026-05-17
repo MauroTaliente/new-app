@@ -25,9 +25,9 @@ Dependencies: `@react33/react-helpers`, `@react33/react-persistence` (already de
 
 Peers: `react`, `next` (optional for core-only apps).
 
-## `lib.config.json`
+## `react33.config.json`
 
-`libI18n` shares the **`libPersistence`** block with `libTheme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-styles` `lib.config.schema.json` → `$defs.libPersistence`). Also: `defaultLocale`, `locales`, `localesDirectory`, `urlLocalePattern`, etc. Dictionaries still load from your app; the config documents keys and conventions.
+`react33I18n` shares the **`react33Persistence`** block with `react33Theme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-config` `react33.config.schema.json` → `$defs.react33Persistence`). Also: `defaultLocale`, `locales`, `localesDirectory`, `urlLocalePattern`, etc. Dictionaries still load from your app; the config documents keys and conventions.
 
 ## Migrating an existing locale module
 

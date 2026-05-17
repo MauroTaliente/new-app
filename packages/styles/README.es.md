@@ -4,19 +4,19 @@
 
 El CLI sube desde `cwd` buscando (gana el primero):
 
-- `.lib.config.json`
-- `lib.config.json`
-- `lib-styles.config.json`
+- `.react33.config.json`
+- `react33.config.json`
+- `react33-styles.config.json`
 
 ### JSON Schema — autocompletado en el IDE
 
-**No hace falta** repetir `$schema` en cada `lib.config.json` si el repo define **`json.schemas`** en `.vscode/settings.json` (Cursor/VS Code): asocia `**/lib.config.json` con `./node_modules/@react33/react-styles/lib.config.schema.json` desde la **raíz del workspace** (donde está `node_modules` tras `pnpm install`).
+**No hace falta** repetir `$schema` en cada `react33.config.json` si el repo define **`json.schemas`** en `.vscode/settings.json` (Cursor/VS Code): asocia `**/react33.config.json` con `./node_modules/@react33/react-config/react33.config.schema.json` desde la **raíz del workspace** (donde está `node_modules` tras `pnpm install`).
 
 Si abrís solo una subcarpeta como workspace o usás otro editor, podés declarar el schema en el propio JSON (ver ejemplo en [README.en.md](README.en.md)).
 
-Export del paquete: `@react33/react-styles/lib.config.schema.json` (alias: `lib-styles.schema.json` → mismo archivo).
+Schema global de `react33.config.json`: paquete [`@react33/react-config`](../config) (no este paquete).
 
-Usá un objeto `libStyles` con `fromCss`, `output` (ruta del `.ts` generado), `domainsOrder`, `excludeStems`, `metaSourceStem`, `banner`, `verbose`, `watch`, etc. (ejemplos completos en [README.en.md](README.en.md)).
+Usá un objeto `react33Styles` con `fromCss`, `output` (ruta del `.ts` generado), `domainsOrder`, `excludeStems`, `metaSourceStem`, `banner`, `verbose`, `watch`, etc. (ejemplos completos en [README.en.md](README.en.md)).
 
 ### Rutas
 
@@ -25,7 +25,7 @@ Usá un objeto `libStyles` con `fromCss`, `output` (ruta del `.ts` generado), `d
 ### Orden de dominios (cascada / `var()`)
 
 1. **`--domains` en el CLI** (máxima prioridad)
-2. **`libStyles.domainsOrder`** en el config
+2. **`react33Styles.domainsOrder`** en el config
 3. **Si no**: todos los `*.css` en `fromCss`, orden **A→Z** por nombre. Se ignoran `*.generated.css`. **`excludeStems`** solo aplica en este modo de descubrimiento automático.
 
 ### Valores por defecto incluidos (`packages/styles/defaults`)

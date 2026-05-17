@@ -67,8 +67,7 @@ export interface StaticOptions {
   onFinal?: (model: unknown) => void;
   onSuccess?: (model: unknown) => void;
   onError?: (model: unknown) => void;
-  params?: unknown;
-  auto?: boolean;
+  fetchOnMount?: boolean;
   prevent?: boolean;
   /** Extra attempts after the first failure (network throw or retryable HTTP). Total attempts = 1 + retries. */
   retries?: number;
@@ -134,8 +133,12 @@ export type DynamicOptions<Params = unknown, Data = unknown, Response = null> = 
   onSuccess?: (model: DynamicModel<Params, Data, Response>) => void;
   onError?: (model: DynamicModel<Params, Data, Response>) => void;
   onUnauthorized?: (model: DynamicModel<Params, Data, Response>) => void;
-  params?: Params;
-  auto?: boolean;
+  /** Run one fetch on mount using `memo.params` (after `mapWatchToParams` sync). */
+  fetchOnMount?: boolean;
+  /** When `watch` changes, update `memo.params` only — no network. */
+  mapWatchToParams?: (watch: readonly unknown[]) => Params;
+  /** After the first mount, reset `data` to `initData` when `watch` changes (no network). */
+  resetDataOnWatchChange?: boolean;
   prevent?: boolean;
   retries?: number;
   retryDelayMs?: number;
@@ -161,7 +164,7 @@ export type DynamicModel<Params, Data, Response = null> = Expand<{
   initialLoading: boolean;
   /** True after at least one successful HTTP completion for this named request. */
   hasLoadedOnce: boolean;
-  params: Params;
+  params?: Params;
   isRepeated: boolean;
   isFirst: boolean;
   data: ResponseOrData<Data, Response>;

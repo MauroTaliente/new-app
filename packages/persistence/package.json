@@ -4,7 +4,13 @@
   "description": "Browser localStorage/sessionStorage and cookie persistence with optional Next.js server adapter",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
-  "keywords": ["react", "storage", "cookie", "persistence", "versioning"],
+  "keywords": [
+    "react",
+    "storage",
+    "cookie",
+    "persistence",
+    "versioning"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",
@@ -41,7 +47,9 @@
     "build": "tsup src/index.ts src/next.ts --format esm --dts",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "dependencies": {
     "@react33/react-helpers": "workspace:*",
@@ -58,6 +66,7 @@
   },
   "devDependencies": {
     "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
     "happy-dom": "^15.11.7",
     "next": "^15.0.0",
     "react": "^19.0.0",

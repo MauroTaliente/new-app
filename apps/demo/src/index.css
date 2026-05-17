@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 @source "../../../packages/ui/src";
+@source "../../../packages/form/src";
+@source "../../../packages/ui-base/src";
 
 /* Tokens from @react33/react-styles (generated) */
 @import "./theme/palette.css";

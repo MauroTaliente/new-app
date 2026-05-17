@@ -8,6 +8,7 @@ export const definitions = {
     url: "https://pokeapi.co/api/v2",
     headers: {"Accept":"application/json"},
     cache: "no-store",
+    credentials: "omit",
   },
 } satisfies Record<string, ApiClientConfigBody>;
 

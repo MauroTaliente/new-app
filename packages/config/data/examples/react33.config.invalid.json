@@ -1,0 +1,12 @@
+{
+  "react33Networking": {
+    "openApi": {
+      "files": {
+        "broken": {
+          "input": "../fixtures/openapi-3.1-demo.yaml",
+          "scope": "demo"
+        }
+      }
+    }
+  }
+}

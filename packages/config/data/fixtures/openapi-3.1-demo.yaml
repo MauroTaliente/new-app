@@ -1,0 +1,482 @@
+openapi: 3.1.0
+
+# ---------------------------------------------------------------------------
+# Demo — OpenAPI 3.1 DEMO spec for codegen R&D (zod schemas + typed SDK).
+#
+# Not the canonical contract. Lives in docs/plans/ on purpose: it is a
+# self-contained playground that exercises every JSON-Schema-2020-12 feature
+# the react33 generator must handle. Copy it into the react33 repo and iterate
+# the generator against it.
+#
+# Codegen surface intentionally covered:
+#   - path params (uuid) · query params (enum, int w/ default, bool)
+#   - GET/POST/PATCH/DELETE · 200/201/204/4xx · no-body responses
+#   - $ref reuse · allOf composition · oneOf + discriminator
+#   - enums · nullable (3.1 `type: [..,"null"]`) · default · readOnly
+#   - formats: uuid / email / date-time / uri · pattern · min/max
+#     · minLength/maxLength · minItems · additionalProperties:false
+#   - paginated envelope · shared Error · bearer auth + one public route
+# ---------------------------------------------------------------------------
+
+info:
+  title: Demo API (demo)
+  version: 0.0.0-demo
+  description: Demo surface for zod + SDK generation experiments.
+
+servers:
+  - url: http://localhost:8080
+    description: Local dev
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: auth
+  - name: trips
+  - name: members
+  - name: itinerary
+
+paths:
+  /v1/auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      security: []                       # public route — overrides global
+      summary: Exchange credentials for tokens.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Tokens issued.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResponse' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/trips:
+    get:
+      operationId: listTrips
+      tags: [trips]
+      summary: List trips for the authenticated user.
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/TripStatus' }
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: includeArchived
+          in: query
+          required: false
+          schema: { type: boolean, default: false }
+      responses:
+        '200':
+          description: Paginated trips.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedTrips' }
+    post:
+      operationId: createTrip
+      tags: [trips]
+      summary: Create a trip.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateTripBody' }
+      responses:
+        '201':
+          description: Trip created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /v1/trips/{tripId}:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
+    get:
+      operationId: getTrip
+      tags: [trips]
+      summary: Fetch one trip.
+      responses:
+        '200':
+          description: The trip.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateTrip
+      tags: [trips]
+      summary: Partially update a trip.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateTripBody' }
+      responses:
+        '200':
+          description: Updated trip.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteTrip
+      tags: [trips]
+      summary: Delete a trip.
+      responses:
+        '204':
+          description: Deleted (no content).
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/trips/{tripId}/members:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
+    post:
+      operationId: addTripMember
+      tags: [members]
+      summary: Invite a member by email or phone (discriminated union body).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddMemberBody' }
+      responses:
+        '201':
+          description: Member invited.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /v1/trips/{tripId}/itinerary:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
+    get:
+      operationId: listItinerary
+      tags: [itinerary]
+      summary: Ordered itinerary items for a trip.
+      responses:
+        '200':
+          description: Itinerary items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ItineraryItem' }
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid credentials.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Resource already exists / state conflict.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ValidationError:
+      description: Request body failed validation.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ValidationProblem' }
+
+  schemas:
+
+    # --- shared primitives -------------------------------------------------
+
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples: ['not_found']
+        message:
+          type: string
+        details:
+          # nullable, free-form bag (3.1 style)
+          type: [object, 'null']
+          additionalProperties: true
+
+    ValidationProblem:
+      type: object
+      additionalProperties: false
+      required: [code, message, fieldErrors]
+      properties:
+        code:
+          type: string
+          const: validation_error
+        message:
+          type: string
+        fieldErrors:
+          # map of field path -> message
+          type: object
+          additionalProperties:
+            type: string
+
+    PageMeta:
+      type: object
+      additionalProperties: false
+      required: [page, pageSize, total]
+      properties:
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+
+    # --- auth --------------------------------------------------------------
+
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, refreshToken, expiresInSec]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        expiresInSec: { type: integer, minimum: 1 }
+
+    # --- trips -------------------------------------------------------------
+
+    TripStatus:
+      type: string
+      enum: [draft, published, archived]
+      description: Lifecycle state of a trip.
+
+    Destination:
+      type: object
+      additionalProperties: false
+      required: [city, country]
+      properties:
+        city:
+          type: string
+          minLength: 1
+        country:
+          # ISO 3166-1 alpha-2
+          type: string
+          pattern: '^[A-Z]{2}$'
+
+    Trip:
+      type: object
+      additionalProperties: false
+      required: [id, title, status, startDate, endDate, destination, tags, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/TripStatus'
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        destination:
+          $ref: '#/components/schemas/Destination'
+        coverImageUrl:
+          # optional + nullable + uri format
+          type: [string, 'null']
+          format: uri
+        tags:
+          type: array
+          items: { type: string }
+          maxItems: 20
+        joinCodeLimit:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 50
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreateTripBody:
+      type: object
+      additionalProperties: false
+      required: [title, startDate, endDate, destination]
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        destination: { $ref: '#/components/schemas/Destination' }
+        tags:
+          type: array
+          items: { type: string }
+          default: []
+        joinCodeLimit:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 50
+
+    UpdateTripBody:
+      # every field optional — generator must NOT carry `required` here
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+        status: { $ref: '#/components/schemas/TripStatus' }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        destination: { $ref: '#/components/schemas/Destination' }
+        coverImageUrl:
+          type: [string, 'null']
+          format: uri
+
+    PaginatedTrips:
+      # allOf composition: envelope + data array
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Trip' }
+        meta:
+          $ref: '#/components/schemas/PageMeta'
+
+    # --- members -----------------------------------------------------------
+
+    MemberRole:
+      type: string
+      enum: [owner, agent, traveler]
+
+    Member:
+      type: object
+      additionalProperties: false
+      required: [id, role, status]
+      properties:
+        id: { type: string, format: uuid, readOnly: true }
+        role: { $ref: '#/components/schemas/MemberRole' }
+        status:
+          type: string
+          enum: [invited, active, removed]
+        email:
+          type: [string, 'null']
+          format: email
+        phone:
+          type: [string, 'null']
+          pattern: '^\+[1-9]\d{6,14}$'
+
+    # Discriminated union: invite path decided by `via`.
+    AddMemberBody:
+      oneOf:
+        - $ref: '#/components/schemas/AddMemberByEmail'
+        - $ref: '#/components/schemas/AddMemberByPhone'
+      discriminator:
+        propertyName: via
+        mapping:
+          email: '#/components/schemas/AddMemberByEmail'
+          phone: '#/components/schemas/AddMemberByPhone'
+
+    AddMemberByEmail:
+      type: object
+      additionalProperties: false
+      required: [via, email, role]
+      properties:
+        via: { type: string, const: email }
+        email: { type: string, format: email }
+        role: { $ref: '#/components/schemas/MemberRole' }
+
+    AddMemberByPhone:
+      type: object
+      additionalProperties: false
+      required: [via, phone, role]
+      properties:
+        via: { type: string, const: phone }
+        phone:
+          type: string
+          pattern: '^\+[1-9]\d{6,14}$'
+        role: { $ref: '#/components/schemas/MemberRole' }
+
+    # --- itinerary ---------------------------------------------------------
+
+    ItineraryItem:
+      type: object
+      additionalProperties: false
+      required: [id, order, title, startsAt]
+      properties:
+        id: { type: string, format: uuid, readOnly: true }
+        order:
+          type: integer
+          minimum: 0
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: [string, 'null']
+          format: date-time
+        location:
+          type: [string, 'null']
+        kind:
+          type: string
+          enum: [flight, lodging, activity, transfer, note]
+          default: note

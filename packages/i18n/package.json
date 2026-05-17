@@ -40,14 +40,15 @@
     }
   },
   "files": [
-    "dist",
-    "lib-i18n.config.schema.json"
+    "dist"
   ],
   "scripts": {
     "build": "tsup src/index.ts src/next.client.tsx src/next-server.ts --format esm --dts --external react --external react-dom --external next --external server-only",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@react33/react-helpers": "workspace:*",
@@ -65,7 +66,9 @@
     }
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
     "happy-dom": "^15.11.7",
     "next": "^15.0.0",
     "react": "^19.0.0",

@@ -4,5 +4,5 @@
     "noEmit": false,
     "composite": true
   },
-  "include": ["src", "lib.config.json"]
+  "include": ["src", "react33.config.json"]
 }

@@ -4,7 +4,13 @@
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Design tokens and buildStyles utility — CSS variables + Tailwind interop.",
-  "keywords": ["react", "tokens", "design-system", "tailwind", "css-variables"],
+  "keywords": [
+    "react",
+    "tokens",
+    "design-system",
+    "tailwind",
+    "css-variables"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",
@@ -14,7 +20,10 @@
   "bugs": {
     "url": "https://github.com/maurotaliente/new-app/issues"
   },
-  "sideEffects": ["*.css", "defaults/**"],
+  "sideEffects": [
+    "*.css",
+    "defaults/**"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -22,8 +31,7 @@
   "files": [
     "dist",
     "defaults",
-    "lib-styles.config.json",
-    "lib.config.schema.json"
+    "react33-styles.config.json"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -41,9 +49,7 @@
       "types": "./dist/generate.d.ts",
       "import": "./dist/generate.js",
       "default": "./dist/generate.js"
-    },
-    "./lib.config.schema.json": "./lib.config.schema.json",
-    "./lib-styles.schema.json": "./lib.config.schema.json"
+    }
   },
   "scripts": {
     "build": "tsup src/index.ts src/generate.ts src/bin/generate-tokens.ts --format esm --dts",
@@ -51,7 +57,9 @@
     "generate": "node dist/bin/generate-tokens.js",
     "generate:tokens": "node dist/bin/generate-tokens.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "dependencies": {
     "@react33/react-helpers": "workspace:*",
@@ -67,6 +75,7 @@
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
     "react": "^19.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5",

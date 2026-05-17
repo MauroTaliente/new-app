@@ -7,7 +7,11 @@ If your app uses Tailwind v4, add this package to the content scan so that the c
 ```css
 @import "tailwindcss";
 @source "../node_modules/@react33/react-ui";
+@source "../node_modules/@react33/react-form";
+@source "../node_modules/@react33/react-ui-base";
 ```
+
+`InputFrame` and validation indicators (check / error) live in `@react33/react-form`; without that `@source`, utilities such as `right-2` are not generated and the icon appears misaligned.
 
 Adjust the path relative to your CSS file’s location (e.g. `./node_modules/` if the CSS is at the project root).
 

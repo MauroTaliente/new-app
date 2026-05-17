@@ -8,11 +8,12 @@ Monorepo (`pnpm` workspaces) of React libraries published to npm under the **`@r
 
 | Package | Purpose |
 |---------|---------|
+| [`@react33/react-config`](packages/config) | `react33.config.json` JSON Schema + shared reference assets |
 | [`@react33/react-context`](packages/context) | Tiny typed context factory for state slices |
 | [`@react33/react-helpers`](packages/helpers) | Type guards, deep utilities, path resolvers, dates |
 | [`@react33/react-hooks`](packages/hooks) | Viewport, media, timer, layout, route-query hooks |
 | [`@react33/react-i18n`](packages/i18n) | ICU messages, typed dictionaries, Next.js adapters |
-| [`@react33/react-generate`](packages/lib-generate) | CLI: tokens + API codegen orchestrator |
+| [`@react33/react-generate`](packages/react-generate) | CLI: tokens + API codegen orchestrator |
 | [`@react33/react-networking`](packages/networking) | Typed fetch client, API registry, cache |
 | [`@react33/react-persistence`](packages/persistence) | Storage and cookies with versioning |
 | [`@react33/react-styles`](packages/styles) | Design tokens + `buildStyles` (Tailwind interop) |
@@ -41,12 +42,12 @@ pnpm add @react33/react-ui @react33/react-styles
 ```bash
 pnpm install
 pnpm run build:packages
-pnpm run generate   # demo: styles + API modules from lib.config.json
+pnpm run generate   # demo: styles + API modules from react33.config.json
 pnpm test
 pnpm --filter demo dev
 ```
 
-See [README.en.md](README.en.md) for the full layout, scripts, codegen workflow, and `lib.config.json` reference.
+See [README.en.md](README.en.md) for the full layout, scripts, codegen workflow, and `react33.config.json` reference.
 
 ## Publishing
 

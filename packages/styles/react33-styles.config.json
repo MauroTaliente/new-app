@@ -1,0 +1,9 @@
+{
+  "$schema": "../config/react33.config.schema.json",
+  "react33Styles": {
+    "fromCss": "./defaults",
+    "domainsOrder": ["tokens", "palette", "theme"],
+    "outputDir": "./dist/generated",
+    "outputFile": "styles.generated.ts"
+  }
+}

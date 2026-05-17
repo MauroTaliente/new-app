@@ -7,7 +7,11 @@ Si tu app usa Tailwind v4, debes incluir este paquete en el escaneo para que se 
 ```css
 @import "tailwindcss";
 @source "../node_modules/@react33/react-ui";
+@source "../node_modules/@react33/react-form";
+@source "../node_modules/@react33/react-ui-base";
 ```
+
+`InputFrame` y los indicadores (check / error) viven en `@react33/react-form`; sin ese `@source`, clases como `right-2` no se generan y el ícono queda desalineado.
 
 Ajustá la ruta según la ubicación de tu CSS (ej. `./node_modules/` si el CSS está en la raíz del proyecto).
 

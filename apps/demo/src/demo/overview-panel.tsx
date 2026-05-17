@@ -1,3 +1,4 @@
+import { PokemonDemo } from '../PokemonDemo';
 import { type DemoTheme, ThemeSwitch } from './theme-switch';
 
 export function OverviewPanel({
@@ -54,6 +55,8 @@ export function OverviewPanel({
           </div>
         </article>
       </div>
+
+      <PokemonDemo />
     </section>
   );
 }

@@ -1,0 +1,71 @@
+{
+  "react33Styles": {
+    "fromCss": "./src/theme",
+    "domainsOrder": ["tokens", "palette", "theme"],
+    "output": "./src/theme/styles.generated.ts"
+  },
+  "react33I18n": {
+    "defaultLocale": "es",
+    "locales": ["es", "en"],
+    "localesDirectory": "./src/locales",
+    "cookieName": "locale",
+    "persistenceMode": "cookie"
+  },
+  "react33Theme": {
+    "cookieName": "demo-theme",
+    "persistenceMode": "cookie"
+  },
+  "react33Networking": {
+    "output": "./src/api/apis.generated.ts",
+    "hooksOutput": "./src/api/apis.client.generated.tsx",
+    "openApi": {
+      "files": {
+        "pokemon": {
+          "input": "./openapi/pokeapi.openapi.yaml",
+          "scope": "pokemon",
+          "basePath": "/api/v2",
+          "client": {
+            "headers": {
+              "Accept": "application/json"
+            },
+            "cache": "no-store",
+            "credentials": "omit"
+          },
+          "validate": {
+            "params": true,
+            "response": true,
+            "mode": "log"
+          },
+          "typesOutput": "./src/api/pokemon.openapi.types.ts",
+          "zodOutput": "./src/api/pokemon.openapi.zod.ts",
+          "sdkOutput": "./src/api/pokemon.openapi.ts",
+          "hooksOutput": "./src/api/pokemon.openapi.client.tsx",
+          "include": {
+            "operationIds": ["pokemon_list", "pokemon_retrieve"]
+          },
+          "initData": {
+            "input": "./src/api/pokemon.init-data.ts",
+            "generate": true
+          },
+          "operations": {
+            "pokemon_list": {
+              "fetchOnMount": true,
+              "verbose": true,
+              "initData": "emptyPokemonListData",
+              "validate": true
+            },
+            "pokemon_retrieve": {
+              "fetchOnMount": false,
+              "verbose": true,
+              "validate": { "params": true, "response": false }
+            }
+          },
+          "defaults": {
+            "fetchOnMount": false,
+            "verbose": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -4,7 +4,13 @@
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Type guards, deep utilities, path resolvers and helpers shared across the library.",
-  "keywords": ["react", "utilities", "helpers", "type-guards", "date"],
+  "keywords": [
+    "react",
+    "utilities",
+    "helpers",
+    "type-guards",
+    "date"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",
@@ -39,9 +45,12 @@
     "build": "tsup src/index.ts --format esm --dts",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "3.2.4",
     "tsup": "^8.4.0",
     "typescript": "^5",
     "vitest": "^3.0.0"

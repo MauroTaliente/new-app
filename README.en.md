@@ -23,15 +23,19 @@
 | `pnpm test` | Run Vitest in all packages that define `test` |
 | `pnpm run clean` | Remove `dist` folders (recursive) |
 
-## Configuration: `lib.config.json`
+## Configuration: `react33.config.json`
 
-Apps declare shared options in **`lib.config.json`** (often at the app root). JSON Schema for editor hints: `@react33/react-styles/lib.config.schema.json`.
+Apps declare shared options in **`react33.config.json`** (often at the app root). JSON Schema and shared reference docs: [`@react33/react-config`](packages/config) (`pnpm add -D @react33/react-config`). Canonical filled example: [`data/react33.config.json`](data/react33.config.json) (see [`data/README.md`](data/README.md)).
 
-- **`libStyles`** — CSS → generated `styles.generated.ts` (`react-styles-generate`). Use **`output`** for the generated file path (relative to the config file).
-- **`libNetworking`** — HTTP API registry. Use **`output`** for `apis.generated.ts`; **`hooksOutput`** is optional (defaults to `apis.client.generated.tsx` beside it). Apps typically run **`react-generate`** (styles + APIs) or **`react-networking-generate --config lib.config.json`** alone (CLI **`--output`** overrides config).
-- **`libI18n`**, **`libTheme`** — locale and theme persistence keys; see package READMEs.
+- **`react33Styles`** — CSS → generated `styles.generated.ts` (`react-styles-generate`). Use **`output`** for the generated file path (relative to the config file).
+- **`react33Networking`** — HTTP API registry. Use **`output`** for `apis.generated.ts`; **`hooksOutput`** is optional (defaults to `apis.client.generated.tsx` beside it). Apps typically run **`react-generate`** (styles + APIs) or **`react-networking-generate --config react33.config.json`** alone (CLI **`--output`** overrides config).
+- **`react33I18n`**, **`react33Theme`** — locale and theme persistence keys; see package READMEs.
 
-Precedence for generated API paths: **CLI > `lib.config.json` > built-in default**.
+Precedence for generated API paths: **CLI > `react33.config.json` > built-in default**.
+
+### Migration from `lib.config.json`
+
+Rename the file to `react33.config.json` and replace section keys: `libStyles` → `react33Styles`, `libI18n` → `react33I18n`, `libTheme` → `react33Theme`, `libNetworking` → `react33Networking`. Update `$schema` / editor mapping to `@react33/react-config/react33.config.schema.json`. CLIs default to `--config react33.config.json`.
 
 ## npm
 

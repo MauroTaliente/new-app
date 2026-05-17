@@ -1,0 +1,27 @@
+{
+  "$schema": "../../react33.config.schema.json",
+  "react33Styles": {
+    "fromCss": "./theme",
+    "domainsOrder": ["tokens", "palette", "theme"],
+    "output": "./theme/styles.generated.ts"
+  },
+  "react33I18n": {
+    "defaultLocale": "es",
+    "locales": ["es", "en"],
+    "localesDirectory": "./locales",
+    "persistenceMode": "cookie"
+  },
+  "react33Theme": {
+    "persistenceMode": "localStorage"
+  },
+  "react33Networking": {
+    "output": "./api/apis.generated.ts",
+    "hooksOutput": "./api/apis.client.generated.tsx",
+    "apis": {
+      "public": {
+        "url": "https://api.example.com",
+        "headers": { "Accept": "application/json" }
+      }
+    }
+  }
+}

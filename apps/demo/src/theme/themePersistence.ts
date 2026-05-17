@@ -1,13 +1,13 @@
 /**
- * Persistencia del tema: `libTheme` en lib.config (misma convención que `libI18n`).
+ * Persistencia del tema: `react33Theme` en react33.config (misma convención que `react33I18n`).
  *
- * Override: `VITE_THEME_PERSISTENCE=cookie` | `localStorage` (p. ej. probar sin tocar lib.config).
+ * Override: `VITE_THEME_PERSISTENCE=cookie` | `localStorage` (p. ej. probar sin tocar react33.config).
  */
 import { getCookie, getLocalStorage, setCookie, setLocalStorage } from '@react33/react-persistence';
 import type { ThemeName } from './styles.generated';
-import libConfig from '../../lib.config.json';
+import react33Config from '../../react33.config.json';
 
-type LibTheme = {
+type React33Theme = {
   cookieName?: string;
   localStorageKey?: string;
   persistenceMode?: 'localStorage' | 'cookie';
@@ -16,18 +16,18 @@ type LibTheme = {
   cookieSameSite?: 'strict' | 'lax' | 'none';
 };
 
-const libTheme = (libConfig as { libTheme?: LibTheme }).libTheme;
+const react33Theme = (react33Config as { react33Theme?: React33Theme }).react33Theme;
 
-const cookieKey = libTheme?.cookieName ?? libTheme?.localStorageKey ?? 'demo-theme';
-const storageKey = libTheme?.localStorageKey ?? libTheme?.cookieName ?? 'demo-theme';
+const cookieKey = react33Theme?.cookieName ?? react33Theme?.localStorageKey ?? 'demo-theme';
+const storageKey = react33Theme?.localStorageKey ?? react33Theme?.cookieName ?? 'demo-theme';
 
 export type ThemePersistenceMode = 'localStorage' | 'cookie';
 
 function resolveMode(): ThemePersistenceMode {
   const raw = import.meta.env.VITE_THEME_PERSISTENCE;
   if (raw === 'cookie' || raw === 'localStorage') return raw;
-  if (libTheme?.persistenceMode === 'cookie' || libTheme?.persistenceMode === 'localStorage') {
-    return libTheme.persistenceMode;
+  if (react33Theme?.persistenceMode === 'cookie' || react33Theme?.persistenceMode === 'localStorage') {
+    return react33Theme.persistenceMode;
   }
   return 'localStorage';
 }
@@ -57,9 +57,9 @@ export function persistTheme(theme: ThemeName): void {
     name: cookieKey,
     params: theme,
     writeOptions: {
-      path: libTheme?.cookiePath ?? '/',
-      maxAge: libTheme?.cookieMaxAgeSeconds ?? 60 * 60 * 24 * 365,
-      sameSite: libTheme?.cookieSameSite ?? 'lax',
+      path: react33Theme?.cookiePath ?? '/',
+      maxAge: react33Theme?.cookieMaxAgeSeconds ?? 60 * 60 * 24 * 365,
+      sameSite: react33Theme?.cookieSameSite ?? 'lax',
     },
   });
 }

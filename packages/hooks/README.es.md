@@ -44,6 +44,23 @@ Convención `.spec` vs `.test`: [docs/testing.es.md](../../docs/testing.es.md).
 
 Requiere `next` en la app que importe este entry.
 
+## React Router (`@react33/react-hooks/router`)
+
+Misma API que el entry de Next, para dashboards Vite/SPA con **React Router v6+** (`react-router-dom`).
+
+```ts
+import { useRouteQuery } from '@react33/react-hooks/router';
+```
+
+La app debe estar envuelta en `BrowserRouter` / `RouterProvider`.
+
+| Export | Notas |
+|--------|--------|
+| `useRouteQuery` | Query ↔ estado (`push` / `replace` / `silent`) |
+| `getObjectWithTag`, `removeTagFromObject` | Helpers de query |
+
+Requiere `react-router-dom` en la app que importe este entry.
+
 ## Fuera de alcance a propósito
 
 La capa de requests de la app está en **`@react33/react-networking`**. Tema e idioma: **`@react33/react-theme`**, **`@react33/react-persistence`**, **`@react33/react-i18n`**.

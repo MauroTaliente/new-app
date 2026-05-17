@@ -4,7 +4,13 @@
   "description": "React hooks: timer, viewport, route query, media",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
-  "keywords": ["react", "hooks", "viewport", "media", "timer"],
+  "keywords": [
+    "react",
+    "hooks",
+    "viewport",
+    "media",
+    "timer"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",
@@ -35,33 +41,46 @@
       "types": "./dist/next-route-query.d.ts",
       "import": "./dist/next-route-query.js",
       "default": "./dist/next-route-query.js"
+    },
+    "./router": {
+      "types": "./dist/router-route-query.d.ts",
+      "import": "./dist/router-route-query.js",
+      "default": "./dist/router-route-query.js"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts src/next-route-query.ts --format esm --dts --external react --external react-dom --external next",
+    "build": "tsup src/index.ts src/next-route-query.ts src/router-route-query.ts --format esm --dts --external react --external react-dom --external next --external react-router-dom",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@react33/react-helpers": "workspace:*"
   },
   "peerDependencies": {
     "next": ">=13",
-    "react": ">=18"
+    "react": ">=18",
+    "react-router-dom": ">=6"
   },
   "peerDependenciesMeta": {
     "next": {
+      "optional": true
+    },
+    "react-router-dom": {
       "optional": true
     }
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
     "happy-dom": "^15.11.7",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5",
     "vitest": "^3.0.0"

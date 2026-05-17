@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.npmjs.com/package/@react33/react-config/react33-i18n.config.schema.json",
+  "title": "react33I18n",
+  "description": "Partial schema for the react33I18n section only. See react33.config.schema.json for the full app config.",
+  "$ref": "react33.config.schema.json#/$defs/react33I18n"
+}

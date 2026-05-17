@@ -1,5 +1,7 @@
 export * from './types';
 export * from './helpers';
+export * from './path-url';
+export * from './openapi/validation';
 export * from './cache/request-cache';
 export * from './fetch/fetch.server';
 export * from './fetch/fetch.client';

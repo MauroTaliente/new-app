@@ -7,14 +7,19 @@ import { apis } from './apis.generated';
 
 export function usePokemonRequest<Params, Data, Response = null>(
   settings: DynamicOptions<Params, Data, Response>,
-  watch: any[],
+  watch: unknown[] = [],
 ) {
-  const { url = '/', method = 'GET' } = settings;
+  const { action: settingsAction, url = '/', method = 'GET', ...rest } = settings;
+  const action =
+    settingsAction ??
+    (async (params?: Params) =>
+      apis.pokemon({ url, method, body: params }) as unknown as Promise<RequestReturn<Data>>);
   return useAsyncFetch<Params, Data, Response>(
     {
-      ...settings,
-      action: async (params?: Params) =>
-        apis.pokemon({ url, method, body: params }) as unknown as Promise<RequestReturn<Data>>,
+      ...rest,
+      url,
+      method,
+      action,
     },
     watch,
   );

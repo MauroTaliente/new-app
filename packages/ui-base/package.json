@@ -44,7 +44,9 @@
     "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @react33/react-styles --external @react33/react-helpers --external @tabler/icons-react --external motion --external @radix-ui/react-dialog --external @radix-ui/react-popover --external @radix-ui/react-tooltip",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@react33/react-helpers": "workspace:*",
@@ -59,7 +61,11 @@
     "react": ">=18"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "3.2.4",
+    "happy-dom": "^15.11.7",
     "react": "^19",
     "react-dom": "^19",
     "tsup": "^8.4.0",

@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, type ForwardedRef } from 'react';
+import { forwardRef, useState, type ForwardedRef } from 'react';
 import { newContext } from '@react33/react-context';
 import { useIsomorphicLayoutEffect } from '@react33/react-hooks';
 import { isFunction } from '@react33/react-helpers';
@@ -41,14 +41,19 @@ const FormRegister = forwardRef<HTMLFormElementExtended, FormProps>(function For
 ) {
   const [formRef, api] = useFormApi(config, ref);
   const register = useFormsUpdater();
+  const [registered, setRegistered] = useState(false);
 
   useIsomorphicLayoutEffect(() => {
     const key = config.space || 'anonymous';
     register({ [key]: api });
-    return () => register({ [key]: undefined });
-  }, [api]);
+    setRegistered(true);
+    return () => {
+      register({ [key]: undefined });
+      setRegistered(false);
+    };
+  }, [api, config.space, register]);
 
-  const render = isFunction(children) ? children(api) : children;
+  const render = registered ? (isFunction(children) ? children(api) : children) : null;
 
   return (
     <form

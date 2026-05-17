@@ -96,6 +96,7 @@ export const useTimer = (
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastChangeAtRef = useRef(0);
+  const resumeAfterVisibleRef = useRef(false);
 
   const nowMs = () => performance.now();
 
@@ -219,15 +220,14 @@ export const useTimer = (
 
   useEffect(() => {
     if (disabled || !pauseWhenHidden) return;
-    let resumeFlag = false;
     const onVis = () => {
       if (document.hidden) {
         if (play) {
-          resumeFlag = true;
+          resumeAfterVisibleRef.current = true;
           pauseTimer();
         }
-      } else if (resumeOnVisible && resumeFlag) {
-        resumeFlag = false;
+      } else if (resumeOnVisible && resumeAfterVisibleRef.current) {
+        resumeAfterVisibleRef.current = false;
         playTimer();
       }
     };

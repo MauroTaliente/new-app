@@ -4,9 +4,9 @@ React theme **runtime**: in-memory state (context) + **DOM sync** (`body` / `doc
 
 Theme **names** are defined in **CSS → `react-styles-generate` → `styles.generated.ts`** (single source of truth).
 
-## `lib.config.json` — `libTheme`
+## `react33.config.json` — `react33Theme`
 
-Alongside `libStyles`, **`libTheme`** shares **`libPersistence`** with **`libI18n`** (same keys). You may override cookie write options (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); otherwise the demo / your app uses **code defaults** (e.g. path `/`, ~1 year, `lax`). The **default theme name** comes from **`styles.meta.defaultTheme`** (generated).
+Alongside `react33Styles`, **`react33Theme`** shares **`react33Persistence`** with **`react33I18n`** (same keys). You may override cookie write options (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); otherwise the demo / your app uses **code defaults** (e.g. path `/`, ~1 year, `lax`). The **default theme name** comes from **`styles.meta.defaultTheme`** (generated).
 
 ## Internal dependencies (monorepo)
 

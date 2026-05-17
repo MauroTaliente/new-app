@@ -1,0 +1,8 @@
+# Reference assets only — never commit codegen output here
+src/
+.codegen/
+**/*.generated.ts
+**/*.generated.tsx
+**/apis.client.generated.tsx
+**/*openapi*.ts
+**/*openapi*.tsx

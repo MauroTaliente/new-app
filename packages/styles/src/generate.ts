@@ -9,11 +9,11 @@ import { emitStylesGeneratedModule } from './css/emitStylesGenerated.js';
 import { stemToCamelCase } from './css/stemUtils.js';
 import {
   discoverCssStemsInDir,
-  findLibStylesConfigFile,
-  loadLibStylesConfigJson,
+  findReact33ConfigFile,
+  loadReact33ConfigJson,
   resolvePathFromConfigBase,
-  type LibStylesConfigSection,
-} from './libStylesConfig.js';
+  type React33StylesConfigSection,
+} from './react33Config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +35,7 @@ export type GenerateTokensOptions = {
   outputDir?: string;
   /** Default: `<outputDir>/styles.generated.ts` */
   outputStyles?: string;
-  /** Absolute path to `lib.config.json` / `lib-styles.config.json` */
+  /** Absolute path to `react33.config.json` / `react33-styles.config.json` */
   configPath?: string;
   /** Skip loading config files (CLI: `--no-config`) */
   skipConfig?: boolean;
@@ -43,12 +43,12 @@ export type GenerateTokensOptions = {
   cwd?: string;
   /** Log resolved paths and domain order (CLI `--verbose`; overrides config when set) */
   verbose?: boolean;
-  /** Override `libStyles.metaSourceStem` from config */
+  /** Override `react33Styles.metaSourceStem` from config */
   metaSourceStem?: string;
-  /** Override `libStyles.banner` from config */
+  /** Override `react33Styles.banner` from config */
   banner?: string;
   /**
-   * Watch mode (CLI `--watch`). When omitted, `libStyles.watch` from config applies.
+   * Watch mode (CLI `--watch`). When omitted, `react33Styles.watch` from config applies.
    */
   watch?: boolean;
 };
@@ -67,7 +67,7 @@ export type ResolvedGenerateOptions = {
   /** First line(s) of generated TS (from config). */
   banner?: string;
   verbose: boolean;
-  /** True if CLI `--watch` or config `libStyles.watch` (CLI wins when set). */
+  /** True if CLI `--watch` or config `react33Styles.watch` (CLI wins when set). */
   watch: boolean;
 };
 
@@ -78,7 +78,7 @@ function getPackageDir(): string {
 export type ResolvedDomainPath = { stem: string; filePath: string };
 
 /**
- * Merges CLI options + `lib.config.json` / `lib-styles.config.json` (`libStyles` section).
+ * Merges CLI options + `react33.config.json` / `react33-styles.config.json` (`react33Styles` section).
  * Paths in config are relative to the **config file directory**.
  *
  * **Order of stems**: CLI `--domains` > config `domainsOrder` > all `*.css` in `fromCss`, **alphabetically** (en).
@@ -89,14 +89,14 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
 
   let configPath: string | undefined = options.configPath;
   if (!skipConfig && !configPath) {
-    configPath = findLibStylesConfigFile(cwd) ?? undefined;
+    configPath = findReact33ConfigFile(cwd) ?? undefined;
   }
 
-  let configSection: LibStylesConfigSection = {};
+  let configSection: React33StylesConfigSection = {};
   let configDir = cwd;
   if (!skipConfig && configPath && existsSync(configPath)) {
-    const json = loadLibStylesConfigJson(configPath);
-    configSection = json.libStyles ?? {};
+    const json = loadReact33ConfigJson(configPath);
+    configSection = json.react33Styles ?? {};
     configDir = path.dirname(path.resolve(configPath));
   }
 
@@ -128,7 +128,7 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
       if (domains.length === 0) {
         throw new Error(
           `[react-styles-generate] No *.css files in ${fromCssDir}\n` +
-            'Add CSS files, set `libStyles.domainsOrder` in lib.config.json, or pass --domains <stems>.',
+            'Add CSS files, set `react33Styles.domainsOrder` in react33.config.json, or pass --domains <stems>.',
         );
       }
     }
@@ -201,7 +201,7 @@ function assertReadable(filePath: string, label: string): void {
   if (!existsSync(filePath)) {
     throw new Error(
       `[react-styles-generate] Missing ${label}: ${filePath}\n` +
-        'Check `libStyles.domainsOrder` / file names, or pass --from-css <dir> with matching <stem>.css files.',
+        'Check `react33Styles.domainsOrder` / file names, or pass --from-css <dir> with matching <stem>.css files.',
     );
   }
 }
@@ -210,7 +210,7 @@ function assertReadable(filePath: string, label: string): void {
  * Reads source CSS files and emits `styles.generated.ts` (nested by `-`, theme modes by class, `meta`, per-domain keys).
  * Resolves `var(--*)` to literals when the chain is declared in the same CSS inputs.
  *
- * Configuration: optional `lib.config.json` or `lib-styles.config.json` with a `libStyles` section (see `resolveGenerateOptions`).
+ * Configuration: optional `react33.config.json` or `react33-styles.config.json` with a `react33Styles` section (see `resolveGenerateOptions`).
  */
 export async function generateTokens(options: GenerateTokensOptions = {}): Promise<void> {
   const merged = resolveGenerateOptions(options);
@@ -279,8 +279,8 @@ export { applyResolvedVarValues, parseSimpleVar } from './css/resolveCssVarValue
 export { stemToCamelCase } from './css/stemUtils.js';
 export {
   discoverCssStemsInDir,
-  findLibStylesConfigFile,
-  loadLibStylesConfigJson,
-  LIB_STYLES_CONFIG_FILENAMES,
-} from './libStylesConfig.js';
-export type { LibStylesConfigSection, LibConfigJson } from './libStylesConfig.js';
+  findReact33ConfigFile,
+  loadReact33ConfigJson,
+  REACT33_CONFIG_FILENAMES,
+} from './react33Config.js';
+export type { React33StylesConfigSection, React33ConfigJson } from './react33Config.js';

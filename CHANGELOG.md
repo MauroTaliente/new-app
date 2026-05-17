@@ -12,6 +12,8 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 ### Added
 
+- **`@react33/react-networking`**: OpenAPI 3.1+ codegen (`react33Networking.openApi.files`) — Zod schemas, types, SDK, client hooks, optional `init-data` module; runtime helpers `buildPathUrl`, `resolveOpenApiRequest`, `OpenApiHookOverrides`, `parseWithSchema`.
+- **`@react33/react-config`**: JSON Schemas for `react33.config.json` and partial `react33-i18n`; home for shared monorepo reference assets ([`data/`](data/)).
 - Documentation: React context and re-renders (architecture EN/ES); `@react33/react-context` README (EN/ES).
 - Documentation: [i18n messages & typing](docs/i18n-messages.en.md) (EN/ES).
 - `@react33/react-persistence`: optional **`ttlMs`** on `createVersionedStorageApi` (envelope `savedAt`); **`subscribeStorageKey`** for cross-tab `storage` events.
@@ -22,6 +24,11 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 - `@react33/react-persistence`: `createVersionedStorageApi` for `{ _v, data }` storage with step migrations (see package README).
 - `@react33/react-i18n`: `formatMessage` (ICU via `intl-messageformat`).
 - `@react33/react-networking`: opt-in `RequestCache` (`createRequestCache`, `defaultRequestCache`, `buildRequestCacheKey`) and `DynamicOptions.requestCache` (`'global'` \| custom instance) / `cacheTtlMs` / `cacheKey` on `useAsyncFetch`.
+
+### Breaking
+
+- **Config schema host:** `react33.config.schema.json` moved from `@react33/react-styles` to **`@react33/react-config`** (`react33-i18n.config.schema.json` included). Update `$schema`, `.vscode/settings.json`, and `pnpm add -D @react33/react-config` in apps.
+- **Config contract:** `lib.config.json` → **`react33.config.json`**; JSON sections `libStyles` / `libI18n` / `libTheme` / `libNetworking` / `libPersistence` → **`react33Styles`** / **`react33I18n`** / **`react33Theme`** / **`react33Networking`** / **`react33Persistence`**. Partial configs: `react33-styles.config.json`. Schema export: `@react33/react-config/react33.config.schema.json`. Monorepo folder `packages/lib-generate` → **`packages/react-generate`**.
 
 ### Changed
 

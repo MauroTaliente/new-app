@@ -44,7 +44,9 @@
     "build": "tsup src/index.ts --format esm --dts --external react --external react-dom --external @react33/react-ui-base --external @react33/react-styles --external @react33/react-helpers --external @react33/react-hooks --external @react33/react-context --external @react33/react-networking --external @tabler/icons-react --external motion --external zod",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "dependencies": {
     "@react33/react-context": "workspace:*",
@@ -68,6 +70,7 @@
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
     "happy-dom": "^15.11.7",
     "react": "^19",
     "react-dom": "^19",
