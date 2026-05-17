@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Concrete input components and decorative UI built on @react33/react-form and @react33/react-ui-base. Includes shadcn-inspired Radix-wrapped components.",

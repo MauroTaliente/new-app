@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-ui-base",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Shared UI primitives (Button, Icon, Overlay) and agnostic Radix-wrapped building blocks used across @react33/react-form and @react33/react-ui.",

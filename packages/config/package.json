@@ -1,10 +1,16 @@
 {
   "name": "@react33/react-config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Shared react33.config.json JSON Schema, partial schemas, and cross-package reference assets for the @react33 ecosystem.",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
-  "keywords": ["react", "config", "json-schema", "codegen", "react33"],
+  "keywords": [
+    "react",
+    "config",
+    "json-schema",
+    "codegen",
+    "react33"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",

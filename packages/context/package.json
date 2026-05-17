@@ -1,10 +1,14 @@
 {
   "name": "@react33/react-context",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Tiny typed context factory for React state slices.",
-  "keywords": ["react", "context", "state"],
+  "keywords": [
+    "react",
+    "context",
+    "state"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",

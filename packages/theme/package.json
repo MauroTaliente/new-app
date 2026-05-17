@@ -1,10 +1,15 @@
 {
   "name": "@react33/react-theme",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Theme runtime: provider, hooks and DOM sync for design-token themes.",
-  "keywords": ["react", "theme", "tokens", "design-system"],
+  "keywords": [
+    "react",
+    "theme",
+    "tokens",
+    "design-system"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",

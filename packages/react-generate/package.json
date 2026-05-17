@@ -1,10 +1,16 @@
 {
   "name": "@react33/react-generate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Unified codegen: react-styles-generate + react-networking-generate",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
-  "keywords": ["react", "cli", "codegen", "generator", "tokens"],
+  "keywords": [
+    "react",
+    "cli",
+    "codegen",
+    "generator",
+    "tokens"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maurotaliente/new-app.git",
@@ -22,7 +28,9 @@
   "bin": {
     "react-generate": "./dist/bin/react-generate.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/bin/react-generate.ts --format esm --dts --outDir dist/bin",
     "prepublishOnly": "pnpm build",

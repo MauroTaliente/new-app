@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-persistence",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Browser localStorage/sessionStorage and cookie persistence with optional Next.js server adapter",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
