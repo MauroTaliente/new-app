@@ -8,15 +8,27 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 **0.0.x** and bumped together when breaking or meaningful changes land; see
 [Versioning policy](#versioning-policy) below.
 
-## [0.0.4] — 2026-05-18
+## [0.0.5] — 2026-05-18
 
-Publish **`@react33/react-i18n@0.0.4`** before **`@react33/react-generate@0.0.4`** so `pnpm codegen` / `react-generate` resolves the updated `react-i18n-generate` bin (not the 0.0.3 generator).
+Publish **`@react33/react-i18n@0.0.5`** before **`@react33/react-generate@0.0.5`** so apps on `pnpm codegen` get `useTf` ICU formatting from the published runtime.
 
 ### @react33/react-i18n
 
 #### Changed
 
 - **`useTf`** applies ICU MessageFormat via `formatMessage` using locale from `LocaleProvider` (previously returned raw dictionary strings and ignored `values`).
+
+### @react33/react-generate
+
+#### Changed
+
+- **`0.0.5`** depends on **`@react33/react-i18n@0.0.5`** (workspace publish rewrite).
+
+## [0.0.4] — 2026-05-18
+
+Publish **`@react33/react-i18n@0.0.4`** before **`@react33/react-generate@0.0.4`** so `pnpm codegen` / `react-generate` resolves the updated `react-i18n-generate` bin (not the 0.0.3 generator).
+
+### @react33/react-i18n
 
 #### Fixed
 
