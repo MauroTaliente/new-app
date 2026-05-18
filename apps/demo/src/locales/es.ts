@@ -4,5 +4,6 @@
 export default {
   shared: {
     hello: 'Hola',
+    greeting: 'Hola, {name}!',
   },
 } as const;

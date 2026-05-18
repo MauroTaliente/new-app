@@ -4,12 +4,28 @@ import { createLocaleRuntime } from './createLocaleRuntime.client.js';
 
 type Locale = 'es' | 'en';
 type Structure = {
-  shared: { hello: string };
+  shared: {
+    hello: string;
+    greeting: string;
+    items: string;
+  };
 };
 
 const dictionaries: Record<Locale, Structure> = {
-  es: { shared: { hello: 'Hola' } },
-  en: { shared: { hello: 'Hello' } },
+  es: {
+    shared: {
+      hello: 'Hola',
+      greeting: 'Hola, {name}!',
+      items: '{count, plural, one {# ítem} other {# ítems}}',
+    },
+  },
+  en: {
+    shared: {
+      hello: 'Hello',
+      greeting: 'Hello, {name}!',
+      items: '{count, plural, one {# item} other {# items}}',
+    },
+  },
 };
 
 const runtime = createLocaleRuntime<Locale, Structure>({
@@ -27,6 +43,23 @@ function LocaleReadout() {
       <span data-testid="locale">{locale}</span>
       <span data-testid="hello">{shared.hello}</span>
       <span data-testid="tf">{t('hello')}</span>
+      <button type="button" onClick={() => setLocale('en')}>
+        to-en
+      </button>
+    </>
+  );
+}
+
+function TfIcuReadout() {
+  const [locale, setLocale] = useLocale();
+  const t = useTf('shared');
+  return (
+    <>
+      <span data-testid="locale">{locale}</span>
+      <span data-testid="greeting">{t('greeting', { name: 'Ada' })}</span>
+      <span data-testid="items-one">{t('items', { count: 1 })}</span>
+      <span data-testid="items-many">{t('items', { count: 3 })}</span>
+      <span data-testid="missing">{t('missingKey' as 'hello')}</span>
       <button type="button" onClick={() => setLocale('en')}>
         to-en
       </button>
@@ -58,6 +91,7 @@ describe('createLocaleRuntime', () => {
     });
     expect(screen.getByTestId('locale').textContent).toBe('en');
     expect(screen.getByTestId('hello').textContent).toBe('Hello');
+    expect(screen.getByTestId('tf').textContent).toBe('Hello');
   });
 
   it('LocaleProvider acepta value inicial', () => {
@@ -82,5 +116,41 @@ describe('createLocaleRuntime', () => {
       screen.getByRole('button', { name: 'to-en' }).click();
     });
     expect(onLocaleChange).toHaveBeenCalledWith('en');
+  });
+
+  describe('useTf', () => {
+    it('interpola ICU según locale activo', () => {
+      render(
+        <LocaleProvider>
+          <TfIcuReadout />
+        </LocaleProvider>,
+      );
+      expect(screen.getByTestId('greeting').textContent).toBe('Hola, Ada!');
+      expect(screen.getByTestId('items-one').textContent).toBe('1 ítem');
+      expect(screen.getByTestId('items-many').textContent).toBe('3 ítems');
+    });
+
+    it('actualiza plurales al cambiar locale', () => {
+      render(
+        <LocaleProvider>
+          <TfIcuReadout />
+        </LocaleProvider>,
+      );
+      act(() => {
+        screen.getByRole('button', { name: 'to-en' }).click();
+      });
+      expect(screen.getByTestId('greeting').textContent).toBe('Hello, Ada!');
+      expect(screen.getByTestId('items-one').textContent).toBe('1 item');
+      expect(screen.getByTestId('items-many').textContent).toBe('3 items');
+    });
+
+    it('devuelve la clave como string si el mensaje no existe', () => {
+      render(
+        <LocaleProvider>
+          <TfIcuReadout />
+        </LocaleProvider>,
+      );
+      expect(screen.getByTestId('missing').textContent).toBe('missingKey');
+    });
   });
 });

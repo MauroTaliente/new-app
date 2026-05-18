@@ -57,7 +57,11 @@ Los diccionarios siguen siendo fuente en tu app (`localesDirectory`); el generad
 
 ### Runtime SPA (`@react33/react-i18n/client`)
 
-`createLocaleRuntime` + `createLocalePersistence` para apps sin segmento `lang` en la URL.
+`createLocaleRuntime` + `createLocalePersistence` para apps sin segmento `lang` en la URL. El codegen exporta hooks tipados:
+
+- **`useDict(scope)`** — segmento del diccionario activo (strings crudos).
+- **`useTf(scope)`** — `(key, values?) => string` con ICU vía `formatMessage` y locale del `LocaleProvider`.
+- **`useLocale`**, **`LocaleProvider`**, **`getInitialLocale`**, **`persistLocale`** — ver [i18n: mensajes y tipado](../../packages/helpers/docs/i18n-messages.es.md).
 
 ## Migrar un módulo de idioma existente
 

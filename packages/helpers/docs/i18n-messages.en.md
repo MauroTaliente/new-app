@@ -6,10 +6,12 @@ The `@react33/react-i18n` package provides **plain-string** ICU formatting via *
 
 | API | Use case |
 |-----|----------|
-| **`formatMessage`** | Plain strings, attributes, `document.title`, logs, passing a resolved string to a child that should not receive React nodes. |
+| **`useTf`** | SPA components with generated runtime (`createLocaleRuntime`): ICU + locale from `LocaleProvider` without passing `locale` manually. |
+| **`useDict`** | Scope object of raw strings (static labels, pass patterns to `ct`). |
+| **`formatMessage`** | Outside the Provider, manual SSR, `document.title`, logs, utilities with an explicit locale. |
 | **`ct`** | UI strings that may include React elements (bold, links) in the pattern. |
 
-Both accept **ICU MessageFormat** patterns (plurals, `select`, `{name}` placeholders). Values are **`MessageValues`** (`string | number | boolean | Date | null | undefined`).
+`useTf`, `formatMessage`, and `ct` accept **ICU MessageFormat** patterns (plurals, `select`, `{name}` placeholders). Values are **`MessageValues`** (`string | number | boolean | Date | null | undefined`).
 
 ## Namespaces and modules
 
@@ -33,6 +35,17 @@ const labels = defineMessages({
 });
 
 const s = formatMessage('en', labels.greeting, { name: 'Ada' });
+```
+
+In apps with a generated runtime, prefer **`useTf`** inside components:
+
+```tsx
+import { useTf } from './lib/i18n';
+
+function LoginMagicSent({ email }: { email: string }) {
+  const t = useTf('login');
+  return <p>{t('magicSentBody', { email })}</p>;
+}
 ```
 
 `defineMessages` is an identity function; it exists for **inference** and documentation. You can use **`as const`** alone on a smaller map if you prefer.

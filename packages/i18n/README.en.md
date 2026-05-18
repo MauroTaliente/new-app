@@ -44,7 +44,11 @@ Dictionaries remain source in your app (`localesDirectory`); the generator does 
 
 ### SPA runtime (`@react33/react-i18n/client`)
 
-`createLocaleRuntime` + `createLocalePersistence` for apps that do not use Next locale segments. Generated `i18n.runtime.generated.tsx` wires both from `react33I18n` persistence keys.
+`createLocaleRuntime` + `createLocalePersistence` for apps that do not use Next locale segments. Generated `i18n.runtime.generated.tsx` wires both from `react33I18n` persistence keys and exports typed hooks:
+
+- **`useDict(scope)`** — active dictionary segment (raw strings).
+- **`useTf(scope)`** — `(key, values?) => string` with ICU via `formatMessage` and locale from `LocaleProvider`.
+- **`useLocale`**, **`LocaleProvider`**, **`getInitialLocale`**, **`persistLocale`** — see [i18n messages & typing](../../packages/helpers/docs/i18n-messages.en.md).
 
 ### Env override (`persistenceEnvKey`)
 

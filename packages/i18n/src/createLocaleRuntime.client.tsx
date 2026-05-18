@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { newContext } from '@react33/react-context';
+import { formatMessage, type MessageValues } from './formatMessage.js';
 import { getAllLocale, getLocale } from './getLocale.js';
 import type { PickSegment } from './types.js';
 
@@ -32,7 +33,7 @@ export type LocaleRuntime<
   ) => PickSegment<Structure, T>;
   useTf: <T extends keyof Structure>(
     scope: T,
-  ) => (key: keyof PickSegment<Structure, T> & string, values?: Record<string, string | number>) => string;
+  ) => (key: keyof PickSegment<Structure, T> & string, values?: MessageValues) => string;
   useAllLocale: () => Structure;
   defaultLocale: Locale;
   dictionaries: Record<Locale, Structure>;
@@ -103,13 +104,16 @@ export function createLocaleRuntime<
   }
 
   function useTf<T extends keyof Structure>(scope: T) {
+    const locale = useLocaleState();
     const segment = useDict(scope);
     return useCallback(
-      (key: keyof PickSegment<Structure, T> & string, _values?: Record<string, string | number>) => {
+      (key: keyof PickSegment<Structure, T> & string, values?: MessageValues) => {
         const block = segment as Record<string, string>;
-        return block[key] ?? String(key);
+        const pattern = block[key];
+        if (pattern === undefined) return String(key);
+        return formatMessage(locale, pattern, values);
       },
-      [segment],
+      [locale, segment],
     );
   }
 

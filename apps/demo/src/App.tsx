@@ -7,7 +7,7 @@ import { OverlaysPanel } from './demo/overlays-panel';
 import { OverviewPanel } from './demo/overview-panel';
 import { LocaleSwitch } from './demo/locale-switch';
 import { type DemoTheme, ThemeSwitch } from './demo/theme-switch';
-import { useDict, useLocale } from './lib/i18n';
+import { useDict, useLocale, useTf } from './lib/i18n';
 import { useTheme } from './lib/theme';
 
 const shellStyles = buildStyles({
@@ -75,6 +75,7 @@ export default function App() {
   const [currentTheme, setTheme] = useTheme();
   const [currentLocale, setLocale] = useLocale();
   const shared = useDict('shared');
+  const t = useTf('shared');
   const [view, setView] = useState<DemoView>(() => getViewFromUrl());
 
   useEffect(() => {
@@ -114,7 +115,8 @@ export default function App() {
             </div>
             <div className="flex flex-col items-end gap-space-md">
               <p className="text-sm text-text-200">
-                {shared.hello} · <span className={shellStyles.code}>{currentLocale}</span>
+                {shared.hello} · {t('greeting', { name: 'React33' })} ·{' '}
+                <span className={shellStyles.code}>{currentLocale}</span>
               </p>
               <LocaleSwitch currentLocale={currentLocale} setLocale={setLocale} />
               <ThemeSwitch currentTheme={currentTheme} setTheme={setTheme} />

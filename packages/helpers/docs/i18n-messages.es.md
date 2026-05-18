@@ -6,10 +6,12 @@ El paquete `@react33/react-i18n` ofrece formato ICU en **texto plano** con **`fo
 
 | API | Caso de uso |
 |-----|-------------|
-| **`formatMessage`** | Strings planos, atributos, `document.title`, logs, pasar un string resuelto a un hijo que no debe recibir nodos React. |
+| **`useTf`** | Componentes SPA con runtime generado (`createLocaleRuntime`): ICU + locale del `LocaleProvider` sin pasar `locale` a mano. |
+| **`useDict`** | Objeto de strings del scope (labels estáticos, pasar patrones a `ct`). |
+| **`formatMessage`** | Fuera del Provider, SSR manual, `document.title`, logs, utilidades con locale explícito. |
 | **`ct`** | Textos de UI que pueden incluir nodos React (negrita, links) en el patrón. |
 
-Ambas aceptan patrones **ICU MessageFormat** (plurales, `select`, placeholders `{name}`). Los valores son **`MessageValues`** (`string | number | boolean | Date | null | undefined`).
+`useTf`, `formatMessage` y `ct` aceptan patrones **ICU MessageFormat** (plurales, `select`, placeholders `{name}`). Los valores son **`MessageValues`** (`string | number | boolean | Date | null | undefined`).
 
 ## Namespaces y módulos
 
@@ -33,6 +35,17 @@ const labels = defineMessages({
 });
 
 const s = formatMessage('es', labels.greeting, { name: 'Ada' });
+```
+
+En apps con runtime generado, preferí **`useTf`** dentro del componente:
+
+```tsx
+import { useTf } from './lib/i18n';
+
+function LoginMagicSent({ email }: { email: string }) {
+  const t = useTf('login');
+  return <p>{t('magicSentBody', { email })}</p>;
+}
 ```
 
 `defineMessages` es una función identidad; sirve para **inferencia** y documentación. Podés usar solo **`as const`** en un mapa chico si preferís.

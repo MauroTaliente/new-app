@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-i18n",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Typed dictionaries, rich string interpolation (ct), browser locale resolution, optional Next.js adapters",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",

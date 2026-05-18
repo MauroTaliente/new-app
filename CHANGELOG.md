@@ -8,6 +8,22 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 **0.0.x** and bumped together when breaking or meaningful changes land; see
 [Versioning policy](#versioning-policy) below.
 
+## [0.0.4] — 2026-05-18
+
+### @react33/react-i18n
+
+#### Changed
+
+- **`useTf`** applies ICU MessageFormat via `formatMessage` using locale from `LocaleProvider` (previously returned raw dictionary strings and ignored `values`).
+
+#### Fixed
+
+- Generated runtime persistence API aligned with theme: **`getInitialLocale`**, **`persistLocale`** (replacing `resolveAppLocale`, `persistLocaleChoice`).
+
+#### Breaking (codegen)
+
+- Regenerate `i18n.runtime.generated.tsx` and update imports if you used the previous export names.
+
 ## [Unreleased]
 
 ### Added
