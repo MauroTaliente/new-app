@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useFormApi, type FormConfig } from '../src/components/organisms/form/use-form-api';
+import {
+  FORM_MESSAGE_KEY,
+  useFormApi,
+  type FormConfig,
+} from '../src/components/organisms/form/use-form-api';
 
 interface SignupValues {
   email: string;
@@ -99,6 +103,81 @@ describe('useFormApi', () => {
       result.current[1].submit(document.createElement('form'), 'unit');
     });
     expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('setMessage exposes server error in connect without affecting isValid', () => {
+    const { result } = renderHook(() =>
+      useFormApi<SignupValues>(
+        baseConfig({
+          initialValues: { email: 'ok@ok.com', age: 0 },
+          validatorsRules: {
+            email: (v: string) => (v ? undefined : 'required'),
+          },
+        }),
+      ),
+    );
+
+    act(() => {
+      result.current[1].setMessage('email', 'Email already taken');
+      result.current[1].setTouch('email', true);
+    });
+
+    expect(result.current[1].isValid).toBe(true);
+    expect(result.current[1].messages).toEqual({ email: 'Email already taken' });
+
+    act(() => {
+      result.current[1].setValue('email', 'other@ok.com');
+    });
+
+    expect(result.current[1].isValid).toBe(true);
+    expect(result.current[1].messages).toEqual({});
+    expect(result.current[1].connect('email').error).toBeUndefined();
+
+    act(() => {
+      result.current[1].setMessage('email', 'Email already taken');
+      result.current[1].setTouch('email', true);
+    });
+
+    expect(result.current[1].isValid).toBe(true);
+    expect(result.current[1].connect('email').error).toBe('Email already taken');
+  });
+
+  it('connect() does not expose status', () => {
+    const { result } = renderHook(() => useFormApi<SignupValues>(baseConfig()));
+    expect(result.current[1].connect('email')).not.toHaveProperty('status');
+  });
+
+  it('setMessage supports form-level key and clearMessages on reset', () => {
+    const { result } = renderHook(() => useFormApi<SignupValues>(baseConfig()));
+
+    act(() => {
+      result.current[1].setMessage(FORM_MESSAGE_KEY, 'Could not save');
+    });
+    expect(result.current[1].messages[FORM_MESSAGE_KEY]).toBe('Could not save');
+
+    act(() => {
+      result.current[1].reset();
+    });
+    expect(result.current[1].messages).toEqual({});
+  });
+
+  it('setValue clears field message', () => {
+    const { result } = renderHook(() =>
+      useFormApi<SignupValues>(
+        baseConfig({ initialValues: { email: 'a@b.com', age: 0 } }),
+      ),
+    );
+
+    act(() => {
+      result.current[1].setMessage('email', 'Stale');
+      result.current[1].setTouch('email', true);
+    });
+    expect(result.current[1].connect('email').error).toBe('Stale');
+
+    act(() => {
+      result.current[1].setValue('email', 'b@c.com');
+    });
+    expect(result.current[1].connect('email').error).toBeUndefined();
   });
 
   it('submit invokes onReject when invalid', () => {

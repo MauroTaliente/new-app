@@ -53,6 +53,14 @@ export type formAction = FormEventHandler<HTMLFormElement>;
 export type Inners = Primitive | Inners[] | { [key: string]: Inners };
 export type Values = { [key: string]: Inners } | {};
 export type Errors = string | Errors[] | { [key: string]: Errors };
+/** Remote or form-level feedback; same shape as {@link Errors}. Does not affect {@link FormApi.isValid}. */
+export type Messages = Errors;
+/** Reserved path for form-wide messages (banners, submit failures). */
+export const FORM_MESSAGE_KEY = '_form';
+/** Catalog of UI copy keyed by HTTP status; wired from {@link FormConfig.status}. */
+export type StatusErrors = Partial<Record<HttpCode, ReactNode>> & {
+  default?: ReactNode;
+};
 export type Toucheds = boolean | Toucheds[] | { [key: string]: Toucheds };
 export type Focuses = boolean | Focuses[] | { [key: string]: Focuses };
 export type SoftObj = { [key: string]: any } | Primitive | undefined | null;
@@ -75,6 +83,7 @@ export interface FormConfig<T extends Values = any> {
   emptyValues?: T;
   initialValues?: T;
   initialErrors?: Errors;
+  initialMessages?: Messages;
   initialToucheds?: Toucheds;
   validatorsRules?: ValidatorsRules<T>;
   validateOnMount?: boolean;
@@ -84,8 +93,11 @@ export interface FormConfig<T extends Values = any> {
   htmlValidationsOn?: boolean;
   reportValidityOn?: boolean;
   undoLimit?: number;
+  /** Live request status from networking (e.g. `useAsyncFetch`); drives latch + reset side effects. */
   status?: HttpCode;
   loading?: boolean;
+  /** Messages to show when {@link FormConfig.status} matches a code (see {@link FormApi.statusError}). */
+  statusErrors?: StatusErrors;
 }
 interface InitApi<T extends Values = any> {
   attempts: number;
@@ -95,6 +107,11 @@ interface InitApi<T extends Values = any> {
   toucheds: Toucheds;
   focuses: Focuses;
   errors: Errors;
+  messages: Messages;
+  /** Latched copy from {@link FormConfig.statusErrors} for the last meaningful status. */
+  statusError: ReactNode | null;
+  /** Latched HTTP status (survives when config `status` returns to `0`). */
+  lastStatus: HttpCode;
   isValid: boolean;
   loading: boolean;
   hasChange: boolean;
@@ -127,7 +144,6 @@ export interface FormInputApi<T extends Values = any, K extends keyof T = keyof 
   toucheds?: Toucheds;
   focuses?: Focuses;
   loading?: boolean;
-  status?: HttpCode;
 }
 
 export interface FromInputCustomApi<T extends Values = any, K extends keyof T = keyof T>
@@ -148,6 +164,8 @@ export interface FormInputStateApi<T extends Values = any, K extends keyof T = k
 
 export interface FormApi<T extends Values = any, K extends keyof T = keyof T> extends InitApi<T> {
   setValue: (key: InputName<K>, value: any, method?: string) => void;
+  setMessage: (key: InputName<K> | typeof FORM_MESSAGE_KEY, value?: string) => void;
+  clearMessages: () => void;
   setNativeValue: (event: ChangeEvent<HTMLElement>) => void;
   setBlur: (key: InputName<K>, value: boolean) => void;
   setNativeBlur: (event: FocusEvent<HTMLElement>) => void;
@@ -365,6 +383,33 @@ const getPathStateBase = (state: unknown) => {
   return {};
 };
 
+const mergeFieldError = (clientError?: Errors, serverMessage?: Errors): string | undefined => {
+  if (typeof clientError === 'string' && clientError) return clientError;
+  if (typeof serverMessage === 'string' && serverMessage) return serverMessage;
+  return undefined;
+};
+
+const isFormSuccessStatus = (code: HttpCode) =>
+  code === HttpCode.OK ||
+  code === HttpCode.CREATED ||
+  code === HttpCode.ACCEPTED ||
+  code === HttpCode.NO_CONTENT;
+
+/** Status codes that should update {@link FormApi.lastStatus} / {@link FormApi.statusError}. */
+const shouldLatchStatus = (code: HttpCode) =>
+  code > 0 && code !== 100 && code !== 300;
+
+const pickStatusError = (code: HttpCode, map?: StatusErrors): ReactNode | null => {
+  if (!map || !shouldLatchStatus(code)) return null;
+  const entry = map[code] ?? map.default;
+  return entry ?? null;
+};
+
+const clearMessageAtPath = (messages: Messages, path: string): Messages => {
+  if (!path) return messages;
+  return setValueByPath(path, undefined, getPathStateBase(messages)) as Messages;
+};
+
 export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
   {
     space = '',
@@ -372,6 +417,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     initialValues,
     initialToucheds,
     initialErrors,
+    initialMessages,
     validatorsRules,
     onSubmit = NOOP_API_FUNC,
     onReject = NOOP_API_FUNC,
@@ -384,6 +430,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     undoLimit = 0,
     status = HttpCode.BEGGINNING,
     loading = false,
+    statusErrors,
     syncInitialValues,
     activeValuesOnly,
     validateOnMount,
@@ -403,9 +450,14 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
   );
   const [toucheds, setToucheds] = useState<Toucheds>({});
   const [focuses, setFocuses] = useState<Focuses>({});
+  const [messages, setMessages] = useState<Messages>(() => initialMessages || {});
+  const [statusError, setStatusError] = useState<ReactNode | null>(null);
+  const [lastStatus, setLastStatus] = useState<HttpCode>(HttpCode.BEGGINNING);
   const valuesRef = useRef<T>({} as T);
   const lastValuesRef = useRef<T | undefined>(undefined);
   const onChangeRef = useRef(onChange);
+  const statusErrorsRef = useRef(statusErrors);
+  statusErrorsRef.current = statusErrors;
   // memo
   const memo = useMemo(
     () => ({
@@ -501,16 +553,37 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     return () => { };
   }, [initialValues, syncInitialValues]);
 
+  const clearMessages = useCallback(() => {
+    setMessages(initialMessages || {});
+  }, [initialMessages]);
+
+  const setMessage = useCallback((key: string, value?: string) => {
+    setMessages((prev) => {
+      const base = getPathStateBase(prev);
+      if (value === undefined || value === null || value === '') {
+        return clearMessageAtPath(prev, key);
+      }
+      return setValueByPath(key, value, base) as Messages;
+    });
+  }, []);
+
+  const clearStatusLatch = useCallback(() => {
+    setStatusError(null);
+    setLastStatus(HttpCode.BEGGINNING);
+  }, []);
+
   // listen reqStatus changes
   useEffect(() => {
     if (status === HttpCode.BEGGINNING) {
       setToucheds((pre) => getActives(pre, initialToucheds, false, 'over'));
     }
-    if (
-      status === HttpCode.OK ||
-      status === HttpCode.CREATED ||
-      status === HttpCode.NO_CONTENT
-    ) {
+
+    if (shouldLatchStatus(status)) {
+      setLastStatus(status);
+      setStatusError(pickStatusError(status, statusErrorsRef.current));
+    }
+
+    if (isFormSuccessStatus(status)) {
       setToucheds((pre) => getActives(pre, initialToucheds, false, 'over'));
       syncValues((emptyValues || initialValues) as T, { force: true });
     }
@@ -553,6 +626,11 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
 
   const setValue = useCallback(
     (name: string, value: any, method: string = '') => {
+      setMessages((prev) => {
+        const current = getValueFromPath(name, prev);
+        if (!current) return prev;
+        return clearMessageAtPath(prev, name);
+      });
       setValues((prev) => {
         const isNewValue = !isDeepEqual(getValueFromPath(name, prev), value);
         if (!isNewValue) return prev;
@@ -571,6 +649,12 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       const { name, type } = target;
 
       if (!name) return;
+
+      setMessages((prev) => {
+        const current = getValueFromPath(name, prev);
+        if (!current) return prev;
+        return clearMessageAtPath(prev, name);
+      });
 
       let value: any;
 
@@ -668,11 +752,12 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
   const submit = useCallback(
     (event: FormEvent | KeyboardEvent | EventTarget, author: string = '') => {
       memo.metadata.author = author;
+      clearStatusLatch();
       validate();
       setAllTouched(true);
       setAttempts((pre) => pre + 1);
     },
-    [validate, setAllTouched, setAttempts],
+    [validate, setAllTouched, setAttempts, clearStatusLatch],
   );
 
   const nativeSubmit = useCallback(
@@ -689,11 +774,24 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     setToucheds(getActives(nextValues, initialToucheds, false));
     setFocuses(setAllValues(nextValues, false));
     setAttempts(0);
+    setMessages(initialMessages || {});
+    clearStatusLatch();
     memo.lastChange = { name: '', value: undefined, method: 'reset' };
     memo.showErrors = false;
     const activeApi = ref.current?.api;
     if (activeApi) onReset(activeApi);
-  }, [setValues, setToucheds, setFocuses, setAttempts, initialValues, initialToucheds, onReset, ref]);
+  }, [
+    setValues,
+    setToucheds,
+    setFocuses,
+    setAttempts,
+    initialValues,
+    initialToucheds,
+    initialMessages,
+    clearStatusLatch,
+    onReset,
+    ref,
+  ]);
 
   const formReset = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -717,14 +815,16 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       registerField(name, getValueFromPath(name, initialValues));
       const currentValue = name && getValueFromPath(name, values);
       const initialValue = name && getValueFromPath(name, initialValues);
+      const clientError = name && getValueFromPath(name, liveErrors);
+      const serverMessage = name && getValueFromPath(name, messages);
       return {
         value: getFallback(currentValue, initialValue),
-        error: name && getValueFromPath(name, errors),
+        error: name && mergeFieldError(clientError, serverMessage),
         touched: name && getValueFromPath(name, toucheds),
         focus: name && getValueFromPath(name, focuses),
       };
     },
-    [registerField, initialValues, values, errors, toucheds, focuses],
+    [registerField, initialValues, values, liveErrors, messages, toucheds, focuses],
   );
 
   const getInputHandlers = useCallback(
@@ -751,10 +851,9 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
         showError: !!input.error && input.touched && !input.focus && !loading,
         ...handlers,
         loading,
-        status,
       };
     },
-    [space, getInputState, getInputHandlers, loading, status],
+    [space, getInputState, getInputHandlers, loading],
   );
 
   const connectNative = useCallback(
@@ -782,6 +881,9 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
         toucheds,
         focuses,
         errors,
+        messages,
+        statusError,
+        lastStatus,
         isValid,
         hasChange,
         lastChange: memo.lastChange,
@@ -790,6 +892,8 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
         redo,
         validate,
         setValue,
+        setMessage,
+        clearMessages,
         setNativeValue,
         setFocus,
         setNativeFocus,
@@ -815,6 +919,9 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       toucheds,
       focuses,
       errors,
+      messages,
+      statusError,
+      lastStatus,
       isValid,
       hasChange,
       loading,
@@ -822,6 +929,8 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       redo,
       validate,
       setValue,
+      setMessage,
+      clearMessages,
       setNativeValue,
       setFocus,
       setNativeFocus,
