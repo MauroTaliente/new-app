@@ -228,6 +228,84 @@ describe('useFormApi scenarios', () => {
     await waitFor(() => expect(result.current[1].values.email).toBe(''));
   });
 
+  it('resets values but keeps messages when request status becomes ACCEPTED (202)', async () => {
+    const { result, rerender } = renderHook(
+      ({ status }: { status: HttpCode }) =>
+        useFormApi<ProfileValues>(
+          profileConfig({
+            initialValues: { email: 'dirty', agree: false, user: { name: '' } },
+            emptyValues: { email: '', agree: false, user: { name: '' } },
+            status,
+          }),
+        ),
+      { initialProps: { status: HttpCode.BEGGINNING } },
+    );
+
+    act(() => result.current[1].setMessage('email', 'server rejected'));
+    expect(result.current[1].messages).toEqual({ email: 'server rejected' });
+
+    rerender({ status: HttpCode.ACCEPTED });
+    await waitFor(() => {
+      expect(result.current[1].values.email).toBe('');
+      expect(result.current[1].messages).toEqual({ email: 'server rejected' });
+    });
+  });
+
+  it('latches statusError from statusErrors and keeps it when status returns to 0', async () => {
+    const { result, rerender } = renderHook(
+      ({ status }: { status: HttpCode }) =>
+        useFormApi<ProfileValues>(
+          profileConfig({
+            status,
+            statusErrors: {
+              [HttpCode.UNPROCESSABLE_ENTITY]: 'Datos inválidos',
+            },
+          }),
+        ),
+      { initialProps: { status: HttpCode.BEGGINNING } },
+    );
+
+    rerender({ status: HttpCode.UNPROCESSABLE_ENTITY });
+    await waitFor(() => {
+      expect(result.current[1].lastStatus).toBe(HttpCode.UNPROCESSABLE_ENTITY);
+      expect(result.current[1].statusError).toBe('Datos inválidos');
+    });
+
+    rerender({ status: HttpCode.BEGGINNING });
+    await waitFor(() => {
+      expect(result.current[1].lastStatus).toBe(HttpCode.UNPROCESSABLE_ENTITY);
+      expect(result.current[1].statusError).toBe('Datos inválidos');
+    });
+  });
+
+  it('clears statusError latch on submit', async () => {
+    const { result, rerender } = renderHook(
+      ({ status }: { status: HttpCode }) =>
+        useFormApi<ProfileValues>(
+          profileConfig({
+            initialValues: { email: 'ok@test.com', agree: false, user: { name: '' } },
+            status,
+            statusErrors: {
+              [HttpCode.INTERNAL_SERVER_ERROR]: 'Error del servidor',
+            },
+          }),
+        ),
+      { initialProps: { status: HttpCode.INTERNAL_SERVER_ERROR } },
+    );
+
+    await waitFor(() => expect(result.current[1].statusError).toBe('Error del servidor'));
+
+    act(() => {
+      result.current[1].submit(document.createElement('form'), 'unit');
+    });
+
+    expect(result.current[1].statusError).toBeNull();
+    expect(result.current[1].lastStatus).toBe(HttpCode.BEGGINNING);
+
+    rerender({ status: HttpCode.BEGGINNING });
+    expect(result.current[1].statusError).toBeNull();
+  });
+
   it('validate surfaces errors after blur', () => {
     const { result } = renderHook(() =>
       useFormApi<ProfileValues>(
