@@ -48,6 +48,12 @@ pnpm add -D @react33/react-config
 
 No runtime import is required unless you add shared TypeScript types here in the future.
 
+## Persistence env vars (`react33Persistence`)
+
+`persistenceMode`, `cookieName`, and optional `persistenceEnvKey` are shared by `react33I18n` and `react33Theme`. Generated runtimes default to `REACT33_I18N_PERSISTENCE` / `REACT33_THEME_PERSISTENCE`.
+
+Those names must be **exposed to the browser** by Vite (`envPrefix`) or Next (`NEXT_PUBLIC_*` + matching `persistenceEnvKey` in config). See **[Persistence env vars — client exposure](../../docs/persistence-env-client.en.md)**.
+
 ## Related CLIs
 
 - `react-generate` — styles + networking codegen from `react33.config.json`

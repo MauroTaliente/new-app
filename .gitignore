@@ -11,6 +11,9 @@ coverage/
 
 # Generated from CSS (demo app)
 apps/demo/src/theme/styles.generated.ts
+apps/demo/src/theme/theme.runtime.generated.ts
+apps/demo/src/lib/i18n/i18n.generated.ts
+apps/demo/src/lib/i18n/i18n.runtime.generated.tsx
 
 # Env
 .env

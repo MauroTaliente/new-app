@@ -5,8 +5,10 @@ import { ButtonPanel } from './demo/button-panel';
 import { FormPanel } from './demo/form-panel';
 import { OverlaysPanel } from './demo/overlays-panel';
 import { OverviewPanel } from './demo/overview-panel';
+import { LocaleSwitch } from './demo/locale-switch';
 import { type DemoTheme, ThemeSwitch } from './demo/theme-switch';
-import { useTheme } from './theme/runtime';
+import { useDict, useLocale } from './lib/i18n';
+import { useTheme } from './lib/theme';
 
 const shellStyles = buildStyles({
   page: 'min-h-screen bg-bg-100 text-text-100',
@@ -71,6 +73,8 @@ const menuItems: Array<{ id: DemoView; label: string; summary: string; }> = [
 
 export default function App() {
   const [currentTheme, setTheme] = useTheme();
+  const [currentLocale, setLocale] = useLocale();
+  const shared = useDict('shared');
   const [view, setView] = useState<DemoView>(() => getViewFromUrl());
 
   useEffect(() => {
@@ -108,7 +112,11 @@ export default function App() {
                 archivo unico gigante.
               </p>
             </div>
-            <div>
+            <div className="flex flex-col items-end gap-space-md">
+              <p className="text-sm text-text-200">
+                {shared.hello} · <span className={shellStyles.code}>{currentLocale}</span>
+              </p>
+              <LocaleSwitch currentLocale={currentLocale} setLocale={setLocale} />
               <ThemeSwitch currentTheme={currentTheme} setTheme={setTheme} />
             </div>
           </div>

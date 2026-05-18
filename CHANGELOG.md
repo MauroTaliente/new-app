@@ -12,6 +12,16 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 ### Added
 
+- **`@react33/react-persistence`**: `readClientEnv`, `resolvePersistenceMode` (bundler-neutral env + config).
+- **`@react33/react-i18n`**: **`@react33/react-i18n/client`** — `createLocaleRuntime` and `createLocalePersistence` (`persistenceEnvKey` optional in config, not hardcoded to Vite).
+- **`@react33/react-i18n`**: **`react-i18n-generate`** also writes **`i18n.runtime.generated.tsx`** (`dictionaries`, runtime hooks, `resolveAppLocale`, `persistLocaleChoice`).
+- **`@react33/react-theme`**: **`createThemePersistence`**, **`react-theme-generate`** → **`theme.runtime.generated.ts`** (Provider, hooks, persistence).
+- **`@react33/react-generate`**: fourth step — **`react-theme-generate`** (after styles + i18n).
+- **`react33.config.json`**: `generatedRuntimeOutput`, `runtimeMode` (i18n), `stylesGeneratedImport` (theme).
+- **`apps/demo`**: wired locale + theme via generated runtimes (`src/lib/i18n.ts`, `src/lib/theme.ts`); removed manual `theme/runtime.ts` and `themePersistence.ts`.
+
+### Added (previous)
+
 - **`@react33/react-networking`**: OpenAPI 3.1+ codegen (`react33Networking.openApi.files`) — Zod schemas, types, SDK, client hooks, optional `init-data` module; runtime helpers `buildPathUrl`, `resolveOpenApiRequest`, `OpenApiHookOverrides`, `parseWithSchema`.
 - **`@react33/react-config`**: JSON Schemas for `react33.config.json` and partial `react33-i18n`; home for shared monorepo reference assets ([`data/`](data/)).
 - Documentation: React context and re-renders (architecture EN/ES); `@react33/react-context` README (EN/ES).

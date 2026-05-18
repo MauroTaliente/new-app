@@ -9,11 +9,16 @@
     "locales": ["es", "en"],
     "localesDirectory": "./src/locales",
     "cookieName": "locale",
-    "persistenceMode": "cookie"
+    "persistenceMode": "cookie",
+    "generatedTypesOutput": "./src/lib/i18n/i18n.generated.ts",
+    "generatedRuntimeOutput": "./src/lib/i18n/i18n.runtime.generated.tsx",
+    "runtimeMode": "spa"
   },
   "react33Theme": {
     "cookieName": "demo-theme",
-    "persistenceMode": "cookie"
+    "persistenceMode": "cookie",
+    "generatedRuntimeOutput": "./src/theme/theme.runtime.generated.ts",
+    "stylesGeneratedImport": "./styles.generated"
   },
   "react33Networking": {
     "output": "./src/api/apis.generated.ts",

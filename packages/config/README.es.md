@@ -48,6 +48,10 @@ pnpm add -D @react33/react-config
 
 No hace falta importarlo en runtime salvo que más adelante agreguemos tipos TS compartidos acá.
 
+## Variables de entorno de persistencia (`react33Persistence`)
+
+Los runtimes generados usan por defecto `REACT33_I18N_PERSISTENCE` / `REACT33_THEME_PERSISTENCE`. Esas claves deben **exponerse al browser** (Vite: `envPrefix`; Next: `NEXT_PUBLIC_*`). Ver **[docs/persistence-env-client.es.md](../../docs/persistence-env-client.es.md)**.
+
 ## CLIs relacionados
 
 - `react-generate` — codegen de estilos + APIs desde `react33.config.json`

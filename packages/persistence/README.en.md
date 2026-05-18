@@ -2,6 +2,15 @@
 
 Browser storage (localStorage, sessionStorage, cookies) and optional Next.js cookie-store helpers.
 
+## `readClientEnv` / `resolvePersistenceMode`
+
+Used by `@react33/react-i18n` and `@react33/react-theme` generated runtimes to optionally override `persistenceMode` via env.
+
+- **`readClientEnv()`** — merges `process.env` (Node/Next) and `import.meta.env` (Vite).
+- **`resolvePersistenceMode({ persistenceMode, persistenceEnvKey, env })`** — env wins when the key is set and readable.
+
+**Client exposure is your bundler’s job:** Vite needs `envPrefix: ['REACT33_']`; Next needs `NEXT_PUBLIC_*` names. See **[Persistence env vars — client exposure](../../docs/persistence-env-client.en.md)**.
+
 ## Versioned storage (`createVersionedStorageApi`)
 
 For keys whose JSON shape evolves over time, persist **`{ _v: number, data: T }`** (optional **`savedAt`** when using TTL) and register **one-step migrators** `migrations[k]` from version `k` to `k + 1`. Values **without** `_v` are read as **version 0** (the whole parsed value is treated as `data`).

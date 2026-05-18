@@ -18,6 +18,7 @@
     "@react33/react-generate": "workspace:*",
     "@react33/react-helpers": "workspace:*",
     "@react33/react-hooks": "workspace:*",
+    "@react33/react-i18n": "workspace:*",
     "@react33/react-networking": "workspace:*",
     "@react33/react-persistence": "workspace:*",
     "@react33/react-styles": "workspace:*",

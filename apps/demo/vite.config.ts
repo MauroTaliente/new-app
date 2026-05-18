@@ -6,6 +6,11 @@ import tailwindcss from '@tailwindcss/vite';
 const packagesDir = path.resolve(__dirname, '../../packages');
 
 export default defineConfig({
+  /**
+   * REACT33_* in .env is NOT visible in the browser unless listed here.
+   * @see docs/persistence-env-client.en.md
+   */
+  envPrefix: ['VITE_', 'REACT33_'],
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
