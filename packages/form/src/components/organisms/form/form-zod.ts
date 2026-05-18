@@ -14,11 +14,12 @@ export type ZodFieldValidator = (value: unknown) => string | undefined;
 
 /**
  * Per-field zod validators: known keys from `z.infer<schema>` plus slash paths
- * (e.g. `destination/city`) for nested segments.
+ * (e.g. `destination/city`). Uses `string & {}` (not `Record<string, …>`) so IDEs
+ * keep concrete field keys in hovers instead of collapsing to a plain index signature.
  */
 export type ZodValidatorsRules<T extends ZodSchema> = {
-  [K in keyof ZodInferredValues<T>]?: ZodFieldValidator;
-} & Record<string, ZodFieldValidator>;
+  [K in keyof ZodInferredValues<T> | (string & {})]?: ZodFieldValidator;
+};
 export type ZodRules = Record<string, Record<string, string> | string>;
 export type ZodEncode = (
   message: string | undefined,

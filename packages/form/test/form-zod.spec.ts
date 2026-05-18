@@ -59,7 +59,7 @@ describe('makeZodValidators', () => {
     const validators = makeZodValidators(schema, {
       'user/email': 'Bad',
     });
-    expect(validators['user/email']('nope')).toBe('Bad');
-    expect(validators['user/email']('ok@example.com')).toBeUndefined();
+    expect(validators['user/email']?.('nope')).toBe('Bad');
+    expect(validators['user/email']?.('ok@example.com')).toBeUndefined();
   });
 });
