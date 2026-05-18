@@ -10,6 +10,8 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 ## [0.0.4] — 2026-05-18
 
+Publish **`@react33/react-i18n@0.0.4`** before **`@react33/react-generate@0.0.4`** so `pnpm codegen` / `react-generate` resolves the updated `react-i18n-generate` bin (not the 0.0.3 generator).
+
 ### @react33/react-i18n
 
 #### Changed
@@ -23,6 +25,12 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 #### Breaking (codegen)
 
 - Regenerate `i18n.runtime.generated.tsx` and update imports if you used the previous export names.
+
+### @react33/react-generate
+
+#### Changed
+
+- **`0.0.4`** depends on **`@react33/react-i18n@0.0.4`** (workspace publish rewrite). Apps that only bump `react-generate` without reinstalling get the new i18n codegen transitively when using `react-generate` as the CLI entry.
 
 ## [Unreleased]
 

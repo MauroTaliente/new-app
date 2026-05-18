@@ -26,7 +26,7 @@ Publicá en este orden (cada fila puede esperar a que termine la anterior; 2 y 3
 | 7 | `@react33/react-theme` | `theme` | context, styles |
 | 8 | `@react33/react-hooks` | `hooks` | helpers |
 | 9 | `@react33/react-i18n` | `i18n` | helpers, persistence |
-| 10 | `@react33/react-generate` | `react-generate` | networking, styles |
+| 10 | `@react33/react-generate` | `react-generate` | networking, styles, **i18n**, **theme** (publicar **i18n** antes que **react-generate**) |
 | 11 | `@react33/react-ui-base` | `ui-base` | helpers, styles |
 | 12 | `@react33/react-form` | `form` | context, helpers, hooks, networking, styles, ui-base |
 | 13 | `@react33/react-ui` | `ui` | form, ui-base, hooks, networking, styles, helpers, context (+ Radix, etc.) |

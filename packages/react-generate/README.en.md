@@ -6,13 +6,14 @@ Orchestrates:
 
 1. **`react-styles-generate`** — emits `styles.generated.ts` from CSS (`react33Styles` in config).
 2. **`react-networking-generate`** — emits `apis.generated.ts` and `apis.client.generated.tsx` (`react33Networking` in config).
-3. **`react-i18n-generate`** — emits `i18n.generated.ts` from `react33I18n` (locale modules + resolve options).
+3. **`react-i18n-generate`** — emits `i18n.generated.ts` and `i18n.runtime.generated.tsx` (`react33I18n`; runtime exports `getInitialLocale` / `persistLocale` from **i18n ≥ 0.0.4**).
+4. **`react-theme-generate`** — emits `theme.runtime.generated.ts` (`react33Theme`).
 
-Forward the same flags as **`react-styles-generate`** (`--config`, `--from-css`, `--watch`, …). For networking, only **`--config`** and **`--output`** are forwarded. For i18n, only **`--config`** is forwarded.
+Forward the same flags as **`react-styles-generate`** (`--config`, `--from-css`, `--watch`, …). For networking, only **`--config`** and **`--output`** are forwarded. For i18n and theme, only **`--config`** is forwarded.
 
 ```bash
 react-generate
 react-generate --config ./react33.config.json
 ```
 
-Requires **`@react33/react-styles`** and **`@react33/react-networking`** built (`dist/`).
+Requires workspace packages built (`dist/`). Published **`@react33/react-generate@0.0.4`** installs **`@react33/react-i18n@0.0.4`** as a dependency so `pnpm codegen` uses the matching generator.
