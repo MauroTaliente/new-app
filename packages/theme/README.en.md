@@ -6,7 +6,28 @@ Theme **names** are defined in **CSS → `react-styles-generate` → `styles.gen
 
 ## `react33.config.json` — `react33Theme`
 
-Alongside `react33Styles`, **`react33Theme`** shares **`react33Persistence`** with **`react33I18n`** (same keys). You may override cookie write options (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); otherwise the demo / your app uses **code defaults** (e.g. path `/`, ~1 year, `lax`). The **default theme name** comes from **`styles.meta.defaultTheme`** (generated).
+Alongside `react33Styles`, **`react33Theme`** shares **`react33Persistence`** with **`react33I18n`** (`cookieName`, `localStorageKey`, `persistenceMode`, optional **`persistenceEnvKey`**). Cookie write options: `cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`. Default theme name: **`styles.meta.defaultTheme`** (from CSS codegen).
+
+### Codegen (`react-theme-generate`)
+
+Fourth step of **`react-generate`** (after styles). Writes **`generatedRuntimeOutput`** (default `./src/theme/theme.runtime.generated.ts`): `createThemePersistence`, `ThemeProvider`, hooks, `getInitialTheme`, `persistTheme`.
+
+```bash
+react-theme-generate --config react33.config.json
+```
+
+### Env override (`persistenceEnvKey`)
+
+Default: `REACT33_THEME_PERSISTENCE`. Must be **exposed to the client** by your bundler or env override has no effect.
+
+| Stack | Required setup |
+|-------|----------------|
+| **Vite** | `envPrefix: ['VITE_', 'REACT33_']`, `.env`, restart dev |
+| **Next.js (client)** | `NEXT_PUBLIC_REACT33_THEME_PERSISTENCE` + `"persistenceEnvKey"` in config, regenerate |
+
+See **[Persistence env vars — client exposure](../../docs/persistence-env-client.en.md)**.
+
+`"persistenceEnvKey": ""` → JSON `persistenceMode` only.
 
 ## Internal dependencies (monorepo)
 
@@ -26,13 +47,22 @@ Typical install in an app that already uses `@react33/react-styles` and `@react3
 }
 ```
 
-## Usage
+## Usage (manual or generated)
+
+**Generated (recommended):** `pnpm generate` then `import { ThemeProvider, useTheme, getInitialTheme, persistTheme } from './theme/theme.runtime.generated'`.
+
+**Manual:**
 
 ```tsx
-import { createThemeRuntime, type ExtractThemeName } from '@react33/react-theme';
-import { styles } from './theme/styles.generated';
+import { createThemeRuntime, createThemePersistence } from '@react33/react-theme';
+import { styles, type ThemeName } from './theme/styles.generated';
 
-type ThemeName = ExtractThemeName<typeof styles>;
+const persistence = createThemePersistence<ThemeName>({
+  defaultTheme: styles.meta.defaultTheme,
+  persistenceMode: 'cookie',
+  cookieName: 'theme',
+  // persistenceEnvKey: 'NEXT_PUBLIC_THEME_PERSISTENCE', // optional
+});
 
 export const { ThemeProvider, ThemeBodySync, useTheme } = createThemeRuntime<ThemeName>({
   defaultTheme: styles.meta.defaultTheme,
@@ -40,14 +70,14 @@ export const { ThemeProvider, ThemeBodySync, useTheme } = createThemeRuntime<The
 ```
 
 ```tsx
-<ThemeProvider value={initialTheme} onThemeChange={persistTheme}>
+<ThemeProvider value={persistence.getInitialTheme()} onThemeChange={persistence.persistTheme}>
   <ThemeBodySync />
   <App />
 </ThemeProvider>
 ```
 
-- **`value`**: initial theme (from `localStorage` / cookie during bootstrap, or from the server).
-- **`onThemeChange`**: called on every theme change (including first commit); use for persistence without coupling the library.
+- **`value`**: initial theme (from persistence or server).
+- **`onThemeChange`**: persist on every change (including first commit).
 
 ## Next.js / SSR
 

@@ -144,7 +144,11 @@
         "persistenceMode": {
           "type": "string",
           "enum": ["localStorage", "cookie"],
-          "description": "Backend por defecto si la app soporta ambos; variables de entorno (p. ej. VITE_*_PERSISTENCE) pueden sobreescribir."
+          "description": "Backend por defecto si la app soporta ambos."
+        },
+        "persistenceEnvKey": {
+          "type": "string",
+          "description": "Env var para sobreescribir persistenceMode (defaults: REACT33_I18N_PERSISTENCE / REACT33_THEME_PERSISTENCE). Debe exponerse al cliente: Vite envPrefix REACT33_; Next NEXT_PUBLIC_* + mismo nombre aquí. Ver docs/persistence-env-client.en.md. \"\" desactiva override."
         }
       },
       "additionalProperties": true
@@ -177,7 +181,17 @@
             },
             "generatedTypesOutput": {
               "type": "string",
-              "description": "Reservado para tipos generados (p. ej. locales.generated.ts)."
+              "description": "Ruta del módulo de tipos/constantes generado (p. ej. i18n.generated.ts)."
+            },
+            "generatedRuntimeOutput": {
+              "type": "string",
+              "description": "Ruta del runtime SPA generado (Provider, hooks, persistencia)."
+            },
+            "runtimeMode": {
+              "type": "string",
+              "enum": ["spa", "next"],
+              "default": "spa",
+              "description": "spa: LocaleProvider + hooks; next: reservado (fase 2)."
             }
           },
           "additionalProperties": true
@@ -207,6 +221,14 @@
               "type": "string",
               "enum": ["strict", "lax", "none"],
               "default": "lax"
+            },
+            "generatedRuntimeOutput": {
+              "type": "string",
+              "description": "Ruta del runtime de tema generado (Provider, hooks, persistencia)."
+            },
+            "stylesGeneratedImport": {
+              "type": "string",
+              "description": "Import relativo a styles.generated desde el archivo runtime (default ./styles.generated)."
             }
           },
           "additionalProperties": true

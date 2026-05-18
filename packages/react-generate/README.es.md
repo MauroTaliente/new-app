@@ -6,8 +6,9 @@ Encadena:
 
 1. **`react-styles-generate`** — genera `styles.generated.ts` desde CSS (`react33Styles` en el config).
 2. **`react-networking-generate`** — genera `apis.generated.ts` y `apis.client.generated.tsx` (`react33Networking` en el config).
+3. **`react-i18n-generate`** — genera `i18n.generated.ts` desde `react33I18n` (módulos por locale + opciones de resolución).
 
-Acepta los mismos flags que **`react-styles-generate`**. Para el paso de networking solo se reenvían **`--config`** y **`--output`**.
+Acepta los mismos flags que **`react-styles-generate`**. Para networking se reenvían **`--config`** y **`--output`**; para i18n solo **`--config`**.
 
 ```bash
 react-generate

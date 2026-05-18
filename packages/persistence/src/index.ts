@@ -1,4 +1,11 @@
 export {
+  readClientEnv,
+  resolvePersistenceMode,
+  type PersistenceMode,
+  type ResolvePersistenceModeOptions,
+} from './persistence-mode.js';
+
+export {
   createStorageApi,
   getLocalStorage,
   setLocalStorage,

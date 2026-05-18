@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-i18n",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Typed dictionaries, rich string interpolation (ct), browser locale resolution, optional Next.js adapters",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
@@ -25,6 +25,9 @@
     "access": "public"
   },
   "type": "module",
+  "bin": {
+    "react-i18n-generate": "./dist/bin/generate-locales.js"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -43,23 +46,37 @@
       "types": "./dist/next-server.d.ts",
       "import": "./dist/next-server.js",
       "default": "./dist/next-server.js"
+    },
+    "./generate": {
+      "types": "./dist/generate-locales.d.ts",
+      "import": "./dist/generate-locales.js",
+      "default": "./dist/generate-locales.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/next.client.tsx src/next-server.ts --format esm --dts --external react --external react-dom --external next --external server-only",
+    "build": "tsup src/index.ts src/client.ts src/createLocaleRuntime.client.tsx src/next.client.tsx src/next-server.ts src/generate-locales.ts src/bin/generate-locales.ts --format esm --dts --external react --external react-dom --external next --external server-only",
+    "generate": "node dist/bin/generate-locales.js",
+    "generate:locales": "node dist/bin/generate-locales.js",
     "prepublishOnly": "pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "dependencies": {
-    "@react33/react-helpers": "workspace:*",
+    "@react33/react-context": "workspace:*",
+    "@react33/react-helpers": "^0.0.2",
     "@react33/react-persistence": "workspace:*",
     "intl-messageformat": "^11.2.0",
+    "jiti": "^2.4.2",
     "server-only": "^0.0.1"
   },
   "peerDependencies": {
@@ -72,6 +89,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^22",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19",
     "@vitest/coverage-v8": "3.2.4",

@@ -1,7 +1,7 @@
 {
   "name": "@react33/react-generate",
-  "version": "0.0.2",
-  "description": "Unified codegen: react-styles-generate + react-networking-generate",
+  "version": "0.0.3",
+  "description": "Unified codegen: styles, networking, i18n, and theme runtime from react33.config.json",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "keywords": [
@@ -41,8 +41,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
   },
   "dependencies": {
+    "@react33/react-i18n": "workspace:*",
     "@react33/react-networking": "workspace:*",
-    "@react33/react-styles": "workspace:*"
+    "@react33/react-styles": "workspace:*",
+    "@react33/react-theme": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22",

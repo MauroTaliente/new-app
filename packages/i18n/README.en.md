@@ -27,7 +27,37 @@ Peers: `react`, `next` (optional for core-only apps).
 
 ## `react33.config.json`
 
-`react33I18n` shares the **`react33Persistence`** block with `react33Theme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-config` `react33.config.schema.json` → `$defs.react33Persistence`). Also: `defaultLocale`, `locales`, `localesDirectory`, `urlLocalePattern`, etc. Dictionaries still load from your app; the config documents keys and conventions.
+`react33I18n` shares the **`react33Persistence`** block with `react33Theme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-config` `react33.config.schema.json` → `$defs.react33Persistence`). Also: `defaultLocale`, `locales`, `localesDirectory`, `generatedTypesOutput`, `urlLocalePattern`, etc.
+
+### Codegen (`react-i18n-generate`)
+
+CLI and the third step of **`react-generate`**. Reads `react33I18n` and writes:
+
+- `generatedTypesOutput` (default `./src/lib/i18n/i18n.generated.ts`) — locale constants, `resolveLocaleOptions`, scoped message key types.
+- `generatedRuntimeOutput` (default `./src/lib/i18n/i18n.runtime.generated.tsx`) — `dictionaries` barrel, `LocaleProvider`, hooks, `resolveAppLocale`, `persistLocaleChoice` (uses `@react33/react-i18n/client`).
+
+```bash
+react-i18n-generate --config react33.config.json
+```
+
+Dictionaries remain source in your app (`localesDirectory`); the generator does not translate strings.
+
+### SPA runtime (`@react33/react-i18n/client`)
+
+`createLocaleRuntime` + `createLocalePersistence` for apps that do not use Next locale segments. Generated `i18n.runtime.generated.tsx` wires both from `react33I18n` persistence keys.
+
+### Env override (`persistenceEnvKey`)
+
+Codegen defaults to `REACT33_I18N_PERSISTENCE`. That name is **not** automatically visible in the browser — the bundler must expose it.
+
+| Stack | What you must do |
+|-------|------------------|
+| **Vite** | `envPrefix: ['VITE_', 'REACT33_']` in `vite.config.ts`, var in `.env`, restart dev server |
+| **Next.js (client)** | `NEXT_PUBLIC_REACT33_I18N_PERSISTENCE` in `.env` + matching `"persistenceEnvKey"` in config, then `pnpm generate` |
+
+Full checklist and troubleshooting: **[Persistence env vars — client exposure](../../docs/persistence-env-client.en.md)**.
+
+Disable env override: `"persistenceEnvKey": ""` (uses only `persistenceMode` from JSON).
 
 ## Migrating an existing locale module
 

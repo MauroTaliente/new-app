@@ -8,6 +8,14 @@ La **definición** de nombres de tema sigue en **CSS → `react-styles-generate`
 
 Junto a `react33Styles`, **`react33Theme`** comparte **`react33Persistence`** con **`react33I18n`** (mismas claves posibles). Opcionalmente podés sobreescribir la escritura de cookie (`cookiePath`, `cookieMaxAgeSeconds`, `cookieSameSite`); si no, el demo / tu app usa **defaults en código** (p. ej. path `/`, ~1 año, `lax`). El **nombre del tema por defecto** sigue en **`styles.meta.defaultTheme`** (generado).
 
+### Codegen (`react-theme-generate`)
+
+Cuarto paso de **`react-generate`**. Escribe `generatedRuntimeOutput` con Provider, hooks y persistencia.
+
+### Override por env (`persistenceEnvKey`)
+
+Default: `REACT33_THEME_PERSISTENCE`. Tiene que **llegar al cliente** (Vite: `envPrefix`; Next: `NEXT_PUBLIC_*` + clave en config). Guía: **[docs/persistence-env-client.es.md](../../docs/persistence-env-client.es.md)**. `""` desactiva el override.
+
 ## Dependencias internas (recomendado en monorepo)
 
 - `@react33/react-context` — estado del tema
