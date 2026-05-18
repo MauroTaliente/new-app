@@ -8,6 +8,7 @@ import {
   type ZodEncode,
   type ZodRules,
   type ZodSchema,
+  type ZodValidatorsRules,
 } from './form-zod';
 
 export function useMakeZodValidators<T extends ZodSchema>(
@@ -21,7 +22,7 @@ export function useMakeZodValidators<T extends ZodSchema>(
     encode?: ZodEncode;
   },
   deps: unknown[] = [],
-) {
+): ZodValidatorsRules<T> {
   const resolvedEncode = encode ?? zodEncodeIdentity;
   return useMemo(
     () => makeZodValidators<T>(schema, messages, resolvedEncode),

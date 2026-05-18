@@ -26,7 +26,7 @@
     "@react33/react-ui-base": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^3.24.0"
+    "zod": "^4.4.0"
   },
   "devDependencies": {
     "@react33/react-config": "workspace:*",

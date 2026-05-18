@@ -46,8 +46,8 @@ describe('makeZodValidators', () => {
       b: 'B invalid',
     };
     const validators = makeZodValidators(schema, rules);
-    expect(validators.a('')).toBe('A required');
-    expect(validators.b(-1)).toBe('B invalid');
+    expect(validators.a?.('')).toBe('A required');
+    expect(validators.b?.(-1)).toBe('B invalid');
   });
 
   it('supports nested paths joined with /', () => {
