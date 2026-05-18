@@ -34,7 +34,7 @@ Peers: `react`, `next` (optional for core-only apps).
 CLI and the third step of **`react-generate`**. Reads `react33I18n` and writes:
 
 - `generatedTypesOutput` (default `./src/lib/i18n/i18n.generated.ts`) — locale constants, `resolveLocaleOptions`, scoped message key types.
-- `generatedRuntimeOutput` (default `./src/lib/i18n/i18n.runtime.generated.tsx`) — `dictionaries` barrel, `LocaleProvider`, hooks, `resolveAppLocale`, `persistLocaleChoice` (uses `@react33/react-i18n/client`).
+- `generatedRuntimeOutput` (default `./src/lib/i18n/i18n.runtime.generated.tsx`) — `dictionaries` barrel, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (uses `@react33/react-i18n/client`).
 
 ```bash
 react-i18n-generate --config react33.config.json

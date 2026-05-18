@@ -34,7 +34,7 @@ Peers: `react`, `next` (opcional para apps solo con core).
 CLI y tercer paso de **`react-generate`**. Escribe:
 
 - `generatedTypesOutput` — constantes, `resolveLocaleOptions`, tipos desde `locales/<defaultLocale>.ts`.
-- `generatedRuntimeOutput` — `dictionaries`, `LocaleProvider`, hooks, `resolveAppLocale`, `persistLocaleChoice` (`@react33/react-i18n/client`).
+- `generatedRuntimeOutput` — `dictionaries`, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (`@react33/react-i18n/client`).
 
 ### Override por env (`persistenceEnvKey`)
 

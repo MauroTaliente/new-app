@@ -4,8 +4,8 @@ import App from './App';
 import './index.css';
 import {
   LocaleProvider,
-  persistLocaleChoice,
-  resolveAppLocale,
+  getInitialLocale,
+  persistLocale,
 } from './lib/i18n';
 import {
   getInitialTheme,
@@ -14,12 +14,12 @@ import {
   ThemeProvider,
 } from './lib/theme';
 
-const initialLocale = resolveAppLocale();
+const initialLocale = getInitialLocale();
 const initialTheme = getInitialTheme();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <LocaleProvider value={initialLocale} onLocaleChange={persistLocaleChoice}>
+    <LocaleProvider value={initialLocale} onLocaleChange={persistLocale}>
       <ThemeProvider value={initialTheme} onThemeChange={persistTheme}>
         <ThemeBodySync />
         <App />

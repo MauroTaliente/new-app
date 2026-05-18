@@ -14,7 +14,7 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 - **`@react33/react-persistence`**: `readClientEnv`, `resolvePersistenceMode` (bundler-neutral env + config).
 - **`@react33/react-i18n`**: **`@react33/react-i18n/client`** — `createLocaleRuntime` and `createLocalePersistence` (`persistenceEnvKey` optional in config, not hardcoded to Vite).
-- **`@react33/react-i18n`**: **`react-i18n-generate`** also writes **`i18n.runtime.generated.tsx`** (`dictionaries`, runtime hooks, `resolveAppLocale`, `persistLocaleChoice`).
+- **`@react33/react-i18n`**: **`react-i18n-generate`** also writes **`i18n.runtime.generated.tsx`** (`dictionaries`, runtime hooks, `getInitialLocale`, `persistLocale`).
 - **`@react33/react-theme`**: **`createThemePersistence`**, **`react-theme-generate`** → **`theme.runtime.generated.ts`** (Provider, hooks, persistence).
 - **`@react33/react-generate`**: fourth step — **`react-theme-generate`** (after styles + i18n).
 - **`react33.config.json`**: `generatedRuntimeOutput`, `runtimeMode` (i18n), `stylesGeneratedImport` (theme).

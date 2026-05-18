@@ -114,7 +114,7 @@ NEXT_PUBLIC_REACT33_I18N_PERSISTENCE=cookie
 
 ### Server-only apps
 
-If persistence runs only on the server, you can use `REACT33_*` without `NEXT_PUBLIC_` and pass `env` manually into `createThemePersistence` / `createLocalePersistence`. The **generated** SPA runtimes expect client-readable env when using `getInitialTheme` / `resolveAppLocale` in the browser.
+If persistence runs only on the server, you can use `REACT33_*` without `NEXT_PUBLIC_` and pass `env` manually into `createThemePersistence` / `createLocalePersistence`. The **generated** SPA runtimes expect client-readable env when using `getInitialTheme` / `getInitialLocale` in the browser.
 
 ---
 

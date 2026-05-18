@@ -106,8 +106,10 @@ describe('emitI18nRuntimeGeneratedSource', () => {
     expect(source).toContain('createLocalePersistence');
     expect(source).toContain('export const dictionaries');
     expect(source).toContain('LocaleProvider');
-    expect(source).toContain('resolveAppLocale');
-    expect(source).toContain('persistLocaleChoice');
+    expect(source).toContain('getInitialLocale');
+    expect(source).toContain('persistLocale');
+    expect(source).not.toContain('resolveAppLocale');
+    expect(source).not.toContain('persistLocaleChoice');
     expect(source).toContain('persistenceEnvKey: "REACT33_I18N_PERSISTENCE"');
   });
 
