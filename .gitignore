@@ -9,11 +9,12 @@ coverage/
 # Test runners
 **/.vite/
 
-# Generated from CSS (demo app)
+# Generated from CSS / codegen (demo app) — paths follow the canonical
+# .client.generated.{ts,tsx} suffix rule (see CLAUDE.md).
 apps/demo/src/theme/styles.generated.ts
-apps/demo/src/theme/theme.runtime.generated.ts
+apps/demo/src/theme/theme.runtime.client.generated.ts
 apps/demo/src/lib/i18n/i18n.generated.ts
-apps/demo/src/lib/i18n/i18n.runtime.generated.tsx
+apps/demo/src/lib/i18n/i18n.runtime.client.generated.ts
 
 # Env
 .env

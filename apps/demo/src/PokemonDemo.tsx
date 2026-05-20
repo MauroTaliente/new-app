@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@react33/react-styles';
-import { usePokemonList, usePokemonRetrieve } from './api/pokemon.openapi.client';
+import { usePokemonList, usePokemonRetrieve } from './api/pokemon.openapi.client.generated';
 
 export function PokemonDemo() {
   const [selectedName, setSelectedName] = useState<string | null>(null);

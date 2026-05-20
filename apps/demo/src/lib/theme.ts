@@ -1,1 +1,1 @@
-export * from '../theme/theme.runtime.generated';
+export * from '../theme/theme.runtime.client.generated';

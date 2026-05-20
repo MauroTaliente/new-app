@@ -16,6 +16,7 @@ Monorepo (`pnpm` workspaces) of React libraries published to npm under the **`@r
 | [`@react33/react-generate`](packages/react-generate) | CLI: tokens + API codegen orchestrator |
 | [`@react33/react-networking`](packages/networking) | Typed fetch client, API registry, cache |
 | [`@react33/react-persistence`](packages/persistence) | Storage and cookies with versioning |
+| [`@react33/react-session`](packages/session) | Bearer session strategies (access + refresh, single-flight) |
 | [`@react33/react-styles`](packages/styles) | Design tokens + `buildStyles` (Tailwind interop) |
 | [`@react33/react-theme`](packages/theme) | Theme runtime: provider, hooks, DOM sync |
 | [`@react33/react-ui-base`](packages/ui-base) | Shared primitives: Button, Icon, Overlay, Dialog, Popover, Tooltip |
