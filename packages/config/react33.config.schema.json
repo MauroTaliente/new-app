@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://www.npmjs.com/package/@react33/react-config/react33.config.schema.json",
-  "title": "react33.config — react33Styles, react33I18n, react33Theme, react33Networking",
+  "title": "react33.config — react33Styles, react33I18n, react33Theme, react33Networking, react33Session",
   "description": "Root schema for react33.config.json. Published by @react33/react-config. Optional $schema key, or associate via .vscode/settings.json (json.schemas).",
   "type": "object",
   "properties": {
@@ -20,6 +20,9 @@
     },
     "react33Networking": {
       "$ref": "#/$defs/react33Networking"
+    },
+    "react33Session": {
+      "$ref": "#/$defs/react33Session"
     }
   },
   "additionalProperties": true,
@@ -35,6 +38,10 @@
         "hooksOutput": {
           "type": "string",
           "description": "Optional path for the client hooks module. If omitted, derived from output (e.g. apis.client.generated.tsx next to apis.generated.ts)."
+        },
+        "runtimeModule": {
+          "type": "string",
+          "description": "Optional module specifier (relative to apis.generated.ts) exporting `apiRuntime: ApiRuntime` with `defineDefinitions(base)`, `load`, and optional `defaults` (registry-wide retries/onRetry/timeoutMs). Single seam between codegen and app-level wiring (session/auth, base-URL overrides, retry policies). See `@react33/react-networking` ApiRuntime type."
         },
         "apis": {
           "type": "object",
@@ -284,6 +291,136 @@
         }
       },
       "additionalProperties": true
+    },
+    "react33Session": {
+      "type": "object",
+      "description": "Session manager + UI runtime (@react33/react-session). Declares static wiring (storage, headers template, retry policy) while keeping un-serializable pieces (refresh, selectors) in the handwritten runtimeModule. Paths are relative to react33.config.json.",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["bearer", "cookie", "opaque"],
+          "default": "bearer",
+          "description": "Which session strategy to wire. Today only \"bearer\" is implemented (BearerSessionManager + createBearerSessionLoad). \"cookie\" and \"opaque\" are on the roadmap — see packages/session/README.en.md \"Strategies side by side\"."
+        },
+        "runtimeModule": {
+          "type": "string",
+          "description": "Module specifier (relative to generatedRuntimeOutput) that exports the un-serializable pieces the strategy needs: for bearer, `selectors: BearerSessionSelectors<Tokens>` + `refresh: (rt: string) => Promise<Tokens | null>`; for cookie/opaque, `selectIdentity` + a `fetchMe` callable. Single seam between the declarative config and your transport (OpenAPI SDK, fetch). **Naming**: this module is framework-agnostic by design (no React), so no `.client` suffix — e.g. `./session.runtime` resolves `session.runtime.ts`."
+        },
+        "generatedRuntimeOutput": {
+          "type": "string",
+          "description": "Output path for the generated session module (manager + bridge + apiRuntime partial + SessionProvider/useSession re-exports). Mirrors `react33Theme.generatedRuntimeOutput`. **Naming**: follow the canonical suffix rule — `.client.generated.{ts,tsx}` because the file re-exports `SessionProvider`. Recommended: `./src/api/session.runtime.client.generated.ts`. Codegen not implemented yet — schema reserves the field so apps can declare it now."
+        },
+        "bearer": {
+          "type": "object",
+          "description": "Settings consumed by `createBearerSessionManager` + `createBearerSessionLoad`. Ignored unless strategy === \"bearer\".",
+          "properties": {
+            "storageKey": {
+              "type": "string",
+              "description": "sessionStorage/localStorage key where the refresh token is persisted. Same value that today lives hardcoded in your handwritten `createBearerSessionManager({ storageKey })`."
+            },
+            "storage": {
+              "type": "string",
+              "enum": ["sessionStorage", "localStorage"],
+              "default": "sessionStorage",
+              "description": "Where the refresh token is persisted. `sessionStorage` (default): per-tab, no cross-tab sync. `localStorage`: persists across tabs and enables the cross-tab subscriber. The access token is always in memory regardless of this choice. See README → \"Storage trade-offs\"."
+            },
+            "accessTokenSkewSec": {
+              "type": "number",
+              "default": 30,
+              "description": "Seconds before the JWT `exp` claim to consider the access token expired. Used by `isAccessTokenExpired()` and (when proactiveRefresh is true) by the bridge before each request."
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "default": { "Authorization": "Bearer {token}" },
+              "description": "Header template merged into each request by `createBearerSessionLoad`. The literal substring `{token}` is replaced with the current access token. Use for non-bearer schemes too — e.g. `{ \"X-Api-Key\": \"{token}\" }`."
+            },
+            "proactiveRefresh": {
+              "type": "boolean",
+              "default": true,
+              "description": "When true, the bridge calls `session.ensureFreshSession()` if the access token is expired AND a refresh token exists, BEFORE attaching the header to the request. Disable to refresh strictly reactively via `onRetry` on 401 — see README → \"Why proactiveRefresh + onRetry is safe to combine\"."
+            }
+          },
+          "additionalProperties": false
+        },
+        "cookie": {
+          "type": "object",
+          "description": "Cookie-only session settings (planned, not implemented yet). Reserved here so apps can plan the migration when the strategy ships.",
+          "properties": {
+            "meEndpoint": {
+              "type": "string",
+              "description": "Path where the client fetches the authenticated user profile (e.g. `/me`). Source of truth for `{ isAuthenticated, identity }` in the snapshot."
+            },
+            "logoutEndpoint": {
+              "type": "string",
+              "description": "Path the client POSTs to so the server can invalidate the HttpOnly cookie."
+            },
+            "bootstrapOnMount": {
+              "type": "boolean",
+              "default": true,
+              "description": "When true, the runtime calls `session.bootstrap()` once on mount so identity is hydrated before the first page render. Set to false if you orchestrate bootstrap manually (e.g. behind a login gate)."
+            },
+            "cache": {
+              "type": "object",
+              "description": "Optional UX cache so the UI doesn't flash a skeleton on every navigation. The server still owns the truth — a stale cache is corrected by the next 401 → bootstrap reaction.",
+              "properties": {
+                "storage": {
+                  "type": "string",
+                  "enum": ["sessionStorage", "localStorage"],
+                  "default": "localStorage"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Storage key for the cached profile."
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "retry": {
+          "type": "object",
+          "description": "Registry-wide retry policy emitted as `apiRuntime.defaults.retries` + `onRetry`. Mirrors the recommended combo from the session README — reactive token refresh on 401 with optional body-level branching.",
+          "properties": {
+            "statuses": {
+              "type": "object",
+              "description": "Per-status retry budget — same shape as `RetryBudget` in @react33/react-networking. Example: `{ \"401\": 1 }` retries once on unauthorized after running `onRetry` (which by default calls `ensureFreshSession`).",
+              "patternProperties": {
+                "^[0-9]+$": { "type": "number", "minimum": 0 }
+              },
+              "additionalProperties": false
+            },
+            "tokenExpiredCode": {
+              "type": "string",
+              "description": "Optional body-level error code that distinguishes \"refresh eligible\" from \"revoked\". When set, the generated `onRetry` only triggers a refresh if `response.data.code` matches this string or is undefined. Useful when the backend differentiates expired tokens from invalidated sessions."
+            }
+          },
+          "additionalProperties": false
+        },
+        "persistenceEnvKey": {
+          "type": "string",
+          "default": "REACT33_SESSION_STORAGE",
+          "description": "Env var the build/runtime can read to override `bearer.storage` (or `cookie.cache.storage`). Same env-driven override pattern as `react33I18n.persistenceEnvKey` and `react33Theme.persistenceEnvKey`. Must reach the client — see docs/persistence-env-client.en.md. Empty string disables override."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "strategy": { "const": "bearer" } } },
+          "then": {
+            "required": ["bearer"],
+            "description": "Bearer strategy requires the `bearer` block (at minimum `storageKey`)."
+          }
+        },
+        {
+          "if": { "properties": { "strategy": { "const": "cookie" } } },
+          "then": {
+            "required": ["cookie"],
+            "description": "Cookie strategy requires the `cookie` block (at minimum `meEndpoint`)."
+          }
+        }
+      ]
     }
   }
 }
