@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-helpers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Type guards, deep utilities, path resolvers and helpers shared across the library.",

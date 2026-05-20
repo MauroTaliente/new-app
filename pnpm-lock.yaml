@@ -260,8 +260,8 @@ importers:
         specifier: workspace:*
         version: link:../context
       '@react33/react-helpers':
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: workspace:^
+        version: link:../helpers
       '@react33/react-persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -1751,9 +1751,6 @@ packages:
 
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
-
-  '@react33/react-helpers@0.0.2':
-    resolution: {integrity: sha512-jEU65JOEyFD1dO5iDUY4cLUuJJRsxfDxIKiLSACqQJ5JaW4HGZGecoDOQeE/30LXVcCUlZf4hvqjIdozuBxBDA==}
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -3975,8 +3972,6 @@ snapshots:
       '@types/react-dom': 19.2.3(@types/react@19.2.14)
 
   '@radix-ui/rect@1.1.1': {}
-
-  '@react33/react-helpers@0.0.2': {}
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 

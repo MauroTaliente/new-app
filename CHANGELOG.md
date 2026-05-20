@@ -44,6 +44,125 @@ Publish **`@react33/react-i18n@0.0.4`** before **`@react33/react-generate@0.0.4`
 
 - **`0.0.4`** depends on **`@react33/react-i18n@0.0.4`** (workspace publish rewrite). Apps that only bump `react-generate` without reinstalling get the new i18n codegen transitively when using `react-generate` as the CLI entry.
 
+## [0.0.6] — 2026-05-20
+
+Publish order: helpers → persistence → networking → session → config → i18n.
+All bumps are additive (no breaking changes); upgrade independently.
+
+### @react33/react-helpers `0.0.3`
+
+#### Added
+
+- **`decodeJwtPayload<T>(token)`** — base64url-decode the JWT payload section
+  and return typed claims (or `null` when malformed).
+- **`isJwtExpired(token, skewSec?)`** — compare `exp` against now with optional
+  skew. Used by `@react33/react-session` for proactive-refresh decisions
+  without a network round-trip.
+
+### @react33/react-persistence `0.0.4`
+
+#### Added
+
+- **`createOpaqueTokenPersistence({ key, storage })`** — minimal read/write/clear
+  facade over `sessionStorage` / `localStorage` for refresh tokens.
+- **`createLoadRequestPropsFromAuthProfile(profile)`** — bridge consuming
+  `AuthProfile` from `@react33/react-networking`: reads a token from cookie /
+  storage and renders templated headers (`{token}` substitution) into a
+  `LoadRequestProps`. Companion `createLoadRequestPropsFromAuthProfiles` for
+  per-API maps.
+- **`subscribeStorageKey(storage, key, listener)`** — cross-tab subscription
+  helper used by the Bearer session manager.
+
+### @react33/react-networking `0.0.3`
+
+#### Added
+
+- **`RetryBudget = number | Partial<Record<HttpCode, number>>`** — number form
+  preserves legacy behavior (5xx/408/429 + throws via `status: 0`); record form
+  is exhaustive per status. Honored by `createDataFlow` (registries, server
+  route loaders) and `useAsyncFetch`.
+- **`onRetry(ctx)` + `RetryContext<Data>`** — awaited between attempts, carries
+  `{ status, attempt, response?, error? }` (response / error mutually exclusive).
+  Enables token refresh, `Retry-After` parsing, body-level branching.
+- **`timeoutMs`** — per-attempt abort that cooperates with retry budgets.
+- **`CreateApiRegistryOptions.defaults`** + **`ApiRuntime.defaults`** — registry-
+  wide retry / `onRetry` / `timeoutMs`, emitted by `react-networking-generate`
+  so the codegen path reaches the same surface as handwritten registries.
+
+#### Changed
+
+- **`shouldRetry`** is now a single pure policy function reused by the hook and
+  the server `createDataFlow` — no behavioral regressions in existing tests.
+
+#### Documentation
+
+- **`LoadRequestProps`** JSDoc warns that returned `headers` replace wholesale;
+  recommends `mergeRequestProps` for additive cases. The session bridge handles
+  this internally.
+- **`AuthProfile`** JSDoc cross-refs `createLoadRequestPropsFromAuthProfile` in
+  `@react33/react-persistence`.
+
+### @react33/react-session `0.0.2`
+
+#### Added
+
+- **`SessionStore<TSnapshot>`** — strategy-agnostic contract (`subscribe` +
+  `getSnapshot`). Each strategy defines its own snapshot shape.
+- **Manager**: `subscribe(listener)` + `getSnapshot()` on `BearerSessionManager`.
+  Snapshot (`{ hasAccess, hasRefresh, accessPayload }`) is reference-stable
+  while nothing changes (memoized) — safe with `useSyncExternalStore`.
+- **Subpath**: `@react33/react-session/runtime` exposes
+  **`createSessionRuntime({ session })`** returning
+  `{ SessionProvider, useSession, useSessionState, session }`. Generic over
+  `SessionStore<TSnapshot>` so future cookie / opaque strategies plug in
+  without breaking Bearer call sites (type-level expectTypeOf guard test).
+- **React** declared as optional peer dependency (only the subpath needs it).
+
+#### Documentation
+
+- README "Strategies side by side" — storage matrix (Bearer vs cookie+`/me` vs
+  opaque), where user data lives, what is strategy-exclusive, what changes in
+  the UI when cookie-session lands.
+- README clarifies single-flight semantics when combining `proactiveRefresh`
+  with reactive `onRetry`.
+
+### @react33/react-config `0.0.3`
+
+#### Added
+
+- **`react33Session`** block in `react33.config.schema.json` — strategy +
+  runtimeModule + generatedRuntimeOutput + `bearer.*` + `cookie.*` (reserved) +
+  retry policy + `persistenceEnvKey`. AJV draft-2020 validated; 7 negative
+  cases reject as expected. Codegen consumer not implemented yet — schema
+  reserves the field so apps can declare it now.
+- JSDoc reinforces the canonical file-naming convention for
+  `generatedRuntimeOutput` (`.client.generated.{ts,tsx}`).
+
+### @react33/react-i18n `0.0.6`
+
+#### Changed
+
+- Aligned `@react33/react-helpers` dependency to `^0.0.3` (no functional change).
+
+### Monorepo
+
+#### Added
+
+- **`CLAUDE.md`** at repo root codifies the canonical file-naming convention
+  (`.client` / `.server` / `.generated` / `.runtime`) with worked examples.
+  Matching rule added as Principle 11 in the `react33-architecture` skill.
+
+#### Changed (apps/demo)
+
+- `api.runtime.ts` → `api.runtime.client.ts` (declares `'use client'`).
+- `theme.runtime.generated.ts` → `theme.runtime.client.generated.ts`.
+- `i18n.runtime.generated.tsx` → `i18n.runtime.client.generated.ts`
+  (no JSX literal).
+- `pokemon.openapi.client.tsx` → `pokemon.openapi.client.generated.ts`.
+- `.gitignore` updated to the canonical paths.
+- `react33.config.json` paths (`runtimeModule`, `generatedRuntimeOutput`,
+  `hooksOutput`) point at the renamed targets.
+
 ## [Unreleased]
 
 ### Added

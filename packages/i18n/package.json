@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-i18n",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Typed dictionaries, rich string interpolation (ct), browser locale resolution, optional Next.js adapters",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
@@ -73,7 +73,7 @@
   },
   "dependencies": {
     "@react33/react-context": "workspace:*",
-    "@react33/react-helpers": "^0.0.2",
+    "@react33/react-helpers": "workspace:^",
     "@react33/react-persistence": "workspace:*",
     "intl-messageformat": "^11.2.0",
     "jiti": "^2.4.2",
