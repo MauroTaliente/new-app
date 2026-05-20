@@ -17,7 +17,7 @@ Para claves cuyo JSON cambia en el tiempo, persistí **`{ _v: number, data: T }`
 
 ## Cargadores de auth HTTP (`createLoadRequestPropsFromAuthProfile`)
 
-`@react33/react-networking` define `createDataFlow` y los tipos **`AuthProfile`**. Este paquete **lee** el token en cookie o storage y fusiona cabeceras con `mergeRequestProps` / `buildHeadersFromTokenTemplate` de `@react33/react-networking`.
+`@react33/react-networking` define `createDataFlow` y los tipos **`AuthProfile`**. Este paquete **lee** el token en cookie o storage y fusiona cabeceras con `mergeRequestProps`.
 
 - **`createLoadRequestPropsFromAuthProfile(profile)`** — un `LoadRequestProps` por API.
 - **`createLoadRequestPropsFromAuthProfiles(record)`** — mapa de loaders con nombre para `createApiRegistry(..., { loads })`.

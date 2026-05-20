@@ -1,7 +1,16 @@
 import type { AuthProfile, LoadRequestProps, RequestProps } from '@react33/react-networking';
-import { buildHeadersFromTokenTemplate, mergeRequestProps } from '@react33/react-networking';
+import { mergeRequestProps } from '@react33/react-networking';
 import { parseDocumentCookie } from './cookie-browser';
 import { getLocalStorage, getSessionStorage } from './storage';
+
+function applyTokenToHeaders(
+  token: string,
+  headers: Record<string, string>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(headers).map(([key, value]) => [key, value.replaceAll('{token}', token)]),
+  );
+}
 
 async function readRawToken(profile: AuthProfile): Promise<string | undefined> {
   if (profile.storage === 'cookie') {
@@ -35,7 +44,7 @@ export function createLoadRequestPropsFromAuthProfile(profile: AuthProfile): Loa
     if (!token) {
       return shared;
     }
-    const extraHeaders = buildHeadersFromTokenTemplate(token, profile.headers);
+    const extraHeaders = applyTokenToHeaders(token, profile.headers);
     return mergeRequestProps(shared, { headers: extraHeaders });
   };
 }

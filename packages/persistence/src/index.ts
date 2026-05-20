@@ -17,6 +17,12 @@ export {
 } from './storage';
 
 export {
+  createOpaqueTokenPersistence,
+  type CreateOpaqueTokenPersistenceOptions,
+  type OpaqueTokenStorage,
+} from './opaque-token-persistence';
+
+export {
   createVersionedStorageApi,
   type VersionedEnvelope,
   type VersionedStorageOptions,

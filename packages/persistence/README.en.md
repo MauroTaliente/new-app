@@ -26,7 +26,7 @@ For keys whose JSON shape evolves over time, persist **`{ _v: number, data: T }`
 
 ## HTTP auth loaders (`createLoadRequestPropsFromAuthProfile`)
 
-`@react33/react-networking` owns `createDataFlow` and **`AuthProfile`** types. This package adds **reading** a raw token from a cookie or storage and merging headers via `mergeRequestProps` / `buildHeadersFromTokenTemplate` from `@react33/react-networking`.
+`@react33/react-networking` owns `createDataFlow` and **`AuthProfile`** types. This package adds **reading** a raw token from a cookie or storage and merging headers via `mergeRequestProps`.
 
 - **`createLoadRequestPropsFromAuthProfile(profile)`** — returns a `LoadRequestProps` for one API.
 - **`createLoadRequestPropsFromAuthProfiles(record)`** — map of named loaders for `createApiRegistry(..., { loads })`.
