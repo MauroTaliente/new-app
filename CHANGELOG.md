@@ -148,6 +148,23 @@ All bumps are additive (no breaking changes); upgrade independently.
 
 - Aligned `@react33/react-helpers` dependency to `^0.0.3` (no functional change).
 
+### @react33/react-generate `0.0.5`
+
+> The local bump to `0.0.5` (commit `27d17e5`) was never published. `0.0.4`
+> on npm pinned `@react33/react-networking` to `0.0.2` and `@react33/react-i18n`
+> to `0.0.4` — both stale after the `0.0.6` release. Consumers installing
+> `react-generate@0.0.4` ended up with `react-networking@0.0.2` nested under
+> `react-generate/node_modules`, and the codegen bin resolved that older
+> version → emitted `apis.generated.ts` without `apiRuntime.defaults` (added
+> in `react-networking@0.0.3`).
+
+#### Fixed
+
+- Publishing `0.0.5` with `workspace:*` so the manifest pins resolve to the
+  current published versions: `react-networking@0.0.3`, `react-i18n@0.0.6`,
+  `react-theme@0.0.3`, `react-styles@0.0.2`. Closes the duplicate-version
+  resolution gap consumers were hitting.
+
 ### Monorepo
 
 #### Added
