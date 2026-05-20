@@ -102,7 +102,11 @@ All bumps are additive (no breaking changes); upgrade independently.
 - **`AuthProfile`** JSDoc cross-refs `createLoadRequestPropsFromAuthProfile` in
   `@react33/react-persistence`.
 
-### @react33/react-session `0.0.2`
+### @react33/react-session `0.0.3`
+
+> **Note**: `0.0.2` was published and then unpublished from npm; the version
+> number is **permanently locked** by npm's unpublish policy. `0.0.3` ships the
+> identical surface (no functional change vs the locked `0.0.2`).
 
 #### Added
 
