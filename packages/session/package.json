@@ -1,0 +1,79 @@
+{
+  "name": "@react33/react-session",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
+  "description": "Bearer session primitives: in-memory access, persisted refresh, single-flight refresh — extensible for more session strategies over time.",
+  "keywords": [
+    "react",
+    "auth",
+    "session",
+    "jwt",
+    "refresh-token",
+    "bearer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maurotaliente/new-app.git",
+    "directory": "packages/session"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.en.md",
+    "README.es.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/runtime.ts src/createSessionRuntime.client.tsx --format esm --dts",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.spec.json"
+  },
+  "dependencies": {
+    "@react33/react-helpers": "workspace:*",
+    "@react33/react-persistence": "workspace:*"
+  },
+  "peerDependencies": {
+    "@react33/react-networking": "workspace:*",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@react33/react-networking": "workspace:*",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@vitest/coverage-v8": "3.2.4",
+    "happy-dom": "^15.11.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5",
+    "vitest": "^3.0.0"
+  }
+}
