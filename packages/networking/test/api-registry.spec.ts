@@ -2,26 +2,11 @@ import { describe, it, expect, expectTypeOf, vi, afterEach } from 'vitest';
 import {
   createApiRegistry,
   mergeRequestProps,
-  buildHeadersFromTokenTemplate,
   assertValidApiName,
 } from '../src/api-registry.js';
 import type { Request } from '../src/types/models.js';
 import type { ApiClientConfigBody } from '../src/types/api-registry.js';
 import type { RequestProps } from '../src/types/models.js';
-
-describe('buildHeadersFromTokenTemplate', () => {
-  it('replaces token placeholder', () => {
-    expect(
-      buildHeadersFromTokenTemplate('abc', {
-        Authorization: 'Bearer {token}',
-        'X-Key': '{token}',
-      }),
-    ).toEqual({
-      Authorization: 'Bearer abc',
-      'X-Key': 'abc',
-    });
-  });
-});
 
 describe('mergeRequestProps', () => {
   it('merges headers with patch winning on same key', () => {
@@ -105,6 +90,50 @@ describe('createApiRegistry', () => {
     expect(loadA).toHaveBeenCalled();
     await apis.b({ method: 'GET' });
     expect(loadB).toHaveBeenCalled();
+  });
+
+  it('registry-wide defaults apply retries to every client', async () => {
+    let calls = 0;
+    globalThis.fetch = vi.fn(async () => {
+      calls++;
+      if (calls === 1) return new Response('', { status: 503 });
+      return new Response('{}', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    }) as typeof fetch;
+
+    const apis = createApiRegistry(
+      { svc: { url: 'https://svc.test' } } satisfies Record<string, ApiClientConfigBody>,
+      {
+        defaults: { retries: 2, retryDelayMs: 0 },
+      },
+    );
+
+    const res = await apis.svc({ url: '/v1', method: 'GET' });
+    expect(res.status).toBe(200);
+    expect(calls).toBe(2);
+  });
+
+  it('per-API definition overrides registry defaults', async () => {
+    let calls = 0;
+    globalThis.fetch = vi.fn(async () => {
+      calls++;
+      return new Response('', { status: 503 });
+    }) as typeof fetch;
+
+    const apis = createApiRegistry(
+      {
+        // This API explicitly opts out of retries (overrides default `retries: 5`).
+        svc: { url: 'https://svc.test', retries: 0 },
+      } satisfies Record<string, ApiClientConfigBody>,
+      {
+        defaults: { retries: 5, retryDelayMs: 0 },
+      },
+    );
+
+    await apis.svc({ url: '/v1', method: 'GET' });
+    expect(calls).toBe(1);
   });
 
   it('throws on duplicate names', () => {

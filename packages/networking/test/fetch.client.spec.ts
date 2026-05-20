@@ -232,6 +232,126 @@ describe('useAsyncFetch', () => {
     expect(action).toHaveBeenCalledTimes(1);
   });
 
+  it('record-form retries: { 503: 2 } retries 503 up to twice', async () => {
+    let calls = 0;
+    const action = vi.fn(async () => {
+      calls += 1;
+      if (calls < 3) return { status: HttpCode.SERVICE_UNAVAILABLE, data: null as any };
+      return { status: HttpCode.OK, data: { ok: true } };
+    });
+
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        { name: 'rec1', action, retries: { 503: 2 }, retryDelayMs: 0 },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ ok: true });
+    });
+    expect(action).toHaveBeenCalledTimes(3);
+  });
+
+  it('record-form retries are exhaustive — 500 with { 503: 5 } does not retry', async () => {
+    const action = vi.fn(async () => ({
+      status: 500 as HttpCode,
+      data: null as any,
+    }));
+
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        { name: 'rec2', action, retries: { 503: 5 }, retryDelayMs: 0 },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.meta.error).toBeGreaterThanOrEqual(1);
+    });
+    expect(action).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onRetry between attempts with the failed status', async () => {
+    let calls = 0;
+    const action = vi.fn(async () => {
+      calls += 1;
+      if (calls < 2) return { status: HttpCode.SERVICE_UNAVAILABLE, data: null as any };
+      return { status: HttpCode.OK, data: { ok: true } };
+    });
+    const onRetry = vi.fn();
+
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        { name: 'on-retry', action, retries: 1, retryDelayMs: 0, onRetry },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ ok: true });
+    });
+    expect(onRetry).toHaveBeenCalledTimes(1);
+    expect(onRetry.mock.calls[0][0]).toMatchObject({ status: 503, attempt: 0 });
+  });
+
+  it('onRetry receives the hook common model + response + retry extras', async () => {
+    let calls = 0;
+    const action = vi.fn(async () => {
+      calls += 1;
+      if (calls < 2)
+        return {
+          status: HttpCode.SERVICE_UNAVAILABLE,
+          data: { code: 'BUSY' } as any,
+        };
+      return { status: HttpCode.OK, data: { ok: true } };
+    });
+    const captured: any[] = [];
+    const onRetry = vi.fn(async (model: any) => {
+      captured.push(model);
+    });
+
+    const { result } = renderHook(() =>
+      useAsyncFetch(
+        { name: 'on-retry-model', action, retries: 1, retryDelayMs: 0, onRetry },
+        [],
+      ),
+    );
+
+    act(() => {
+      result.current.trigger(undefined);
+    });
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual({ ok: true });
+    });
+
+    expect(captured).toHaveLength(1);
+    const model = captured[0];
+    // Convention: model fields from `common` are present.
+    expect(typeof model.trigger).toBe('function');
+    expect(model.meta).toBeDefined();
+    // Retry extras.
+    expect(model.attempt).toBe(0);
+    expect(model.status).toBe(503);
+    expect(model.response).toBeDefined();
+    expect(model.response.status).toBe(503);
+    expect(model.response.data).toEqual({ code: 'BUSY' });
+    expect(model.error).toBeUndefined();
+  });
+
   it('accepts a custom RequestCache instance', async () => {
     const myCache = createRequestCache();
     const { result } = renderHook(() =>

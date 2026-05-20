@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useMemo, useCallback } from 'use-memo-one';
 import { isDeepEqual } from '@react33/react-helpers';
-import { shouldRetryAfterHttpFailure, sleepMs } from '../helpers';
+import { shouldRetry, sleepMs } from '../helpers';
 import {
   buildRequestCacheKey,
   defaultRequestCache,
@@ -20,6 +20,7 @@ import {
   type StaticMeta,
   type DynamicOptions,
   type DynamicModel,
+  type DynamicRetryModel,
   type ResponseOrData,
   type RequestReturn,
   type Context,
@@ -43,6 +44,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     prevent = false,
     retries = 0,
     retryDelayMs = 0,
+    onRetry,
     verbose = false,
     initData = undefined,
     initLoading = false,
@@ -102,6 +104,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     verbose,
     retries,
     retryDelayMs,
+    onRetry,
     onChange,
     onMount,
     onBefore,
@@ -124,6 +127,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     verbose,
     retries,
     retryDelayMs,
+    onRetry,
     onChange,
     onMount,
     onBefore,
@@ -259,16 +263,26 @@ const useAsyncFetch = <Params, Data, Response = null>(
           return;
         }
 
-        const maxAttempts = 1 + Math.max(0, o.retries);
+        // Retry policy is shared with `createDataFlow` via `shouldRetry`.
+        // Number-form `retries`: total cap with default policy (5xx, 408, 429, plus throws).
+        // Record-form `retries`: exhaustive per-status budgets; throws counted as status `0`.
         const delayMs = Math.max(0, o.retryDelayMs ?? 0);
         const params = memo.params;
+        const usedByStatus = new Map<number, number>();
+        let totalUsed = 0;
+        let attempt = 0;
 
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
           if (!alive) return;
           if (attempt > 0) {
-            await sleepMs(delayMs);
+            if (delayMs > 0) await sleepMs(delayMs);
             if (!alive) return;
           }
+
+          let decisionStatus: number;
+          let attemptError: unknown;
+          let attemptResponse: RequestReturn<Data> | undefined;
 
           try {
             memo.loading = true;
@@ -290,27 +304,44 @@ const useAsyncFetch = <Params, Data, Response = null>(
             const ok = response.status >= 200 && response.status < 300;
             setStatus(response.status);
 
-            if (ok) {
-              break;
-            }
-
-            const canHttpRetry =
-              shouldRetryAfterHttpFailure(response.status) &&
-              attempt < maxAttempts - 1;
-            if (!canHttpRetry) {
-              break;
-            }
+            if (ok) break;
+            decisionStatus = response.status;
+            attemptError = undefined;
+            attemptResponse = response;
           } catch (error: unknown) {
             if (!alive) return;
             if (memo.error) console.error(memo.error);
             if (error) memo.error = error;
+            // UI surfaces the error's status (or 500 fallback) — preserves prior behavior.
             const errStatus = ((error as { status?: number })?.status ?? 500) as HttpCode;
             setStatus(errStatus);
-
-            if (attempt >= maxAttempts - 1) {
-              break;
-            }
+            // Retry decision treats throws as `status: 0` (no response received).
+            decisionStatus = 0;
+            attemptError = error;
+            attemptResponse = undefined;
           }
+
+          const latest = optsRef.current;
+          if (!shouldRetry(latest.retries, decisionStatus, totalUsed, usedByStatus)) break;
+
+          if (latest.onRetry) {
+            // Convention: like onSuccess/onError/onUnauthorized, onRetry receives the model.
+            // Override `status` with `decisionStatus` because `common.status` reflects React
+            // state (which may not have flushed yet) — the user expects the just-failed status.
+            const retryModel: DynamicRetryModel<Params, Data, Response> = {
+              ...common,
+              status: decisionStatus as HttpCode,
+              attempt,
+              ...(attemptResponse !== undefined ? { response: attemptResponse } : {}),
+              ...(attemptError !== undefined ? { error: attemptError } : {}),
+            };
+            await latest.onRetry(retryModel);
+            if (!alive) return;
+          }
+
+          totalUsed++;
+          usedByStatus.set(decisionStatus, (usedByStatus.get(decisionStatus) ?? 0) + 1);
+          attempt++;
         }
       } finally {
         memo.loading = false;

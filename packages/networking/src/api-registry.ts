@@ -34,20 +34,6 @@ function mergeHeadersInit(
   return h;
 }
 
-/**
- * Replace `{token}` in each header value. Use for `AuthProfile.headers` and custom loaders.
- */
-export function buildHeadersFromTokenTemplate(
-  token: string,
-  headers: Record<string, string>,
-): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(headers)) {
-    out[k] = v.split('{token}').join(token);
-  }
-  return out;
-}
-
 /** Named HTTP clients keyed by API name. Default is a wide map; pass a concrete `T` for known keys (inferred from `createApiRegistry` map form). */
 export type ApiRegistry<
   T extends Record<string, Request<unknown, unknown>> = Record<string, Request<unknown, unknown>>,
@@ -96,7 +82,8 @@ export function createApiRegistry<const T extends Record<string, ApiClientConfig
     }
     seen.add(name);
 
-    const shared: RequestProps = { url, ...rest };
+    // Merge order: defaults < per-API definition (`rest`) < per-call props (handled in `requestReady`).
+    const shared: RequestProps = { ...options.defaults, url, ...rest };
     const load =
       options.loads?.[name] ?? options.load ?? (async () => ({}));
 

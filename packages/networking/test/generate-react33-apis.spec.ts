@@ -78,6 +78,23 @@ describe('deriveHooksGeneratedPath', () => {
   });
 });
 
+describe('generateApisModuleSource — runtimeModule', () => {
+  it('routes load through apiRuntime.load and forwards defaults', () => {
+    const src = generateApisModuleSource({
+      react33Networking: {
+        runtimeModule: './api.runtime',
+        apis: {
+          pokemon: { url: 'https://pokeapi.co/api/v2' },
+        },
+      },
+    });
+    expect(src).toContain("import { apiRuntime } from \"./api.runtime\"");
+    expect(src).toContain('apiRuntime.defineDefinitions(baseDefinitions)');
+    expect(src).toContain('load: apiRuntime.load');
+    expect(src).toContain('defaults: apiRuntime.defaults');
+  });
+});
+
 describe('generateApisHooksModuleSource', () => {
   it('emits useAsyncFetch wrappers per API', () => {
     const src = generateApisHooksModuleSource({

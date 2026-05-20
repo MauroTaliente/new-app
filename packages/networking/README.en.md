@@ -168,7 +168,6 @@ Merge order: `defaults.validate` → `openApi.files.*.validate` → `operations.
 Pure helpers (no storage I/O):
 
 - **`mergeRequestProps(base, patch)`** — merge `RequestProps`, including `Headers`.
-- **`buildHeadersFromTokenTemplate(token, headers)`** — replace `{token}` in each header value (used with auth profiles below).
 
 ### `AuthProfile` (serializable contract)
 

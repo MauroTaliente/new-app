@@ -15,10 +15,12 @@ export interface SettingsProps extends RequestInit {
   method?: HttpMethod;
 }
 
-export interface RequestProps<Params = unknown> extends Omit<SettingsProps, 'body'> {
-  url?: string;
-  body?: Params;
-}
+/**
+ * Retry budget. Two shapes:
+ * - `number`: extra attempts after first failure, using the default policy (5xx, 408, 429, plus throws/aborts as status `0`). Backward-compatible with the historical `retries: number` field.
+ * - `Partial<Record<HttpCode, number>>`: exhaustive per-status budgets. A status not listed gets `0` retries. Cover network throws/aborts via the `0` key.
+ */
+export type RetryBudget = number | Partial<Record<HttpCode, number>>;
 
 export interface RequestReturn<Data = unknown> extends DeepPartial<Response> {
   status: HttpCode;
@@ -27,6 +29,79 @@ export interface RequestReturn<Data = unknown> extends DeepPartial<Response> {
   errors?: unknown;
 }
 
+/**
+ * Context passed to `onRetry` between attempts (awaited).
+ *
+ * `response` and `error` are **mutually exclusive**:
+ *   - When `status > 0`, the attempt produced a response — `response` is set, `error` is absent.
+ *   - When `status === 0`, the attempt threw or was aborted — `error` is set, `response` is absent.
+ *
+ * Use `response.headers`, `response.data`, or `response.error` to inspect the failed attempt
+ * (e.g. parse `Retry-After`, branch on a body-level error code, log a correlation id).
+ */
+export type RetryContext<Data = unknown> = {
+  /** Status of the attempt that just failed. `0` means thrown/aborted (no response). */
+  status: HttpCode;
+  /** Zero-based index of the attempt that just failed. The next attempt will be `attempt + 1`. */
+  attempt: number;
+  /** Full response, when the attempt produced one (`status > 0`). Absent on throws/aborts. */
+  response?: RequestReturn<Data>;
+  /** Original thrown error, when the attempt threw (`status === 0`). Absent when a response was received. */
+  error?: unknown;
+};
+
+/** Called between retry attempts. Awaited — use to refresh tokens, parse `Retry-After`, log, etc. */
+export type OnRetry<Data = unknown> = (ctx: RetryContext<Data>) => Promise<void> | void;
+
+export interface RequestProps<Params = unknown> extends Omit<SettingsProps, 'body'> {
+  url?: string;
+  body?: Params;
+  /**
+   * Retry budget. See {@link RetryBudget}. Honored by `createDataFlow` (server route loaders, registries) and by `useAsyncFetch`.
+   * Default (undefined): no retries.
+   */
+  retries?: RetryBudget;
+  /** Milliseconds to wait between attempts (after each failure). Ignored when no retries happen. */
+  retryDelayMs?: number;
+  /**
+   * Awaited hook fired between attempts with the full `RetryContext`. Use to inspect the failed
+   * response (headers, body), refresh tokens, parse `Retry-After`, or report telemetry. The
+   * `response` field carries the full `RequestReturn` of the failed attempt — type it via
+   * `RetryContext<MyData>` in your handler if you need typed access to `response.data`.
+   */
+  onRetry?: OnRetry;
+  /**
+   * Abort each attempt after this many milliseconds (per-attempt, not total). Aborted attempts produce `status: 0`,
+   * which is retriable in number-form retries by default. Combine with `retries` to get bounded total time.
+   */
+  timeoutMs?: number;
+}
+
+/**
+ * Per-request "load" hook: receives the shared `RequestProps` for the client and returns a
+ * partial override applied before each attempt (see `createDataFlow`).
+ *
+ * **Merge semantics** — the returned partial is spread on top of `shared` shallowly:
+ * `{ ...shared, ...loaded, ...perCall }`. That means **`headers` is replaced wholesale**,
+ * not key-by-key. If you only want to add an `Authorization` header without dropping the
+ * shared `Accept` (or any header set per-API), pre-merge with `mergeRequestProps`:
+ *
+ * ```ts
+ * import { mergeRequestProps } from '@react33/react-networking';
+ *
+ * const load: LoadRequestProps = async (shared) => {
+ *   const token = await getToken();
+ *   return mergeRequestProps(shared, { headers: { Authorization: `Bearer ${token}` } });
+ * };
+ * ```
+ *
+ * The bridge in `@react33/react-session` (`createBearerSessionLoad`) does this internally,
+ * so consumers of that bridge don't need to handle it.
+ *
+ * The load is re-invoked **before each retry attempt** — a refreshed token from a previous
+ * attempt's `onRetry` (e.g. `session.ensureFreshSession()`) automatically reaches the next
+ * attempt without manual plumbing.
+ */
 export type LoadRequestProps = (
   shared: RequestProps<unknown>,
 ) => Promise<Partial<RequestProps<unknown>>>;
@@ -69,10 +144,12 @@ export interface StaticOptions {
   onError?: (model: unknown) => void;
   fetchOnMount?: boolean;
   prevent?: boolean;
-  /** Extra attempts after the first failure (network throw or retryable HTTP). Total attempts = 1 + retries. */
-  retries?: number;
+  /** Retry budget. See {@link RetryBudget}. Backward-compatible with `retries: number`. */
+  retries?: RetryBudget;
   /** Milliseconds to wait before each retry (after the first attempt). Ignored if retries is 0. */
   retryDelayMs?: number;
+  /** Awaited hook fired between attempts with the full retry context (status, attempt, response?, error?). */
+  onRetry?: OnRetry;
   verbose?: boolean;
   initLoading?: boolean;
   initData?: unknown;
@@ -140,8 +217,15 @@ export type DynamicOptions<Params = unknown, Data = unknown, Response = null> = 
   /** After the first mount, reset `data` to `initData` when `watch` changes (no network). */
   resetDataOnWatchChange?: boolean;
   prevent?: boolean;
-  retries?: number;
+  /** Retry budget. See {@link RetryBudget}. Backward-compatible with `retries: number`. */
+  retries?: RetryBudget;
   retryDelayMs?: number;
+  /**
+   * Awaited callback fired between attempts. Receives a {@link DynamicRetryModel} —
+   * the hook's `common` model extended with `attempt` and `response?`. Keeps the convention
+   * of other hook callbacks (`onSuccess`, `onError`, `onUnauthorized`) which also receive the model.
+   */
+  onRetry?: (model: DynamicRetryModel<Params, Data, Response>) => Promise<void> | void;
   verbose?: boolean;
   initLoading?: boolean;
   initData?: ResponseOrData<Data, Response>;
@@ -177,6 +261,23 @@ export type DynamicModel<Params, Data, Response = null> = Expand<{
     author?: string,
   ) => void;
 }>;
+
+/**
+ * Model passed to `useAsyncFetch`'s `onRetry` between attempts.
+ *
+ * Extends {@link DynamicModel} with retry-specific fields:
+ *   - `attempt`: zero-based index of the attempt that just failed.
+ *   - `response?`: full `RequestReturn<Data>` when the attempt produced one
+ *     (absent on throws/aborts — see {@link RetryContext}).
+ *
+ * `status` and `error` inherit from `DynamicModel` but are **overridden in the call** to reflect
+ * the just-failed attempt (rather than the React state at the time of the closure).
+ */
+export type DynamicRetryModel<Params, Data, Response = null> =
+  DynamicModel<Params, Data, Response> & {
+    attempt: number;
+    response?: RequestReturn<Data>;
+  };
 
 export type DynamicMemo<Params, Data, Response = null> = {
   author: string;
