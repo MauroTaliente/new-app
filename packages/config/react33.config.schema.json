@@ -29,23 +29,23 @@
   "$defs": {
     "react33Networking": {
       "type": "object",
-      "description": "Generated API registry and client hooks (@react33/react-networking). Paths are relative to react33.config.json.",
+      "description": "Generated API registry and client hooks (@react33/react-networking). Convention: *Output paths are relative to react33.config.json; *Module specifiers are relative to the generated file they are emitted into.",
       "properties": {
-        "output": {
+        "registryOutput": {
           "type": "string",
-          "description": "Path for apis.generated.ts (createApiRegistry, apis, *Request). Overrides CLI default when --output is omitted."
+          "description": "Path for the generated API registry module (apis.generated.ts — createApiRegistry, apis, *Request). Write path — relative to react33.config.json. Overrides CLI default when --output is omitted."
         },
         "hooksOutput": {
           "type": "string",
-          "description": "Optional path for the client hooks module. If omitted, derived from output (e.g. apis.client.generated.tsx next to apis.generated.ts)."
+          "description": "Optional path for the generated client hooks module. Write path — relative to react33.config.json. If omitted, derived from registryOutput (e.g. apis.client.generated.tsx next to apis.generated.ts)."
         },
         "runtimeModule": {
           "type": "string",
-          "description": "Optional module specifier (relative to apis.generated.ts) exporting `apiRuntime: ApiRuntime` with `defineDefinitions(base)`, `load`, and optional `defaults` (registry-wide retries/onRetry/timeoutMs). Single seam between codegen and app-level wiring (session/auth, base-URL overrides, retry policies). See `@react33/react-networking` ApiRuntime type."
+          "description": "Optional module specifier emitted verbatim into an import of the generated registry module — relative to that GENERATED FILE (registryOutput), no extension. Must export `apiRuntime: ApiRuntime` (all fields optional): `defineDefinitions?`, `load?`/`loads?`, `defaults?`/`defaultsByApi?`. Single seam between codegen and app-level wiring. Typically points at the framework-agnostic file generated from `react33Session` (`react33Session.runtimeOutput`, e.g. `./session.runtime.generated`) — that file is server-safe and supplies `loads`/`defaultsByApi`. See `@react33/react-networking` ApiRuntime type."
         },
         "apis": {
           "type": "object",
-          "description": "Map of API name -> { url, headers?, cache?, credentials? }.",
+          "description": "Map of API name -> { url, headers?, cache?, credentials?, session? }. `session` is the name of a `react33Session.sessions` entry that authenticates this API (the api→session foreign key); omit for an unauthenticated API.",
           "additionalProperties": true
         },
         "openApi": {
@@ -63,7 +63,7 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
-              "input": { "type": "string" },
+              "specSource": { "type": "string", "description": "OpenAPI spec file the codegen reads. Read path — relative to react33.config.json." },
               "scope": { "type": "string" },
               "basePath": { "type": "string" },
               "client": {
@@ -82,7 +82,7 @@
               "initData": {
                 "type": "object",
                 "properties": {
-                  "input": { "type": "string" },
+                  "source": { "type": "string", "description": "Init-data module the codegen reads. Read path — relative to react33.config.json." },
                   "generate": { "type": "boolean" }
                 }
               },
@@ -130,7 +130,7 @@
               },
               "defaults": { "type": "object" }
             },
-            "required": ["input", "scope", "typesOutput", "zodOutput", "sdkOutput", "hooksOutput"]
+            "required": ["specSource", "scope", "typesOutput", "zodOutput", "sdkOutput", "hooksOutput"]
           }
         }
       },
@@ -178,21 +178,21 @@
               "items": { "type": "string" },
               "description": "Códigos de idioma permitidos."
             },
-            "localesDirectory": {
+            "localesDir": {
               "type": "string",
-              "description": "Carpeta de módulos por idioma (relativa a react33.config.json)."
+              "description": "Carpeta de módulos por idioma. Read path — relativo a react33.config.json."
             },
             "urlLocalePattern": {
               "type": "string",
               "description": "Regex (string) sobre pathname; primer grupo de captura = locale."
             },
-            "generatedTypesOutput": {
+            "typesOutput": {
               "type": "string",
-              "description": "Ruta del módulo de tipos/constantes generado (p. ej. i18n.generated.ts)."
+              "description": "Ruta del módulo de tipos/constantes generado (p. ej. i18n.generated.ts). Write path — relativo a react33.config.json."
             },
-            "generatedRuntimeOutput": {
+            "runtimeOutput": {
               "type": "string",
-              "description": "Ruta del runtime SPA generado (Provider, hooks, persistencia)."
+              "description": "Ruta del runtime SPA generado (Provider, hooks, persistencia). Write path — relativo a react33.config.json."
             },
             "runtimeMode": {
               "type": "string",
@@ -229,13 +229,14 @@
               "enum": ["strict", "lax", "none"],
               "default": "lax"
             },
-            "generatedRuntimeOutput": {
+            "runtimeOutput": {
               "type": "string",
-              "description": "Ruta del runtime de tema generado (Provider, hooks, persistencia)."
+              "description": "Ruta del runtime de tema generado (Provider, hooks, persistencia). Write path — relativo a react33.config.json."
             },
-            "stylesGeneratedImport": {
+            "stylesModule": {
               "type": "string",
-              "description": "Import relativo a styles.generated desde el archivo runtime (default ./styles.generated)."
+              "default": "./styles.generated",
+              "description": "Module specifier de styles.generated, emitido verbatim en un import del archivo runtime generado. Relativo al ARCHIVO GENERADO (runtimeOutput), sin extensión."
             }
           },
           "additionalProperties": true
@@ -246,27 +247,18 @@
       "type": "object",
       "description": "Paths are relative to the config file directory.",
       "properties": {
-        "fromCss": {
+        "cssDir": {
           "type": "string",
-          "description": "Directory containing *.css source files."
+          "description": "Directory containing *.css source files. Read path — relative to react33.config.json."
         },
         "domainsOrder": {
           "type": "array",
           "items": { "type": "string" },
           "description": "Cascade order (file stems without .css). Overrides alphabetical discovery."
         },
-        "output": {
+        "stylesOutput": {
           "type": "string",
-          "description": "Output path for the generated .ts file."
-        },
-        "outputDir": {
-          "type": "string",
-          "description": "Output directory (used with outputFile)."
-        },
-        "outputFile": {
-          "type": "string",
-          "default": "styles.generated.ts",
-          "description": "Generated filename when using outputDir."
+          "description": "Output path for the generated styles module (styles.generated.ts). Write path — relative to react33.config.json."
         },
         "excludeStems": {
           "type": "array",
@@ -279,11 +271,11 @@
         },
         "verbose": {
           "type": "boolean",
-          "description": "Log resolved config, fromCss, domain order, and output path."
+          "description": "Log resolved config, cssDir, domain order, and output path."
         },
         "watch": {
           "type": "boolean",
-          "description": "Watch fromCss for changes and regenerate (same as CLI --watch). Use CLI --no-watch to force a one-off run when this is true."
+          "description": "Watch cssDir for changes and regenerate (same as CLI --watch). Use CLI --no-watch to force a one-off run when this is true."
         },
         "metaSourceStem": {
           "type": "string",
@@ -294,21 +286,39 @@
     },
     "react33Session": {
       "type": "object",
-      "description": "Session manager + UI runtime (@react33/react-session). Declares static wiring (storage, headers template, retry policy) while keeping un-serializable pieces (refresh, selectors) in the handwritten runtimeModule. Paths are relative to react33.config.json.",
+      "description": "Session managers + UI runtime (@react33/react-session) as an indexed collection — one or more named sessions, each authenticating one or more APIs with its own token/auth. Mirrors the map-of-named-entries shape of `react33Networking.apis`. The codegen emits a framework-agnostic `session.runtime.generated.ts` (the managers + `apiRuntime`) plus a derived `.client.generated.ts` (`SessionProvider`/`useSession`). Paths are relative to react33.config.json.",
+      "properties": {
+        "runtimeOutput": {
+          "type": "string",
+          "description": "Output path for the GENERATED framework-agnostic session module — the managers + `apiRuntime` (`loads`/`defaultsByApi`). Write path, relative to react33.config.json. Server-safe: no `'use client'`. Canonical suffix rule — `.generated.ts`. Recommended: `./src/api/session.runtime.generated.ts`. The client-side React module (`SessionProvider`/`useSession`) is written to a path DERIVED from this one by inserting `.client` before `.generated` (e.g. `session.runtime.client.generated.ts`). `react33Networking.runtimeModule` must point at THIS (agnostic) file."
+        },
+        "primarySession": {
+          "type": "string",
+          "description": "Name of the session (a key in `sessions`) that receives the React runtime — `SessionProvider` + `useSession`/`useSessionState` via `createSessionRuntime`. At most one session is primary. Omit for an app with no react33 React session surface (all sessions are pure `loads` token-holders, or the UI reads auth from a third-party hook such as `useAuth0`). Must reference an existing key in `sessions`."
+        },
+        "sessions": {
+          "type": "object",
+          "description": "Map of session name -> session definition. The key is the name referenced by `react33Networking.apis.<api>.session`. Always a map, even for a single session — consistent with `react33Networking.apis`.",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/react33SessionDef" }
+        }
+      },
+      "required": ["sessions"],
+      "additionalProperties": false
+    },
+    "react33SessionDef": {
+      "type": "object",
+      "description": "One named session: a strategy + its un-serializable seam (`runtimeModule`) + strategy-specific static config. Each session produces one `LoadRequestProps` wired into `apiRuntime.loads` for every API that names it.",
       "properties": {
         "strategy": {
           "type": "string",
-          "enum": ["bearer", "cookie", "opaque"],
+          "enum": ["bearer", "cookie", "opaque", "external"],
           "default": "bearer",
-          "description": "Which session strategy to wire. Today only \"bearer\" is implemented (BearerSessionManager + createBearerSessionLoad). \"cookie\" and \"opaque\" are on the roadmap — see packages/session/README.en.md \"Strategies side by side\"."
+          "description": "Session strategy. `bearer` — react33-managed access+refresh JWT (BearerSessionManager + createBearerSessionLoad). `external` — the dev brings their own session (Firebase Auth, Auth0, Supabase, NextAuth, a token exchange, …): the `runtimeModule` seam exports a ready `load: LoadRequestProps` directly and the codegen skips `createBearerSessionManager`. `cookie`/`opaque` — roadmap, not implemented. See packages/session/README.en.md \"Strategies side by side\"."
         },
         "runtimeModule": {
           "type": "string",
-          "description": "Module specifier (relative to generatedRuntimeOutput) that exports the un-serializable pieces the strategy needs: for bearer, `selectors: BearerSessionSelectors<Tokens>` + `refresh: (rt: string) => Promise<Tokens | null>`; for cookie/opaque, `selectIdentity` + a `fetchMe` callable. Single seam between the declarative config and your transport (OpenAPI SDK, fetch). **Naming**: this module is framework-agnostic by design (no React), so no `.client` suffix — e.g. `./session.runtime` resolves `session.runtime.ts`."
-        },
-        "generatedRuntimeOutput": {
-          "type": "string",
-          "description": "Output path for the generated session module (manager + bridge + apiRuntime partial + SessionProvider/useSession re-exports). Mirrors `react33Theme.generatedRuntimeOutput`. **Naming**: follow the canonical suffix rule — `.client.generated.{ts,tsx}` because the file re-exports `SessionProvider`. Recommended: `./src/api/session.runtime.client.generated.ts`. Codegen not implemented yet — schema reserves the field so apps can declare it now."
+          "description": "Module specifier emitted verbatim into an import of the generated session module — relative to that GENERATED FILE (react33Session.runtimeOutput), no extension. The un-serializable seam for this session. For `bearer`: exports `selectors: BearerSessionSelectors<Tokens>` + `refresh: (rt: string) => Promise<Tokens | null>`. For `external`: exports `load: LoadRequestProps` (always) and `sessionStore?: SessionStore<TSnapshot>` (only when this session is the `primarySession`). For `cookie`/`opaque`: `selectIdentity` + a `fetchMe` callable. Framework-agnostic by design (no React) — no `.client` suffix; e.g. `./main.session.runtime` resolves `main.session.runtime.ts`."
         },
         "bearer": {
           "type": "object",
@@ -381,7 +391,7 @@
         },
         "retry": {
           "type": "object",
-          "description": "Registry-wide retry policy emitted as `apiRuntime.defaults.retries` + `onRetry`. Mirrors the recommended combo from the session README — reactive token refresh on 401 with optional body-level branching.",
+          "description": "Retry policy for the APIs this session authenticates. Emitted PER-API into `apiRuntime.defaultsByApi` (via the `createBearerSessionRetry` helper) so a 401 from one API refreshes only this session's token, never another's. Omit for proactive-only refresh (the `load` already refreshes an expired token before the request). Ignored unless strategy === \"bearer\".",
           "properties": {
             "statuses": {
               "type": "object",
