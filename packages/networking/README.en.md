@@ -83,9 +83,12 @@ Build many named HTTP clients from a list instead of repeating `createDataFlow` 
 
 - **`ApiClientConfig`**: `{ name, url, ...RequestInit }` — `name` must be a letter-first identifier (`admin`, `api_1`).
 - **`ApiRegistry<T>`**: alias for a map of `Request` clients; default `T` is a wide `Record<string, Request<unknown, unknown>>`. With the map form of `createApiRegistry`, **`T` is inferred** as `ApiRegistryFromDefinitions<typeof definitions>` when `definitions` keeps literal keys (see below).
-- **`createApiRegistry(entries | definitions, { load?, loads? })`**: pass an array of `{ name, url, ... }` **or** a map of `ApiClientConfigBody` (keys are API names). Map form returns **`ApiRegistry<ApiRegistryFromDefinitions<T>>`** so `apis.pokemon`, `apis.admin`, etc. are known to TypeScript without hand-written generics. Use **`satisfies Record<string, ApiClientConfigBody>`** on the object (as the generator does) so keys are not widened to `string`. Array form returns the wide `ApiRegistry` unless you use `as const` on names.
+- **`createApiRegistry(entries | definitions, { load?, loads?, defaults?, defaultsByApi? })`**: pass an array of `{ name, url, ... }` **or** a map of `ApiClientConfigBody` (keys are API names). Map form returns **`ApiRegistry<ApiRegistryFromDefinitions<T>>`** so `apis.pokemon`, `apis.admin`, etc. are known to TypeScript without hand-written generics. Use **`satisfies Record<string, ApiClientConfigBody>`** on the object (as the generator does) so keys are not widened to `string`. Array form returns the wide `ApiRegistry` unless you use `as const` on names.
 - **`load`**: shared `LoadRequestProps` for every client (e.g. one auth flow).
 - **`loads`**: overrides per `name` when some APIs use different tokens or headers.
+- **`defaults`**: registry-wide `RequestProps` defaults (`retries`, `onRetry`, `retryDelayMs`, `timeoutMs`) applied to every client.
+- **`defaultsByApi`**: per-`name` defaults — the per-API counterpart of `defaults`. Use when the policy is API-specific, e.g. a session-specific retry/`onRetry` so a 401 from one API refreshes only that API's session. Merge order (lowest→highest): `defaults` < `defaultsByApi[name]` < per-API definition < per-call props.
+- **`ApiRuntime`**: the seam type a `runtimeModule` exports for the codegen — `{ defineDefinitions?, load?, loads?, defaults?, defaultsByApi? }`. The `@react33/react-session` codegen generates a module of this shape (see that package's README).
 
 ### `react33.config.json` + `react-networking-generate`
 
