@@ -67,6 +67,21 @@ export type CreateApiRegistryOptions = {
    * applies to all generated clients without touching per-API definitions or each call site.
    */
   defaults?: ApiRegistryDefaults;
+  /**
+   * Per-client defaults keyed by API name — the per-API counterpart of `defaults`, the same way
+   * `loads` is the per-API counterpart of `load`.
+   *
+   * **Merge order (lowest to highest priority)**:
+   *   1. `defaults` — registry-wide.
+   *   2. `defaultsByApi[name]` — this map, for one API.
+   *   3. Per-API definition props — declared in the entries map.
+   *   4. Per-call props.
+   *
+   * Needed when a retry/`onRetry` policy is **session-specific**: with multiple sessions, a 401
+   * from API `billing` must refresh the `billing` session's token, not another's — so `onRetry`
+   * cannot be a single registry-wide closure. An API with no entry here falls back to `defaults`.
+   */
+  defaultsByApi?: Partial<Record<string, ApiRegistryDefaults>>;
 };
 
 /**
@@ -77,37 +92,33 @@ export type CreateApiRegistryOptions = {
  * overrides, retry policies). The generated `apis.generated.ts` consumes this module to wire
  * `createApiRegistry` without touching the generated file.
  *
- * Recommended pattern (file name follows the canonical suffix rule —
- * `.client` because this module re-exports the React `SessionProvider`):
- *   ```tsx
- *   // src/api/api.runtime.client.tsx
- *   'use client';
- *   import type { ApiRuntime } from '@react33/react-networking';
- *   import { createBearerSessionManager, createBearerSessionLoad } from '@react33/react-session';
+ * For a single-session app the seam exposes one `load`; for a multi-session app (several APIs,
+ * each with its own token/auth) it exposes `loads` keyed by API name plus `defaultsByApi` for
+ * per-API, session-specific retry policy. Both shapes are typically **generated** by the
+ * `@react33/react-session` codegen into a `session.runtime.generated.ts` module — see that
+ * package's README. All fields are optional: an unauthenticated registry needs none of them.
  *
- *   export const session = createBearerSessionManager({ ... });
- *
+ *   ```ts
+ *   // session.runtime.generated.ts (generated — framework-agnostic, server-safe)
  *   export const apiRuntime: ApiRuntime = {
- *     defineDefinitions: (base) => base,
- *     load: createBearerSessionLoad(session),
- *     defaults: {
- *       retries: { 401: 1 },
- *       onRetry: async ({ status }) => {
- *         if (status === 401) await session.ensureFreshSession();
- *       },
- *     },
+ *     loads: { pokemon: mainLoad, billing: partnerLoad },
+ *     defaultsByApi: { billing: createBearerSessionRetry(partnerSession) },
  *   };
  *   ```
  */
 export type ApiRuntime<
   T extends Record<string, ApiClientConfigBody> = Record<string, ApiClientConfigBody>,
 > = {
-  /** Identity transform by default; use for runtime base-URL overrides (e.g. per environment). */
-  defineDefinitions: (base: T) => T;
-  /** The `load` applied to every client; typically a session/auth bridge. */
-  load: LoadRequestProps;
+  /** Optional base-definitions transform — use for runtime base-URL overrides (e.g. per environment). Defaults to identity. */
+  defineDefinitions?: (base: T) => T;
+  /** A `load` applied to every client unless overridden in `loads`; typically a session/auth bridge. */
+  load?: LoadRequestProps;
+  /** Per-API `load` keyed by API name — different auth/token per API (multi-session). */
+  loads?: Partial<Record<string, LoadRequestProps>>;
   /** Optional registry-wide defaults (retries, onRetry, timeoutMs, retryDelayMs). */
   defaults?: ApiRegistryDefaults;
+  /** Per-API defaults keyed by API name — session-specific retry/`onRetry` policy. */
+  defaultsByApi?: Partial<Record<string, ApiRegistryDefaults>>;
 };
 
 const NAME_RE = /^[a-zA-Z][a-zA-Z0-9_]*$/;

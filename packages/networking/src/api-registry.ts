@@ -82,8 +82,13 @@ export function createApiRegistry<const T extends Record<string, ApiClientConfig
     }
     seen.add(name);
 
-    // Merge order: defaults < per-API definition (`rest`) < per-call props (handled in `requestReady`).
-    const shared: RequestProps = { ...options.defaults, url, ...rest };
+    // Merge order: defaults < defaultsByApi[name] < per-API definition (`rest`) < per-call props (handled in `requestReady`).
+    const shared: RequestProps = {
+      ...options.defaults,
+      ...options.defaultsByApi?.[name],
+      url,
+      ...rest,
+    };
     const load =
       options.loads?.[name] ?? options.load ?? (async () => ({}));
 

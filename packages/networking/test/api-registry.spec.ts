@@ -136,6 +136,54 @@ describe('createApiRegistry', () => {
     expect(calls).toBe(1);
   });
 
+  it('defaultsByApi applies per-API defaults; APIs without an entry fall back to defaults', async () => {
+    const callsByHost: Record<string, number> = {};
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const host = new URL(String(input)).host;
+      callsByHost[host] = (callsByHost[host] ?? 0) + 1;
+      return new Response('', { status: 503 });
+    }) as typeof fetch;
+
+    const apis = createApiRegistry(
+      {
+        withRetry: { url: 'https://with.test' },
+        noRetry: { url: 'https://none.test' },
+      } satisfies Record<string, ApiClientConfigBody>,
+      {
+        defaults: { retries: 0, retryDelayMs: 0 },
+        defaultsByApi: { withRetry: { retries: 2, retryDelayMs: 0 } },
+      },
+    );
+
+    await apis.withRetry({ url: '/v1', method: 'GET' });
+    await apis.noRetry({ url: '/v1', method: 'GET' });
+
+    expect(callsByHost['with.test']).toBe(3); // 1 attempt + 2 retries
+    expect(callsByHost['none.test']).toBe(1); // no entry → falls back to defaults (retries: 0)
+  });
+
+  it('merge precedence: defaults < defaultsByApi < per-API definition', async () => {
+    let calls = 0;
+    globalThis.fetch = vi.fn(async () => {
+      calls++;
+      return new Response('', { status: 503 });
+    }) as typeof fetch;
+
+    const apis = createApiRegistry(
+      {
+        // definition `retries: 0` must override defaultsByApi `retries: 3` and defaults `retries: 9`.
+        svc: { url: 'https://svc.test', retries: 0 },
+      } satisfies Record<string, ApiClientConfigBody>,
+      {
+        defaults: { retries: 9, retryDelayMs: 0 },
+        defaultsByApi: { svc: { retries: 3, retryDelayMs: 0 } },
+      },
+    );
+
+    await apis.svc({ url: '/v1', method: 'GET' });
+    expect(calls).toBe(1); // per-API definition wins
+  });
+
   it('throws on duplicate names', () => {
     expect(() =>
       createApiRegistry([
