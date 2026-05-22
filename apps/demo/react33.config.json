@@ -1,50 +1,63 @@
 {
   "react33Styles": {
-    "fromCss": "./src/theme",
+    "cssDir": "./src/theme",
     "domainsOrder": ["tokens", "palette", "theme"],
-    "output": "./src/theme/styles.generated.ts"
+    "stylesOutput": "./src/theme/styles.generated.ts"
   },
   "react33I18n": {
     "defaultLocale": "es",
     "locales": ["es", "en"],
-    "localesDirectory": "./src/locales",
+    "localesDir": "./src/locales",
     "cookieName": "locale",
     "persistenceMode": "cookie",
-    "generatedTypesOutput": "./src/lib/i18n/i18n.generated.ts",
-    "generatedRuntimeOutput": "./src/lib/i18n/i18n.runtime.client.generated.ts",
+    "typesOutput": "./src/lib/i18n/i18n.generated.ts",
+    "runtimeOutput": "./src/lib/i18n/i18n.runtime.client.generated.ts",
     "runtimeMode": "spa"
   },
   "react33Theme": {
     "cookieName": "demo-theme",
     "persistenceMode": "cookie",
-    "generatedRuntimeOutput": "./src/theme/theme.runtime.client.generated.ts",
-    "stylesGeneratedImport": "./styles.generated"
+    "runtimeOutput": "./src/theme/theme.runtime.client.generated.ts",
+    "stylesModule": "./styles.generated"
   },
   "react33Session": {
-    "strategy": "bearer",
-    "runtimeModule": "./session.runtime",
-    "generatedRuntimeOutput": "./src/api/session.runtime.client.generated.ts",
-    "bearer": {
-      "storageKey": "demo.app.session",
-      "storage": "localStorage",
-      "accessTokenSkewSec": 30,
-      "headers": { "Authorization": "Bearer {token}" },
-      "proactiveRefresh": true
-    },
-    "retry": {
-      "statuses": { "401": 1 },
-      "tokenExpiredCode": "TOKEN_EXPIRED"
-    },
-    "persistenceEnvKey": "REACT33_SESSION_STORAGE"
+    "runtimeOutput": "./src/api/session.runtime.generated.ts",
+    "primarySession": "main",
+    "sessions": {
+      "main": {
+        "strategy": "bearer",
+        "runtimeModule": "./main.session.runtime",
+        "bearer": {
+          "storageKey": "demo.app.session",
+          "storage": "localStorage",
+          "accessTokenSkewSec": 30,
+          "headers": { "Authorization": "Bearer {token}" },
+          "proactiveRefresh": true
+        },
+        "retry": {
+          "statuses": { "401": 1 },
+          "tokenExpiredCode": "TOKEN_EXPIRED"
+        },
+        "persistenceEnvKey": "REACT33_SESSION_STORAGE"
+      },
+      "partner": {
+        "strategy": "external",
+        "runtimeModule": "./partner.session.runtime"
+      }
+    }
   },
   "react33Networking": {
-    "output": "./src/api/apis.generated.ts",
+    "registryOutput": "./src/api/apis.generated.ts",
     "hooksOutput": "./src/api/apis.client.generated.tsx",
-    "runtimeModule": "./api.runtime.client",
+    "runtimeModule": "./session.runtime.generated",
+    "apis": {
+      "billing": { "url": "https://billing.example.com", "session": "main" },
+      "reports": { "url": "https://reports.partner.example.com", "session": "partner" }
+    },
     "openApi": {
       "files": {
         "pokemon": {
-          "input": "./openapi/pokeapi.openapi.yaml",
+          "specSource": "./openapi/pokeapi.openapi.yaml",
           "scope": "pokemon",
           "basePath": "/api/v2",
           "client": {
@@ -67,7 +80,7 @@
             "operationIds": ["pokemon_list", "pokemon_retrieve"]
           },
           "initData": {
-            "input": "./src/api/pokemon.init-data.ts",
+            "source": "./src/api/pokemon.init-data.ts",
             "generate": true
           },
           "operations": {

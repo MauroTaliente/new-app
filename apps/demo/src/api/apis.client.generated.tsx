@@ -5,6 +5,46 @@
 import { useAsyncFetch, type DynamicOptions, type RequestReturn } from '@react33/react-networking';
 import { apis } from './apis.generated';
 
+export function useBillingRequest<Params, Data, Response = null>(
+  settings: DynamicOptions<Params, Data, Response>,
+  watch: unknown[] = [],
+) {
+  const { action: settingsAction, url = '/', method = 'GET', ...rest } = settings;
+  const action =
+    settingsAction ??
+    (async (params?: Params) =>
+      apis.billing({ url, method, body: params }) as unknown as Promise<RequestReturn<Data>>);
+  return useAsyncFetch<Params, Data, Response>(
+    {
+      ...rest,
+      url,
+      method,
+      action,
+    },
+    watch,
+  );
+}
+
+export function useReportsRequest<Params, Data, Response = null>(
+  settings: DynamicOptions<Params, Data, Response>,
+  watch: unknown[] = [],
+) {
+  const { action: settingsAction, url = '/', method = 'GET', ...rest } = settings;
+  const action =
+    settingsAction ??
+    (async (params?: Params) =>
+      apis.reports({ url, method, body: params }) as unknown as Promise<RequestReturn<Data>>);
+  return useAsyncFetch<Params, Data, Response>(
+    {
+      ...rest,
+      url,
+      method,
+      action,
+    },
+    watch,
+  );
+}
+
 export function usePokemonRequest<Params, Data, Response = null>(
   settings: DynamicOptions<Params, Data, Response>,
   watch: unknown[] = [],
