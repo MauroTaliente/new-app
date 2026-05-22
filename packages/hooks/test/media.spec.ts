@@ -64,7 +64,7 @@ describe('usePrefersColorScheme', () => {
       media: query,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-    } as MediaQueryList));
+    } as unknown as MediaQueryList));
 
     const { result } = renderHook(() => usePrefersColorScheme());
     expect(result.current).toBe('dark');
