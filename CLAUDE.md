@@ -33,10 +33,11 @@ When more than one applies, use this exact order: `<base>.<role?>.<boundary?>.<o
 ### Worked examples
 
 ```
-api.runtime.client.ts                     # handwritten orchestrator with 'use client'
+main.session.runtime.ts                   # handwritten session seam (selectors/refresh, or external load)
 theme.runtime.client.generated.ts         # generated theme runtime, declares 'use client'
 i18n.runtime.client.generated.ts          # generated i18n runtime, declares 'use client'
-session.runtime.client.generated.ts       # planned (codegen TBD): generated session runtime
+session.runtime.generated.ts              # generated session runtime — server-safe (managers + apiRuntime)
+session.runtime.client.generated.ts       # generated session runtime — 'use client' (SessionProvider/useSession)
 apis.generated.ts                         # generated registry; server-safe, no React
 apis.client.generated.tsx                 # generated React hooks for the registry
 pokemon.openapi.ts                        # generated SDK; server-safe (just functions)
@@ -63,8 +64,8 @@ Historical inconsistencies that are now retired:
 - `pokemon.openapi.client.tsx` (`.tsx` without JSX; missing `.generated`) → `pokemon.openapi.client.generated.ts`.
 
 When you migrate a file's name, also update:
-1. The codegen `output` / `runtimeModule` / `hooksOutput` / `generatedRuntimeOutput` field
-   in `react33.config.json` for any affected app.
+1. The codegen `registryOutput` / `runtimeModule` / `hooksOutput` / `runtimeOutput` /
+   `stylesOutput` / `typesOutput` field in `react33.config.json` for any affected app.
 2. Every importer (use `grep -rln "<old-stem>"` to find them).
 3. The package `tsup` build entries if a package source file moved.
 
@@ -78,6 +79,70 @@ pnpm -F @react33/react-networking -F @react33/react-session test
 ```
 
 Tests + typechecks pass = the rename is complete.
+
+---
+
+## Config key naming — `react33.config.json`
+
+Every path-like key in `react33.config.json` follows a suffix convention that encodes
+**role + kind**. The kind determines the **base of relativity** — that is the whole point:
+you never guess what a `./` or `../` resolves against.
+
+### The suffixes
+
+| Suffix | Role | What it is | Resolved relative to |
+|---|---|---|---|
+| `*Output` | write | a file the codegen generates | `react33.config.json` |
+| `*Source` | read | a source file the codegen reads | `react33.config.json` |
+| `*Dir` | read | a directory the codegen scans | `react33.config.json` |
+| `*Module` | — | a module specifier emitted verbatim into an `import` of a generated file | **the generated file** (no extension) |
+
+Mechanical rule: **ends in `Module` → base is the generated file. Everything else → base
+is the config file.** A `*Module` value is a JS module specifier (what you'd write in an
+`import`), not a filesystem path — no extension, and `./`/`../` count from wherever the
+emitting `*.generated.*` file lives.
+
+### Current keys
+
+```
+react33Styles.cssDir              react33Styles.stylesOutput
+react33I18n.localesDir            react33I18n.typesOutput / runtimeOutput
+react33Theme.runtimeOutput        react33Theme.stylesModule
+react33Session.runtimeOutput      react33Session.sessions.*.runtimeModule
+react33Networking.registryOutput / hooksOutput      react33Networking.runtimeModule
+react33Networking.apis.*.session  (FK — names a react33Session.sessions entry)
+react33Networking.openApi.files.*.specSource        .typesOutput / zodOutput / sdkOutput / hooksOutput
+react33Networking.openApi.files.*.initData.source
+```
+
+### `react33Session` is a collection
+
+`react33Session` holds `{ runtimeOutput, primarySession?, sessions }` — a **map** of named
+sessions (mirrors `react33Networking.apis`). Each session is `bearer` (react33-managed) or
+`external` (the dev's seam exports a ready `load` — Firebase, Auth0, a token exchange…).
+
+- `react33Session.runtimeOutput` writes the **agnostic** `session.runtime.generated.ts`
+  (managers + `apiRuntime`, server-safe). The `'use client'` `session.runtime.client.generated.ts`
+  (`SessionProvider`/`useSession` for `primarySession`) is written to a **derived** path —
+  no separate key.
+- `react33Networking.runtimeModule` must point at the agnostic generated file.
+- Codegen order: `react-session-generate` runs **before** `react-networking-generate`.
+
+### Rules of thumb when adding a key
+
+- New file the codegen **writes**? → `*Output`.
+- New file the codegen **reads**? → `*Source`. A directory? → `*Dir`.
+- A specifier emitted into generated `import`s? → `*Module`, and document it as relative
+  to the generated file.
+- Never ship a bare `output` / `input` / `path`. The suffix carries the contract.
+
+### What this rule replaces
+
+`fromCss` → `cssDir`, `localesDirectory` → `localesDir`, bare `output` →
+`stylesOutput` / `registryOutput`, `generatedTypesOutput` → `typesOutput`,
+`generatedRuntimeOutput` → `runtimeOutput`, `stylesGeneratedImport` → `stylesModule`,
+openApi `input` → `specSource`, `initData.input` → `initData.source`. v0 — no
+backward-compat aliases; the old keys are gone.
 
 ---
 
