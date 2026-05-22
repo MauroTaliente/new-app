@@ -89,7 +89,9 @@ export type BearerSessionManager<TTokens> = SessionStore<BearerSessionSnapshot> 
  *
  * - **Access token in memory** — not persisted by default; survives only within the tab session.
  * - **Refresh token in storage** — `sessionStorage` (per-tab) or `localStorage` (cross-tab).
- * - **Single-flight refresh** — concurrent `ensureFreshSession()` calls coalesce into one.
+ * - **Single-flight refresh** — concurrent `ensureFreshSession()` calls coalesce into one,
+ *   in-tab (`inFlightRefresh`) and cross-tab (Web Locks). Safe with single-use rotating
+ *   refresh tokens: only one tab ever spends a given refresh token.
  * - **Cross-tab sync** — when `storage: 'localStorage'`, external changes to the refresh key
  *   (clear or update from another tab) invalidate the in-memory access + payload cache. Next
  *   request triggers `ensureFreshSession()` with the new refresh value. With `sessionStorage`
@@ -206,29 +208,60 @@ export function createBearerSessionManager<TTokens>(
     return cachedAccessPayload as T | null;
   }
 
+  /**
+   * The token refresh itself — run while the cross-tab lock is held (see `runRefreshExclusive`).
+   *
+   * Re-reads the refresh token from storage first: while this call waited for the lock, another
+   * tab may have rotated it (single-use refresh tokens) and written the new value. Refreshing
+   * with the stale in-memory token would fail against a rotating backend — re-reading avoids
+   * that spurious failure and the cross-tab logout cascade it would trigger. A `null` read means
+   * storage was cleared meanwhile (another tab logged out) — treat it as a terminal logout.
+   */
+  async function performRefresh(): Promise<boolean> {
+    const token = tokenStore.read();
+    if (!token) {
+      clearSession();
+      return false;
+    }
+    refreshTokenMemory = token;
+    try {
+      const next = await refresh(token);
+      if (!next) {
+        clearSession();
+        return false;
+      }
+      setSession(next);
+      return true;
+    } catch {
+      clearSession();
+      return false;
+    }
+  }
+
+  /**
+   * Run `performRefresh` under a cross-tab lock so only one tab refreshes at a time.
+   *
+   * With single-use rotating refresh tokens + `localStorage`, two tabs refreshing concurrently
+   * race the same token: one wins, the loser's request is rejected and clears the session — and
+   * that storage clear cascades the logout back to the winner. The Web Locks API serialises the
+   * refresh across tabs (the cross-tab counterpart of the in-tab `inFlightRefresh` guard). The
+   * lock name is scoped to `storageKey` so distinct sessions never block each other. Falls back
+   * to a direct call when the API is unavailable (older browsers, SSR).
+   */
+  async function runRefreshExclusive(): Promise<boolean> {
+    const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
+    if (!locks) return performRefresh();
+    return await locks.request(`react33.session.refresh:${storageKey}`, () => performRefresh());
+  }
+
   function ensureFreshSession(): Promise<boolean> {
     if (inFlightRefresh) return inFlightRefresh;
     hydrateRefreshToken();
     if (!refreshTokenMemory) return Promise.resolve(false);
-    const token = refreshTokenMemory;
 
-    inFlightRefresh = (async () => {
-      try {
-        const next = await refresh(token);
-        if (!next) {
-          clearSession();
-          return false;
-        }
-        setSession(next);
-        return true;
-      } catch {
-        clearSession();
-        return false;
-      } finally {
-        inFlightRefresh = null;
-      }
-    })();
-
+    inFlightRefresh = runRefreshExclusive().finally(() => {
+      inFlightRefresh = null;
+    });
     return inFlightRefresh;
   }
 

@@ -334,4 +334,92 @@ describe('createBearerSessionManager', () => {
 
     expect(mgr.getAccessToken()).toBe(farFuture);
   });
+
+  // ---------- Cross-tab refresh race ----------
+
+  it('refresh re-reads the token from storage, picking up a cross-tab rotation', async () => {
+    const refresh = vi.fn(async () => ({
+      access_token: farFuture,
+      refresh_token: 'rt-final',
+    }));
+    const mgr = track(
+      createBearerSessionManager<Tokens>({
+        storageKey: 'rotate.session',
+        storage: 'localStorage',
+        selectors: baseSelectors,
+        refresh,
+      }),
+    );
+    mgr.setSession({ access_token: farFuture, refresh_token: 'rt1' });
+
+    // Another tab rotated the refresh token: it wrote the new value to the shared
+    // localStorage. A same-tab write fires no `storage` event, so THIS manager's in-memory
+    // refresh token stays stale at 'rt1' — exactly the single-use-rotation race window.
+    const otherTab = createBearerSessionManager<Tokens>({
+      storageKey: 'rotate.session',
+      storage: 'localStorage',
+      selectors: baseSelectors,
+      refresh: async () => null,
+    });
+    otherTab.setSession({ access_token: farFuture, refresh_token: 'rt-rotated' });
+    otherTab.dispose();
+
+    await mgr.ensureFreshSession();
+
+    // performRefresh re-read storage → refreshed with the rotated token, not the stale 'rt1'.
+    expect(refresh).toHaveBeenCalledWith('rt-rotated');
+  });
+
+  it('clears the session when storage was emptied before the refresh runs', async () => {
+    const refresh = vi.fn(async () => null);
+    const mgr = track(
+      createBearerSessionManager<Tokens>({
+        storageKey: 'emptied.session',
+        storage: 'localStorage',
+        selectors: baseSelectors,
+        refresh,
+      }),
+    );
+    mgr.setSession({ access_token: farFuture, refresh_token: 'rt1' });
+
+    // Another tab logged out (cleared the key) without this manager seeing the event yet.
+    window.localStorage.removeItem('emptied.session');
+
+    const ok = await mgr.ensureFreshSession();
+    expect(ok).toBe(false);
+    expect(refresh).not.toHaveBeenCalled(); // no stale-token request
+    expect(mgr.getAccessToken()).toBeNull();
+  });
+
+  it('serialises the refresh through navigator.locks when the API is available', async () => {
+    const lockNames: string[] = [];
+    const request = vi.fn((name: string, cb: () => Promise<unknown>) => {
+      lockNames.push(name);
+      return cb();
+    });
+    vi.stubGlobal('navigator', { locks: { request } });
+
+    try {
+      const refresh = vi.fn(async () => ({
+        access_token: farFuture,
+        refresh_token: 'rt2',
+      }));
+      const mgr = track(
+        createBearerSessionManager<Tokens>({
+          storageKey: 'locked.session',
+          selectors: baseSelectors,
+          refresh,
+        }),
+      );
+      mgr.setSession({ access_token: farFuture, refresh_token: 'rt1' });
+
+      const ok = await mgr.ensureFreshSession();
+      expect(ok).toBe(true);
+      expect(refresh).toHaveBeenCalledTimes(1);
+      // Lock name is scoped to storageKey so distinct sessions never block each other.
+      expect(lockNames).toEqual(['react33.session.refresh:locked.session']);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
 });

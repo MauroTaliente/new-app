@@ -425,6 +425,14 @@ When `storage: 'localStorage'`, the manager subscribes to `storage` events for i
 
 With `storage: 'sessionStorage'` (default), this is a no-op by browser design: `sessionStorage` is per-tab.
 
+### Cross-tab refresh lock (rotating refresh tokens)
+
+`ensureFreshSession()` runs the refresh under a **cross-tab lock** (the [Web Locks API](https://developer.mozilla.org/docs/Web/API/Web_Locks_API)) — the cross-tab counterpart of the in-tab single-flight guard. The lock name is scoped to `storageKey`, so distinct sessions never block each other.
+
+This matters when the backend issues **single-use rotating refresh tokens** (OAuth 2.0 BCP): without the lock, two tabs whose access tokens expire together both refresh with the *same* token — one wins, the other's request is rejected and clears the session, and that storage clear cascades the logout back to the winning tab. With the lock, only one tab refreshes at a time; each waiting tab then **re-reads the refresh token from storage**, so it spends the freshly rotated token, not the stale one. No spurious logout, no cascade.
+
+When `navigator.locks` is unavailable (older browsers, SSR), it degrades gracefully to the in-tab guard.
+
 ## Lifecycle: `dispose()`
 
 The manager returns a `dispose()` method that detaches the cross-tab subscriber. Long-lived managers (one per app) can ignore it. Tests, transient components, or code that replaces the manager instance should call it.
