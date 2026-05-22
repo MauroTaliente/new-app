@@ -30,7 +30,7 @@ describe('writeOpenApiBundles', () => {
               openApi: {
                 files: {
                   pokemon: {
-                    input: './openapi/pokeapi.openapi.yaml',
+                    specSource: './openapi/pokeapi.openapi.yaml',
                     scope: 'pokemon',
                     basePath: '/api/v2',
                     typesOutput: join(tmp, 't.ts'),
@@ -69,7 +69,7 @@ describe('writeOpenApiBundles', () => {
               openApi: {
                 files: {
                   pokemon: {
-                    input: './openapi/pokeapi.openapi.yaml',
+                    specSource: './openapi/pokeapi.openapi.yaml',
                     scope: 'pokemon',
                     basePath: '/api/v2',
                     typesOutput: '',

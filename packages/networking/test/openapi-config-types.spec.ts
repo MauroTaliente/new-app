@@ -8,7 +8,7 @@ describe('readReact33OpenApiConfig', () => {
   it('returns openApi when files map exists', () => {
     const cfg = readReact33OpenApiConfig({
       react33Networking: {
-        openApi: { files: { demo: { input: './x.yaml', scope: 'demo' } } },
+        openApi: { files: { demo: { specSource: './x.yaml', scope: 'demo' } } },
       },
     });
     expect(cfg?.files.demo.scope).toBe('demo');

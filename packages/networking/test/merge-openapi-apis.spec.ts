@@ -26,7 +26,7 @@ describe('mergeOpenApiIntoApisConfig', () => {
           openApi: {
             files: {
               pokemon: {
-                input: './openapi/pokeapi.openapi.yaml',
+                specSource: './openapi/pokeapi.openapi.yaml',
                 scope: 'pokemon',
                 basePath: '/api/v2',
                 typesOutput: './src/api/pokemon.openapi.types.ts',
@@ -57,7 +57,7 @@ describe('mergeOpenApiIntoApisConfig', () => {
           openApi: {
             files: {
               pokemon: {
-                input: './openapi/pokeapi.openapi.yaml',
+                specSource: './openapi/pokeapi.openapi.yaml',
                 scope: 'pokemon',
                 basePath: '/api/v2',
                 typesOutput: './t.ts',

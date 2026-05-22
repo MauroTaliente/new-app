@@ -25,13 +25,13 @@ export async function writeOpenApiBundles(
   for (const [bundleKey, fileConfig] of Object.entries(openApi.files)) {
     validateFileConfig(fileConfig, apiNames, bundleKey);
 
-    const specPath = resolve(configDir, fileConfig.input);
+    const specPath = resolve(configDir, fileConfig.specSource);
     const zodPath = resolve(configDir, fileConfig.zodOutput);
     const typesPath = resolve(configDir, fileConfig.typesOutput);
     const sdkPath = resolve(configDir, fileConfig.sdkOutput);
     const hooksOutPath = resolve(configDir, fileConfig.hooksOutput);
-    const initDataPath = fileConfig.initData?.input
-      ? resolve(configDir, fileConfig.initData.input)
+    const initDataPath = fileConfig.initData?.source
+      ? resolve(configDir, fileConfig.initData.source)
       : undefined;
 
     const outputs = await generateOpenApiBundle(specPath, fileConfig, {

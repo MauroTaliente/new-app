@@ -19,13 +19,13 @@ describe('readReact33ThemeConfig', () => {
         react33Theme: {
           cookieName: 'demo-theme',
           persistenceMode: 'cookie',
-          generatedRuntimeOutput: './out/theme.runtime.generated.ts',
+          runtimeOutput: './out/theme.runtime.generated.ts',
         },
       }),
     ).toEqual({
       cookieName: 'demo-theme',
       persistenceMode: 'cookie',
-      generatedRuntimeOutput: './out/theme.runtime.generated.ts',
+      runtimeOutput: './out/theme.runtime.generated.ts',
     });
   });
 });
@@ -71,8 +71,8 @@ describe('writeThemeRuntimeFromConfig', () => {
       JSON.stringify({
         react33Theme: {
           cookieName: 't',
-          generatedRuntimeOutput: './out/theme.runtime.generated.ts',
-          stylesGeneratedImport: './styles.generated.ts',
+          runtimeOutput: './out/theme.runtime.generated.ts',
+          stylesModule: './styles.generated.ts',
         },
       }),
     );

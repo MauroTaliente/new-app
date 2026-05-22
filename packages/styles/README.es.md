@@ -16,17 +16,17 @@ Si abrís solo una subcarpeta como workspace o usás otro editor, podés declara
 
 Schema global de `react33.config.json`: paquete [`@react33/react-config`](../config) (no este paquete).
 
-Usá un objeto `react33Styles` con `fromCss`, `output` (ruta del `.ts` generado), `domainsOrder`, `excludeStems`, `metaSourceStem`, `banner`, `verbose`, `watch`, etc. (ejemplos completos en [README.en.md](README.en.md)).
+Usá un objeto `react33Styles` con `cssDir`, `stylesOutput` (ruta del `.ts` generado), `domainsOrder`, `excludeStems`, `metaSourceStem`, `banner`, `verbose`, `watch`, etc. (ejemplos completos en [README.en.md](README.en.md)).
 
 ### Rutas
 
-- `fromCss`, `output`, `outputDir` se resuelven **respecto al directorio del archivo de config** (como `tsconfig.json`).
+- `cssDir`, `stylesOutput` se resuelven **respecto al directorio del archivo de config** (como `tsconfig.json`).
 
 ### Orden de dominios (cascada / `var()`)
 
 1. **`--domains` en el CLI** (máxima prioridad)
 2. **`react33Styles.domainsOrder`** en el config
-3. **Si no**: todos los `*.css` en `fromCss`, orden **A→Z** por nombre. Se ignoran `*.generated.css`. **`excludeStems`** solo aplica en este modo de descubrimiento automático.
+3. **Si no**: todos los `*.css` en `cssDir`, orden **A→Z** por nombre. Se ignoran `*.generated.css`. **`excludeStems`** solo aplica en este modo de descubrimiento automático.
 
 ### Valores por defecto incluidos (`packages/styles/defaults`)
 

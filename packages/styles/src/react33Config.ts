@@ -13,19 +13,15 @@ export const REACT33_CONFIG_FILENAMES = [
  * Paths are resolved relative to the config file directory (same idea as tsconfig).
  */
 export type React33StylesConfigSection = {
-  /** Directory containing `*.css` sources. */
-  fromCss?: string;
+  /** Directory containing `*.css` sources. Read path — relative to the config file. */
+  cssDir?: string;
   /**
    * Cascade order (stems without `.css`).
-   * Omit to compile **every** `*.css` in `fromCss`, sorted **A–Z** by filename (locale: en, base sensitivity).
+   * Omit to compile **every** `*.css` in `cssDir`, sorted **A–Z** by filename (locale: en, base sensitivity).
    */
   domainsOrder?: string[];
-  /** Single output path for the generated `.ts` file. */
-  output?: string;
-  /** Directory for the generated file (used with `outputFile`). */
-  outputDir?: string;
-  /** Default: `styles.generated.ts` */
-  outputFile?: string;
+  /** Output path for the generated styles module. Write path — relative to the config file. */
+  stylesOutput?: string;
   /**
    * Stems (file names without `.css`) skipped when **auto-discovering** domains.
    * Ignored when `domainsOrder` is set.
@@ -33,7 +29,7 @@ export type React33StylesConfigSection = {
   excludeStems?: string[];
   /** First line(s) of the generated `.ts` (replaces the default “Auto-generated…” banner). */
   banner?: string;
-  /** Log resolved config path, `fromCss`, domain order, and output path. */
+  /** Log resolved config path, `cssDir`, domain order, and output path. */
   verbose?: boolean;
   /**
    * Which CSS file supplies `@theme` meta (`--theme-default`, `--theme-cols`) and cols fallback.
@@ -41,7 +37,7 @@ export type React33StylesConfigSection = {
    */
   metaSourceStem?: string;
   /**
-   * Watch `fromCss` and regenerate on change (same as CLI `--watch`).
+   * Watch `cssDir` and regenerate on change (same as CLI `--watch`).
    * CLI `--watch` wins when passed.
    */
   watch?: boolean;

@@ -16,7 +16,7 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const demoYaml = resolve(testDir, '../../config/data/fixtures/openapi-3.1-demo.yaml');
 
 const fileConfig = {
-  input: demoYaml,
+  specSource: demoYaml,
   scope: 'admin',
   basePath: '/v1',
   typesOutput: './demo.openapi.types.ts',
@@ -105,7 +105,7 @@ describe('generateOpenApi sources', () => {
   it('emits .nullable() for OpenAPI nullable paginated fields (pokeapi)', async () => {
     const pokeapiYaml = resolve(testDir, '../../../apps/demo/openapi/pokeapi.openapi.yaml');
     const pokeapiFileConfig = {
-      input: pokeapiYaml,
+      specSource: pokeapiYaml,
       scope: 'pokemon',
       basePath: '/api/v2',
       typesOutput: './pokemon.openapi.types.ts',
@@ -123,7 +123,7 @@ describe('generateOpenApi sources', () => {
   it('generates init-data module when initData.generate is true', async () => {
     const bundle = await generateOpenApiBundle(
       demoYaml,
-      { ...fileConfig, initData: { input: './demo.init-data.ts', generate: true } },
+      { ...fileConfig, initData: { source: './demo.init-data.ts', generate: true } },
       {
         zod: '/tmp/demo.openapi.zod.ts',
         types: '/tmp/demo.openapi.types.ts',

@@ -20,7 +20,7 @@ export type OpenApiOperationConfig = {
 };
 
 export type OpenApiInitDataConfig = {
-  input: string;
+  source: string;
   generate?: boolean;
 };
 
@@ -32,7 +32,7 @@ export type OpenApiClientConfig = {
 };
 
 export type OpenApiFileConfig = {
-  input: string;
+  specSource: string;
   scope: string;
   typesOutput: string;
   zodOutput: string;

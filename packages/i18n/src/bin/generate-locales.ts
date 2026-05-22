@@ -13,8 +13,8 @@ function parseArgs(): { config: string } {
       console.log(`Usage: react-i18n-generate [--config react33.config.json]
 
 Reads react33I18n from react33.config.json and writes:
-  - generatedTypesOutput (default ./src/lib/i18n/i18n.generated.ts)
-  - generatedRuntimeOutput (default ./src/lib/i18n/i18n.runtime.generated.tsx)`);
+  - typesOutput (default ./src/lib/i18n/i18n.generated.ts)
+  - runtimeOutput (default ./src/lib/i18n/i18n.runtime.generated.tsx)`);
       process.exit(0);
     }
   }

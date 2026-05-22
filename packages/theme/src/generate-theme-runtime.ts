@@ -89,9 +89,9 @@ export function writeThemeRuntimeFromConfig(options: {
     return { skipped: true };
   }
 
-  const outRel = config.generatedRuntimeOutput ?? './src/theme/theme.runtime.generated.ts';
+  const outRel = config.runtimeOutput ?? './src/theme/theme.runtime.generated.ts';
   const outputPath = resolve(configDir, outRel);
-  const stylesImportPath = config.stylesGeneratedImport ?? './styles.generated';
+  const stylesImportPath = config.stylesModule ?? './styles.generated';
 
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(

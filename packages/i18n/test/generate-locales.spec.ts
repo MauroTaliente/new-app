@@ -22,14 +22,14 @@ describe('readReact33I18nConfig', () => {
         react33I18n: {
           defaultLocale: 'es',
           locales: ['es', 'en'],
-          localesDirectory: './locales',
+          localesDir: './locales',
           cookieName: 'locale',
         },
       }),
     ).toEqual({
       defaultLocale: 'es',
       locales: ['es', 'en'],
-      localesDirectory: './locales',
+      localesDir: './locales',
       cookieName: 'locale',
     });
   });
@@ -52,7 +52,7 @@ describe('emitI18nGeneratedSource', () => {
       {
         defaultLocale: 'es',
         locales: ['es', 'en'],
-        localesDirectory: './locales',
+        localesDir: './locales',
         cookieName: 'locale',
         persistenceMode: 'cookie',
       },
@@ -72,7 +72,7 @@ describe('emitI18nRuntimeGeneratedSource', () => {
       {
         defaultLocale: 'es',
         locales: ['es'],
-        localesDirectory: './locales',
+        localesDir: './locales',
         persistenceEnvKey: 'NEXT_PUBLIC_LOCALE_PERSISTENCE',
         runtimeMode: 'spa',
       },
@@ -89,7 +89,7 @@ describe('emitI18nRuntimeGeneratedSource', () => {
       {
         defaultLocale: 'es',
         locales: ['es', 'en'],
-        localesDirectory: './locales',
+        localesDir: './locales',
         cookieName: 'locale',
         persistenceMode: 'cookie',
         runtimeMode: 'spa',
@@ -118,7 +118,7 @@ describe('emitI18nRuntimeGeneratedSource', () => {
       {
         defaultLocale: 'es',
         locales: ['es'],
-        localesDirectory: './locales',
+        localesDir: './locales',
         persistenceEnvKey: '',
         runtimeMode: 'spa',
       },
@@ -141,9 +141,9 @@ describe('writeI18nFromConfig', () => {
         react33I18n: {
           defaultLocale: 'es',
           locales: ['es'],
-          localesDirectory: './locales',
-          generatedTypesOutput: './out/i18n.generated.ts',
-          generatedRuntimeOutput: './out/i18n.runtime.generated.tsx',
+          localesDir: './locales',
+          typesOutput: './out/i18n.generated.ts',
+          runtimeOutput: './out/i18n.runtime.generated.tsx',
         },
       }),
     );

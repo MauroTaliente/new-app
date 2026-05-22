@@ -27,14 +27,14 @@ Peers: `react`, `next` (opcional para apps solo con core).
 
 ## `react33.config.json`
 
-`react33I18n` comparte con `react33Theme` el bloque **`react33Persistence`**: `cookieName`, `localStorageKey`, `persistenceMode`, `persistenceEnvKey` opcional (ver `@react33/react-config` → `$defs.react33Persistence`). Además: `defaultLocale`, `locales`, `localesDirectory`, `generatedTypesOutput`, `generatedRuntimeOutput`, `runtimeMode`, `urlLocalePattern`, etc.
+`react33I18n` comparte con `react33Theme` el bloque **`react33Persistence`**: `cookieName`, `localStorageKey`, `persistenceMode`, `persistenceEnvKey` opcional (ver `@react33/react-config` → `$defs.react33Persistence`). Además: `defaultLocale`, `locales`, `localesDir`, `typesOutput`, `runtimeOutput`, `runtimeMode`, `urlLocalePattern`, etc.
 
 ### Codegen (`react-i18n-generate`)
 
 CLI y tercer paso de **`react-generate`**. Escribe:
 
-- `generatedTypesOutput` — constantes, `resolveLocaleOptions`, tipos desde `locales/<defaultLocale>.ts`.
-- `generatedRuntimeOutput` — `dictionaries`, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (`@react33/react-i18n/client`).
+- `typesOutput` — constantes, `resolveLocaleOptions`, tipos desde `locales/<defaultLocale>.ts`.
+- `runtimeOutput` — `dictionaries`, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (`@react33/react-i18n/client`).
 
 ### Override por env (`persistenceEnvKey`)
 
@@ -53,7 +53,7 @@ Guía completa: **[Variables de persistencia en el cliente](../../docs/persisten
 react-i18n-generate --config react33.config.json
 ```
 
-Los diccionarios siguen siendo fuente en tu app (`localesDirectory`); el generador no traduce ni duplica strings.
+Los diccionarios siguen siendo fuente en tu app (`localesDir`); el generador no traduce ni duplica strings.
 
 ### Runtime SPA (`@react33/react-i18n/client`)
 

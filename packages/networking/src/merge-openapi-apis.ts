@@ -25,7 +25,7 @@ async function deriveApiFromOpenApiFile(
   configDir: string,
   fileConfig: OpenApiFileConfig,
 ): Promise<ApiDefinitionJson> {
-  const specPath = resolve(configDir, fileConfig.input);
+  const specPath = resolve(configDir, fileConfig.specSource);
   const parsed = await parseOpenApiFile(specPath, fileConfig);
   const url = deriveClientBaseUrl(parsed.document, fileConfig.basePath);
   return toApiDefinition(fileConfig.client, url);

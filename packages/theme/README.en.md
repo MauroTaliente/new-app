@@ -10,7 +10,7 @@ Alongside `react33Styles`, **`react33Theme`** shares **`react33Persistence`** wi
 
 ### Codegen (`react-theme-generate`)
 
-Fourth step of **`react-generate`** (after styles). Writes **`generatedRuntimeOutput`** (default `./src/theme/theme.runtime.generated.ts`): `createThemePersistence`, `ThemeProvider`, hooks, `getInitialTheme`, `persistTheme`.
+Fourth step of **`react-generate`** (after styles). Writes **`runtimeOutput`** (default `./src/theme/theme.runtime.generated.ts`): `createThemePersistence`, `ThemeProvider`, hooks, `getInitialTheme`, `persistTheme`.
 
 ```bash
 react-theme-generate --config react33.config.json

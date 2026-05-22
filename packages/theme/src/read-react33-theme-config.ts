@@ -6,8 +6,8 @@ export type React33ThemeConfig = {
   cookiePath?: string;
   cookieMaxAgeSeconds?: number;
   cookieSameSite?: 'strict' | 'lax' | 'none';
-  generatedRuntimeOutput?: string;
-  stylesGeneratedImport?: string;
+  runtimeOutput?: string;
+  stylesModule?: string;
 };
 
 export function readReact33ThemeConfig(json: unknown): React33ThemeConfig | null {
@@ -34,11 +34,11 @@ export function readReact33ThemeConfig(json: unknown): React33ThemeConfig | null
     cfg.cookieSameSite === 'none'
       ? { cookieSameSite: cfg.cookieSameSite }
       : {}),
-    ...(typeof cfg.generatedRuntimeOutput === 'string'
-      ? { generatedRuntimeOutput: cfg.generatedRuntimeOutput }
+    ...(typeof cfg.runtimeOutput === 'string'
+      ? { runtimeOutput: cfg.runtimeOutput }
       : {}),
-    ...(typeof cfg.stylesGeneratedImport === 'string'
-      ? { stylesGeneratedImport: cfg.stylesGeneratedImport }
+    ...(typeof cfg.stylesModule === 'string'
+      ? { stylesModule: cfg.stylesModule }
       : {}),
   };
 }

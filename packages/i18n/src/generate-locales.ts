@@ -252,7 +252,7 @@ export async function writeI18nFromConfig(options: {
   }
 
   const loadLocale = options.loadLocale ?? loadLocaleModule;
-  const localesDir = resolve(configDir, config.localesDirectory);
+  const localesDir = resolve(configDir, config.localesDir);
   const sourcePath = resolve(localesDir, `${config.defaultLocale}.ts`);
   let localeStructure: LocaleStructure = {};
   try {
@@ -263,17 +263,17 @@ export async function writeI18nFromConfig(options: {
     console.warn(`react-i18n-generate: could not load ${sourcePath} for types (${message})`);
   }
 
-  const outRel = config.generatedTypesOutput ?? './src/lib/i18n/i18n.generated.ts';
+  const outRel = config.typesOutput ?? './src/lib/i18n/i18n.generated.ts';
   const outputPath = resolve(configDir, outRel);
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, emitI18nGeneratedSource(config, localeStructure), 'utf8');
 
   const runtimeRel =
-    config.generatedRuntimeOutput ?? './src/lib/i18n/i18n.runtime.generated.tsx';
+    config.runtimeOutput ?? './src/lib/i18n/i18n.runtime.generated.tsx';
   const runtimeOutputPath = resolve(configDir, runtimeRel);
   const runtimeDir = dirname(runtimeOutputPath);
   const typesImportPath = relativeImport(runtimeDir, outputPath);
-  const localesRoot = resolve(configDir, config.localesDirectory);
+  const localesRoot = resolve(configDir, config.localesDir);
   const localeImports = config.locales.map((code) => ({
     code,
     importPath: relativeImport(runtimeDir, resolve(localesRoot, `${code}.ts`)),

@@ -13,9 +13,9 @@ Detalle y ejemplos: [README.en.md](README.en.md#useasyncfetch).
 
 ## Generador de APIs (`apis`)
 
-Declará **`react33Networking.apis`** como objeto (nombre → `{ url, headers?, … }`). Definí **`react33Networking.output`** con la ruta de **`apis.generated.ts`** (relativa al `react33.config.json`). El módulo de hooks cliente por defecto es **`apis.client.generated.tsx`** (u otra ruta con **`hooksOutput`**).
+Declará **`react33Networking.apis`** como objeto (nombre → `{ url, headers?, … }`). Definí **`react33Networking.registryOutput`** con la ruta de **`apis.generated.ts`** (relativa al `react33.config.json`). El módulo de hooks cliente por defecto es **`apis.client.generated.tsx`** (u otra ruta con **`hooksOutput`**).
 
-Ejecutá **`react-networking-generate --config react33.config.json`** o **`react-generate`**. El flag **`--output`** sobrescribe **`output`** del JSON.
+Ejecutá **`react-networking-generate --config react33.config.json`** o **`react-generate`**. El flag **`--output`** sobrescribe **`registryOutput`** del JSON.
 
 ## OpenAPI 3.1 codegen
 
@@ -27,7 +27,7 @@ Añadí **`react33Networking.openApi.files`** (ver schema en `@react33/react-con
 | `*.openapi.types.ts` | `z.infer` + `{Operación}HookOverrides` |
 | `*.openapi.ts` | SDK server-safe (`pokemonList`, …) → `{scope}Request` |
 | `*.openapi.client.tsx` | `usePokemonList`, … vía `use{Scope}Request` |
-| `initData.input` | Módulo TS con constantes (`operations.*.initData` elige el símbolo) |
+| `initData.source` | Módulo TS con constantes (`operations.*.initData` elige el símbolo) |
 
 Ejemplo mínimo (2 operaciones PokeAPI en la demo):
 
@@ -35,7 +35,7 @@ Ejemplo mínimo (2 operaciones PokeAPI en la demo):
 "openApi": {
   "files": {
     "pokemon": {
-      "input": "./openapi/pokeapi.openapi.yaml",
+      "specSource": "./openapi/pokeapi.openapi.yaml",
       "scope": "pokemon",
       "basePath": "/api/v2",
       "include": { "operationIds": ["pokemon_list", "pokemon_retrieve"] },

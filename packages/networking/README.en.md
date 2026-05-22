@@ -106,7 +106,7 @@ For apps that already use `react33.config.json`, declare **`react33Networking.ap
 }
 ```
 
-Set **`react33Networking.output`** in `react33.config.json` (path relative to the config file) for the server-safe module, or pass **`--output`** on the CLI (CLI wins). Optional **`react33Networking.hooksOutput`** overrides the client hooks path; otherwise it is derived next to `apis.generated.ts` as **`apis.client.generated.tsx`**.
+Set **`react33Networking.registryOutput`** in `react33.config.json` (path relative to the config file) for the server-safe module, or pass **`--output`** on the CLI (CLI wins). Optional **`react33Networking.hooksOutput`** overrides the client hooks path; otherwise it is derived next to `apis.generated.ts` as **`apis.client.generated.tsx`**.
 
 Then run the generator (after `@react33/react-networking` is built):
 
@@ -133,7 +133,7 @@ Add `react33Networking.openApi.files` in `react33.config.json` (see `@react33/re
 - `*.openapi.types.ts` — `z.infer` types + `{Operation}HookOverrides`
 - `*.openapi.ts` — server-safe SDK (`listTrips`, …) calling `{scope}Request`
 - `*.openapi.client.tsx` — `useListTrips` hooks via `use{Scope}Request`
-- optional `initData.input` — constants module wired from `operations.<id>.initData`
+- optional `initData.source` — constants module wired from `operations.<id>.initData`
 
 `react-networking-generate` emits the above after `apis.generated.ts`. **Auth stays in `createApiRegistry` `loads` / `AuthProfile`** — generated SDK functions only include `@openapi-security` JSDoc hints from the spec, not tokens.
 

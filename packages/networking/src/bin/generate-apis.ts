@@ -23,7 +23,7 @@ function parseArgs(): { config: string; outputCli: string | undefined } {
       outputCli = args[++i] ?? outputCli;
     } else if (a === '--help' || a === '-h') {
       console.log(`Usage: react-networking-generate [--config react33.config.json] [--output src/api/apis.generated.ts]
-Paths: CLI --output overrides react33Networking.output in config; default is src/api/apis.generated.ts (cwd-relative).
+Paths: CLI --output overrides react33Networking.registryOutput in config; default is src/api/apis.generated.ts (cwd-relative).
 Reads react33Networking.apis (object keyed by API name) and emits:
   - apis.generated.ts: createApiRegistry, export const apis, export const *Request per API
   - apis.client.generated.tsx: 'use client' + use*Request hooks (useAsyncFetch + apis.*)
@@ -42,7 +42,8 @@ async function run() {
 
   const raw = readFileSync(configPath, 'utf8');
   const json = JSON.parse(raw) as unknown;
-  const { output: outputFromConfig, hooksOutput: hooksFromConfig } = readReact33NetworkingOutputPaths(json);
+  const { registryOutput: outputFromConfig, hooksOutput: hooksFromConfig } =
+    readReact33NetworkingOutputPaths(json);
 
   let outputPath: string;
   if (outputCli !== undefined) {

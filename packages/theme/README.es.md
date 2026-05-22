@@ -10,7 +10,7 @@ Junto a `react33Styles`, **`react33Theme`** comparte **`react33Persistence`** co
 
 ### Codegen (`react-theme-generate`)
 
-Cuarto paso de **`react-generate`**. Escribe `generatedRuntimeOutput` con Provider, hooks y persistencia.
+Cuarto paso de **`react-generate`**. Escribe `runtimeOutput` con Provider, hooks y persistencia.
 
 ### Override por env (`persistenceEnvKey`)
 

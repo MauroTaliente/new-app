@@ -81,7 +81,7 @@ export type ResolvedDomainPath = { stem: string; filePath: string };
  * Merges CLI options + `react33.config.json` / `react33-styles.config.json` (`react33Styles` section).
  * Paths in config are relative to the **config file directory**.
  *
- * **Order of stems**: CLI `--domains` > config `domainsOrder` > all `*.css` in `fromCss`, **alphabetically** (en).
+ * **Order of stems**: CLI `--domains` > config `domainsOrder` > all `*.css` in `cssDir`, **alphabetically** (en).
  */
 export function resolveGenerateOptions(options: GenerateTokensOptions = {}): ResolvedGenerateOptions {
   const cwd = options.cwd ?? process.cwd();
@@ -105,7 +105,7 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
 
   const fromCssDir = path.resolve(
     options.fromCssDir ??
-      (configSection.fromCss ? resolvePathFromConfigBase(configSection.fromCss, configDir, cwd) : undefined) ??
+      (configSection.cssDir ? resolvePathFromConfigBase(configSection.cssDir, configDir, cwd) : undefined) ??
       defaultDir,
   );
 
@@ -134,7 +134,7 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
     }
   }
 
-  const outputFileName = configSection.outputFile ?? 'styles.generated.ts';
+  const outputFileName = 'styles.generated.ts';
 
   let outputStyles: string | undefined;
   if (options.outputStyles) {
@@ -143,13 +143,8 @@ export function resolveGenerateOptions(options: GenerateTokensOptions = {}): Res
       : path.resolve(cwd, options.outputStyles);
   } else if (options.outputDir) {
     outputStyles = path.join(options.outputDir, outputFileName);
-  } else if (configSection.output) {
-    outputStyles = resolvePathFromConfigBase(configSection.output, configDir, cwd);
-  } else if (configSection.outputDir) {
-    outputStyles = path.join(
-      resolvePathFromConfigBase(configSection.outputDir, configDir, cwd),
-      outputFileName,
-    );
+  } else if (configSection.stylesOutput) {
+    outputStyles = resolvePathFromConfigBase(configSection.stylesOutput, configDir, cwd);
   } else {
     outputStyles = path.join(cwd, outputFileName);
   }
@@ -243,7 +238,7 @@ export async function generateTokens(options: GenerateTokensOptions = {}): Promi
   if (merged.verbose) {
     console.log('[react-styles-generate] Resolved:');
     if (merged.configPath) console.log('  config:', merged.configPath);
-    console.log('  fromCss:', merged.fromCssDir);
+    console.log('  cssDir:', merged.fromCssDir);
     console.log('  domains (cascade):', orderedStems.join(' → '));
     console.log('  output:', outStyles);
   }

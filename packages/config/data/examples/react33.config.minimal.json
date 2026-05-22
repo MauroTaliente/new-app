@@ -1,21 +1,21 @@
 {
   "$schema": "../../react33.config.schema.json",
   "react33Styles": {
-    "fromCss": "./theme",
+    "cssDir": "./theme",
     "domainsOrder": ["tokens", "palette", "theme"],
-    "output": "./theme/styles.generated.ts"
+    "stylesOutput": "./theme/styles.generated.ts"
   },
   "react33I18n": {
     "defaultLocale": "es",
     "locales": ["es", "en"],
-    "localesDirectory": "./locales",
+    "localesDir": "./locales",
     "persistenceMode": "cookie"
   },
   "react33Theme": {
     "persistenceMode": "localStorage"
   },
   "react33Networking": {
-    "output": "./api/apis.generated.ts",
+    "registryOutput": "./api/apis.generated.ts",
     "hooksOutput": "./api/apis.client.generated.tsx",
     "apis": {
       "public": {

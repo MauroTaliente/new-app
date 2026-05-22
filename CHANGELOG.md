@@ -193,7 +193,7 @@ All bumps are additive (no breaking changes); upgrade independently.
 - **`@react33/react-i18n`**: **`react-i18n-generate`** also writes **`i18n.runtime.generated.tsx`** (`dictionaries`, runtime hooks, `getInitialLocale`, `persistLocale`).
 - **`@react33/react-theme`**: **`createThemePersistence`**, **`react-theme-generate`** → **`theme.runtime.generated.ts`** (Provider, hooks, persistence).
 - **`@react33/react-generate`**: fourth step — **`react-theme-generate`** (after styles + i18n).
-- **`react33.config.json`**: `generatedRuntimeOutput`, `runtimeMode` (i18n), `stylesGeneratedImport` (theme).
+- **`react33.config.json`**: `runtimeOutput`, `runtimeMode` (i18n), `stylesModule` (theme).
 - **`apps/demo`**: wired locale + theme via generated runtimes (`src/lib/i18n.ts`, `src/lib/theme.ts`); removed manual `theme/runtime.ts` and `themePersistence.ts`.
 
 ### Added (previous)
@@ -215,6 +215,7 @@ All bumps are additive (no breaking changes); upgrade independently.
 
 - **Config schema host:** `react33.config.schema.json` moved from `@react33/react-styles` to **`@react33/react-config`** (`react33-i18n.config.schema.json` included). Update `$schema`, `.vscode/settings.json`, and `pnpm add -D @react33/react-config` in apps.
 - **Config contract:** `lib.config.json` → **`react33.config.json`**; JSON sections `libStyles` / `libI18n` / `libTheme` / `libNetworking` / `libPersistence` → **`react33Styles`** / **`react33I18n`** / **`react33Theme`** / **`react33Networking`** / **`react33Persistence`**. Partial configs: `react33-styles.config.json`. Schema export: `@react33/react-config/react33.config.schema.json`. Monorepo folder `packages/lib-generate` → **`packages/react-generate`**.
+- **Config key naming convention:** every path-like key in `react33.config.json` now carries a role+kind suffix — `*Output` (file written, relative to the config file), `*Source` (file read, relative to the config file), `*Dir` (directory scanned, relative to the config file), `*Module` (module specifier relative to the generated file it is emitted into). v0 — **no backward-compat aliases**. Renames: `react33Styles.fromCss` → `cssDir`, `react33Styles.output` → `stylesOutput` (`outputDir` + `outputFile` removed — use a full path in `stylesOutput`); `react33I18n.localesDirectory` → `localesDir`, `generatedTypesOutput` → `typesOutput`, `generatedRuntimeOutput` → `runtimeOutput`; `react33Theme.generatedRuntimeOutput` → `runtimeOutput`, `stylesGeneratedImport` → `stylesModule`; `react33Networking.output` → `registryOutput`; `react33Networking.openApi.files.*.input` → `specSource`, `initData.input` → `initData.source`; `react33Session.generatedRuntimeOutput` → `runtimeOutput`. Update `react33.config.json` in every app. Codegen output is unchanged — regeneration produces byte-identical files.
 
 ### Changed
 

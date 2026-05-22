@@ -27,20 +27,20 @@ Peers: `react`, `next` (optional for core-only apps).
 
 ## `react33.config.json`
 
-`react33I18n` shares the **`react33Persistence`** block with `react33Theme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-config` `react33.config.schema.json` → `$defs.react33Persistence`). Also: `defaultLocale`, `locales`, `localesDirectory`, `generatedTypesOutput`, `urlLocalePattern`, etc.
+`react33I18n` shares the **`react33Persistence`** block with `react33Theme`: `cookieName`, `localStorageKey`, `persistenceMode` (see `@react33/react-config` `react33.config.schema.json` → `$defs.react33Persistence`). Also: `defaultLocale`, `locales`, `localesDir`, `typesOutput`, `urlLocalePattern`, etc.
 
 ### Codegen (`react-i18n-generate`)
 
 CLI and the third step of **`react-generate`**. Reads `react33I18n` and writes:
 
-- `generatedTypesOutput` (default `./src/lib/i18n/i18n.generated.ts`) — locale constants, `resolveLocaleOptions`, scoped message key types.
-- `generatedRuntimeOutput` (default `./src/lib/i18n/i18n.runtime.generated.tsx`) — `dictionaries` barrel, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (uses `@react33/react-i18n/client`).
+- `typesOutput` (default `./src/lib/i18n/i18n.generated.ts`) — locale constants, `resolveLocaleOptions`, scoped message key types.
+- `runtimeOutput` (default `./src/lib/i18n/i18n.runtime.generated.tsx`) — `dictionaries` barrel, `LocaleProvider`, hooks, `getInitialLocale`, `persistLocale` (uses `@react33/react-i18n/client`).
 
 ```bash
 react-i18n-generate --config react33.config.json
 ```
 
-Dictionaries remain source in your app (`localesDirectory`); the generator does not translate strings.
+Dictionaries remain source in your app (`localesDir`); the generator does not translate strings.
 
 ### SPA runtime (`@react33/react-i18n/client`)
 
