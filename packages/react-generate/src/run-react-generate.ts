@@ -6,9 +6,13 @@ export const REACT_GENERATE_HELP = `Usage: react-generate [options...]
 
 Runs in order:
   1) react-styles-generate — same flags as standalone (see react-styles-generate --help)
-  2) react-networking-generate — uses --config / --output from argv if present
-  3) react-i18n-generate — uses --config from argv if present
-  4) react-theme-generate — uses --config from argv if present
+  2) react-session-generate — uses --config from argv if present
+  3) react-networking-generate — uses --config / --output from argv if present
+  4) react-i18n-generate — uses --config from argv if present
+  5) react-theme-generate — uses --config from argv if present
+
+Note: react-session-generate runs before react-networking-generate — the generated
+API registry imports \`apiRuntime\` from the generated session module.
 
 Typical app (cwd next to react33.config.json):
   react-generate
@@ -19,6 +23,7 @@ With explicit config path:
 
 export type RunReactGenerateOptions = {
   stylesBin: string;
+  sessionBin: string;
   networkingBin: string;
   i18nBin: string;
   themeBin: string;
@@ -44,7 +49,7 @@ export function runReactGenerate(argv: string[], options: RunReactGenerateOption
   const stylesRun = spawn(execPath, [options.stylesBin, ...argv], {
     stdio: 'inherit',
     cwd,
-  }) as SpawnSyncReturns<string>;
+  }) as unknown as SpawnSyncReturns<string>;
   if (stylesRun.status !== 0) {
     return stylesRun.status ?? 1;
   }
@@ -53,11 +58,26 @@ export function runReactGenerate(argv: string[], options: RunReactGenerateOption
     return 1;
   }
 
+  // Session runs before networking: the generated API registry imports `apiRuntime`
+  // from the generated session module, so that module must exist first.
+  const configArgsForSession = extractConfigArgs(argv);
+  const sessionRun = spawn(execPath, [options.sessionBin, ...configArgsForSession], {
+    stdio: 'inherit',
+    cwd,
+  }) as unknown as SpawnSyncReturns<string>;
+  if (sessionRun.status !== 0) {
+    return sessionRun.status ?? 1;
+  }
+  if (sessionRun.error) {
+    logError(String(sessionRun.error));
+    return 1;
+  }
+
   const netArgs = extractNetworkingArgs(argv);
   const netRun = spawn(execPath, [options.networkingBin, ...netArgs], {
     stdio: 'inherit',
     cwd,
-  }) as SpawnSyncReturns<string>;
+  }) as unknown as SpawnSyncReturns<string>;
   if (netRun.status !== 0) {
     return netRun.status ?? 1;
   }
@@ -70,7 +90,7 @@ export function runReactGenerate(argv: string[], options: RunReactGenerateOption
   const i18nRun = spawn(execPath, [options.i18nBin, ...configArgs], {
     stdio: 'inherit',
     cwd,
-  }) as SpawnSyncReturns<string>;
+  }) as unknown as SpawnSyncReturns<string>;
   if (i18nRun.status !== 0) {
     return i18nRun.status ?? 1;
   }
@@ -82,7 +102,7 @@ export function runReactGenerate(argv: string[], options: RunReactGenerateOption
   const themeRun = spawn(execPath, [options.themeBin, ...configArgs], {
     stdio: 'inherit',
     cwd,
-  }) as SpawnSyncReturns<string>;
+  }) as unknown as SpawnSyncReturns<string>;
   if (themeRun.error) {
     logError(String(themeRun.error));
     return 1;

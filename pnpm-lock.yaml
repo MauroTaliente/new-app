@@ -403,6 +403,9 @@ importers:
       '@react33/react-networking':
         specifier: workspace:*
         version: link:../networking
+      '@react33/react-session':
+        specifier: workspace:*
+        version: link:../session
       '@react33/react-styles':
         specifier: workspace:*
         version: link:../styles

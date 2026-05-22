@@ -9,6 +9,7 @@ import { resolvePackageBin } from '../resolve-package-bin.js';
 import { runReactGenerate } from '../run-react-generate.js';
 
 const stylesBin = resolvePackageBin('@react33/react-styles', 'generate-tokens.js');
+const sessionBin = resolvePackageBin('@react33/react-session', 'generate-session.js');
 const networkingBin = resolvePackageBin('@react33/react-networking', 'generate-apis.js');
 const i18nBin = resolvePackageBin('@react33/react-i18n', 'generate-locales.js');
 const themeBin = resolvePackageBin('@react33/react-theme', 'generate-theme-runtime.js');
@@ -16,6 +17,7 @@ const themeBin = resolvePackageBin('@react33/react-theme', 'generate-theme-runti
 process.exit(
   runReactGenerate(process.argv.slice(2), {
     stylesBin,
+    sessionBin,
     networkingBin,
     i18nBin,
     themeBin,

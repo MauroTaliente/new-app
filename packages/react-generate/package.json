@@ -43,6 +43,7 @@
   "dependencies": {
     "@react33/react-i18n": "workspace:*",
     "@react33/react-networking": "workspace:*",
+    "@react33/react-session": "workspace:*",
     "@react33/react-styles": "workspace:*",
     "@react33/react-theme": "workspace:*"
   },

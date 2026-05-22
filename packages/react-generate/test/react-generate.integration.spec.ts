@@ -24,12 +24,12 @@ describe('react-generate CLI (integration)', () => {
     try {
       const config = {
         react33Styles: {
-          fromCss: stylesDefaults,
+          cssDir: stylesDefaults,
           domainsOrder: ['tokens', 'palette', 'theme'],
-          output: './out/styles.generated.ts',
+          stylesOutput: './out/styles.generated.ts',
         },
         react33Networking: {
-          output: './out/apis.generated.ts',
+          registryOutput: './out/apis.generated.ts',
           apis: {
             integrationtest: { url: 'https://example.com/api' },
           },
