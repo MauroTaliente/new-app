@@ -24,16 +24,19 @@ export function deriveHooksGeneratedPath(apisModulePath: string): string {
   return apisModulePath.replace(/\.ts$/i, '.client.generated.tsx');
 }
 
-/** Optional `output` / `hooksOutput` under `react33Networking` in `react33.config.json` (paths relative to the config file). */
+/** Optional `registryOutput` / `hooksOutput` under `react33Networking` in `react33.config.json` (write paths relative to the config file). */
 export function readReact33NetworkingOutputPaths(configJson: unknown): {
-  output?: string;
+  registryOutput?: string;
   hooksOutput?: string;
 } {
   const root = configJson as Record<string, unknown> | null;
   const react33Networking = root?.react33Networking as Record<string, unknown> | undefined;
   if (!react33Networking || typeof react33Networking !== 'object') return {};
   return {
-    output: typeof react33Networking.output === 'string' ? react33Networking.output : undefined,
+    registryOutput:
+      typeof react33Networking.registryOutput === 'string'
+        ? react33Networking.registryOutput
+        : undefined,
     hooksOutput:
       typeof react33Networking.hooksOutput === 'string' ? react33Networking.hooksOutput : undefined,
   };
@@ -45,6 +48,12 @@ export type ApiDefinitionJson = {
   headers?: Record<string, string>;
   cache?: 'default' | 'no-store' | 'reload' | 'no-cache' | 'force-cache' | 'only-if-cached';
   credentials?: 'omit' | 'same-origin' | 'include';
+  /**
+   * Name of the `react33Session.sessions` entry that authenticates this API (the api→session
+   * foreign key). Consumed by the `@react33/react-session` codegen to build the per-API `loads`
+   * map; the networking codegen itself ignores it. Omit for an unauthenticated API.
+   */
+  session?: string;
 };
 
 /** One property in `definitions` — key is the API name (see `createApiRegistry` map form). */
@@ -214,11 +223,13 @@ import { apiRuntime } from ${JSON.stringify(runtimeModule)};
 
 const baseDefinitions = ${definitionsLiteral} satisfies Record<string, ApiClientConfigBody>;
 
-export const definitions = apiRuntime.defineDefinitions(baseDefinitions);
+export const definitions = apiRuntime.defineDefinitions?.(baseDefinitions) ?? baseDefinitions;
 
 export const apis = createApiRegistry(definitions, {
   load: apiRuntime.load,
+  loads: apiRuntime.loads,
   defaults: apiRuntime.defaults,
+  defaultsByApi: apiRuntime.defaultsByApi,
 });
 
 export type ApiNames = keyof typeof apis;${requestExports}`;

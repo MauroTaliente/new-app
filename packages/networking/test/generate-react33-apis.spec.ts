@@ -49,24 +49,28 @@ describe('generateApisModuleSource', () => {
 });
 
 describe('readReact33NetworkingOutputPaths', () => {
-  it('returns output and hooksOutput when present', () => {
+  it('returns registryOutput and hooksOutput when present', () => {
     expect(
       readReact33NetworkingOutputPaths({
-        react33Networking: { output: './a/apis.generated.ts', hooksOutput: './b/hooks.tsx', apis: {} },
+        react33Networking: {
+          registryOutput: './a/apis.generated.ts',
+          hooksOutput: './b/hooks.tsx',
+          apis: {},
+        },
       }),
-    ).toEqual({ output: './a/apis.generated.ts', hooksOutput: './b/hooks.tsx' });
+    ).toEqual({ registryOutput: './a/apis.generated.ts', hooksOutput: './b/hooks.tsx' });
   });
 
   it('returns empty object when react33Networking is missing', () => {
     expect(readReact33NetworkingOutputPaths({})).toEqual({});
   });
 
-  it('returns undefined strings when output is not a string', () => {
+  it('returns undefined strings when registryOutput is not a string', () => {
     expect(
       readReact33NetworkingOutputPaths({
-        react33Networking: { output: 1 as unknown as string, apis: {} },
+        react33Networking: { registryOutput: 1 as unknown as string, apis: {} },
       }),
-    ).toEqual({ output: undefined, hooksOutput: undefined });
+    ).toEqual({ registryOutput: undefined, hooksOutput: undefined });
   });
 });
 
@@ -79,19 +83,33 @@ describe('deriveHooksGeneratedPath', () => {
 });
 
 describe('generateApisModuleSource — runtimeModule', () => {
-  it('routes load through apiRuntime.load and forwards defaults', () => {
+  it('routes auth through apiRuntime and forwards per-API loads + defaults', () => {
     const src = generateApisModuleSource({
       react33Networking: {
-        runtimeModule: './api.runtime',
+        runtimeModule: './session.runtime.generated',
         apis: {
-          pokemon: { url: 'https://pokeapi.co/api/v2' },
+          pokemon: { url: 'https://pokeapi.co/api/v2', session: 'main' },
         },
       },
     });
-    expect(src).toContain("import { apiRuntime } from \"./api.runtime\"");
-    expect(src).toContain('apiRuntime.defineDefinitions(baseDefinitions)');
+    expect(src).toContain('import { apiRuntime } from "./session.runtime.generated"');
+    // defineDefinitions is optional — codegen falls back to baseDefinitions when absent.
+    expect(src).toContain('apiRuntime.defineDefinitions?.(baseDefinitions) ?? baseDefinitions');
     expect(src).toContain('load: apiRuntime.load');
+    expect(src).toContain('loads: apiRuntime.loads');
     expect(src).toContain('defaults: apiRuntime.defaults');
+    expect(src).toContain('defaultsByApi: apiRuntime.defaultsByApi');
+  });
+
+  it('emits the API definition unaffected by the session foreign key', () => {
+    const src = generateApisModuleSource({
+      react33Networking: {
+        runtimeModule: './session.runtime.generated',
+        apis: { pokemon: { url: 'https://pokeapi.co/api/v2', session: 'main' } },
+      },
+    });
+    // `session` is the session codegen's concern — it must not leak into the definition literal.
+    expect(src).not.toContain('session:');
   });
 });
 
