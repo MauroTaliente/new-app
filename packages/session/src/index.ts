@@ -20,3 +20,8 @@ export {
   createBearerSessionLoad,
   type CreateBearerSessionLoadOptions,
 } from './bearer-session-load';
+
+export {
+  createBearerSessionRetry,
+  type CreateBearerSessionRetryOptions,
+} from './createBearerSessionRetry';

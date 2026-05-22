@@ -29,9 +29,84 @@ export const session = createBearerSessionManager({
 });
 ```
 
-## Wiring — two paths
+## Codegen — the `react33Session` collection (recommended)
 
-### Path A — codegen via `react33.config.json` (recommended)
+`react33Session` in `react33.config.json` is a **collection** of named sessions — one app can
+hold several, each authenticating different APIs with its own token. `react-session-generate`
+turns it into two modules; you only hand-write the un-serializable **seam** per session.
+
+```json
+{
+  "react33Session": {
+    "runtimeOutput": "./src/api/session.runtime.generated.ts",
+    "primarySession": "main",
+    "sessions": {
+      "main":    { "strategy": "bearer",   "runtimeModule": "./main.session.runtime",
+                   "bearer": { "storageKey": "app.session", "storage": "localStorage" },
+                   "retry":  { "statuses": { "401": 1 }, "tokenExpiredCode": "TOKEN_EXPIRED" } },
+      "partner": { "strategy": "external", "runtimeModule": "./partner.session.runtime" }
+    }
+  },
+  "react33Networking": {
+    "registryOutput": "./src/api/apis.generated.ts",
+    "runtimeModule": "./session.runtime.generated",
+    "apis": {
+      "billing": { "url": "https://billing.example.com", "session": "main" },
+      "reports": { "url": "https://reports.example.com",  "session": "partner" }
+    }
+  }
+}
+```
+
+**`apis.<name>.session`** is the foreign key — it binds an API to a session by name. An API
+with no `session` gets no auth. Many APIs may share one session.
+
+### Two generated files (the server/client split)
+
+| File | `'use client'`? | Contains | Imported by |
+|---|---|---|---|
+| `session.runtime.generated.ts` | no — server-safe | the session managers + `apiRuntime` (`loads`, `defaultsByApi`) | `apis.generated.ts` (`react33Networking.runtimeModule` → here) |
+| `session.runtime.client.generated.ts` | yes | `SessionProvider` + `useSession`/`useSessionState` for `primarySession` | your React tree |
+
+One `runtimeOutput` key names the agnostic file; the `.client` path is **derived**. The split
+keeps the React boundary out of the server-safe networking seam.
+
+### The seam — `bearer` vs `external`
+
+Each session's `runtimeModule` is a hand-written file. What it must export depends on `strategy`:
+
+- **`bearer`** — `selectors: BearerSessionSelectors<Tokens>` + `refresh`. The codegen builds the
+  `createBearerSessionManager` + `createBearerSessionLoad` wiring.
+- **`external`** — `load: LoadRequestProps` (always) and `sessionStore?: SessionStore` (only when
+  this session is the `primarySession`). The codegen wires the `load` straight into
+  `apiRuntime.loads` and constructs **no** react33 manager. This is the escape hatch for
+  third-party auth — Firebase, Auth0, Supabase, NextAuth, a token-exchange endpoint:
+
+  ```ts
+  // partner.session.runtime.ts — strategy: "external"
+  import { mergeRequestProps, type LoadRequestProps } from '@react33/react-networking';
+  export const load: LoadRequestProps = async (shared) =>
+    mergeRequestProps(shared, {
+      headers: { Authorization: `Bearer ${await getAuth().currentUser?.getIdToken()}` },
+    });
+  ```
+
+  react33 never authenticates — it **wires auth into networking**. With `external`, the manager,
+  storage, and single-flight refresh go unused; the third-party SDK owns that lifecycle.
+
+### Per-API retry — `defaultsByApi`
+
+A session's optional `retry` block is emitted **per-API** into `apiRuntime.defaultsByApi` via
+`createBearerSessionRetry`, so a 401 from one API refreshes only **that** session's token. With
+`tokenExpiredCode` set, a 401 whose body code differs (or is absent) is terminal — no refresh.
+Codegen order: `react-session-generate` runs before `react-networking-generate`.
+
+## Wiring — handwritten (no codegen)
+
+Prefer the `react33Session` codegen above. The two paths below are for apps that compose the
+runtime module or the registry by hand — the same primitives, wired manually.
+
+### Path A — handwritten runtime module
 
 If your app drives the API registry from `react33.config.json` (`react33Networking.apis`), expose a **runtime module** that owns session creation + the `ApiRuntime` export. The generator wires the rest.
 
@@ -40,7 +115,7 @@ If your app drives the API registry from `react33.config.json` (`react33Networki
 ```json
 {
   "react33Networking": {
-    "output": "./src/api/apis.generated.ts",
+    "registryOutput": "./src/api/apis.generated.ts",
     "runtimeModule": "./api.runtime",
     "apis": { "main": { "url": "https://api.example.com" } }
   }

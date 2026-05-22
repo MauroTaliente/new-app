@@ -40,7 +40,7 @@ Si tu app maneja el registry desde `react33.config.json` (`react33Networking.api
 ```json
 {
   "react33Networking": {
-    "output": "./src/api/apis.generated.ts",
+    "registryOutput": "./src/api/apis.generated.ts",
     "runtimeModule": "./api.runtime",
     "apis": { "main": { "url": "https://api.example.com" } }
   }
