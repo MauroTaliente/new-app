@@ -15,6 +15,11 @@ const baseDefinitions = {
     headers: {"Accept":"application/json"},
     cache: "no-store",
   },
+  catalog: {
+    url: "https://catalog.example.com",
+    headers: {"Accept":"application/json"},
+    cache: "no-store",
+  },
   pokemon: {
     url: "https://pokeapi.co/api/v2",
     headers: {"Accept":"application/json"},
@@ -35,4 +40,5 @@ export const apis = createApiRegistry(definitions, {
 export type ApiNames = keyof typeof apis;
 export const billingRequest = apis.billing;
 export const reportsRequest = apis.reports;
+export const catalogRequest = apis.catalog;
 export const pokemonRequest = apis.pokemon;

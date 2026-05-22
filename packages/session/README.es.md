@@ -72,13 +72,29 @@ sin `session` no recibe auth. Varias APIs pueden compartir una misma sesión.
 Una sola key `runtimeOutput` nombra el archivo agnóstico; el path `.client` se **deriva**. El
 split mantiene la frontera de React fuera del seam server-safe de networking.
 
-### El seam — `bearer` vs `external`
+### El seam — `bearer`, `bearer-static`, `external`
 
 El `runtimeModule` de cada sesión es un archivo escrito a mano. Lo que tiene que exportar
 depende de `strategy`:
 
 - **`bearer`** — `selectors: BearerSessionSelectors<Tokens>` + `refresh`. El codegen arma el
-  cableado `createBearerSessionManager` + `createBearerSessionLoad`.
+  cableado `createBearerSessionManager` + `createBearerSessionLoad`. Access en memoria, refresh
+  token persistido, `ensureFreshSession()` disponible.
+- **`bearer-static`** — `selectors: BearerStaticSessionSelectors<Tokens>` (solo `selectAccessToken`)
+  — **sin `refresh`**. Un access token managed sin flujo de refresh: react33 sostiene y decodifica
+  el token y expone el snapshot + `load`, pero un 401 es terminal (re-autenticás a nivel app).
+  Se para entre `bearer` y `external` — tenés el decode de JWT + snapshot reactivo gratis sin ser
+  dueño de un refresh token. El bloque opcional `bearerStatic` elige dónde vive el token (`memory`
+  por default, o `sessionStorage`/`localStorage`).
+
+  ```ts
+  // kiosk.session.runtime.ts — strategy: "bearer-static"
+  import type { BearerStaticSessionSelectors } from '@react33/react-session';
+  export type KioskTokens = { access_token: string };
+  export const selectors: BearerStaticSessionSelectors<KioskTokens> = {
+    selectAccessToken: (t) => t.access_token,
+  };
+  ```
 - **`external`** — `load: LoadRequestProps` (siempre) y `sessionStore?: SessionStore` (solo
   cuando esta sesión es la `primarySession`). El codegen cablea el `load` directo en
   `apiRuntime.loads` y **no** construye ningún manager de react33. Es el escape hatch para

@@ -312,13 +312,13 @@
       "properties": {
         "strategy": {
           "type": "string",
-          "enum": ["bearer", "cookie", "opaque", "external"],
+          "enum": ["bearer", "bearer-static", "cookie", "opaque", "external"],
           "default": "bearer",
-          "description": "Session strategy. `bearer` — react33-managed access+refresh JWT (BearerSessionManager + createBearerSessionLoad). `external` — the dev brings their own session (Firebase Auth, Auth0, Supabase, NextAuth, a token exchange, …): the `runtimeModule` seam exports a ready `load: LoadRequestProps` directly and the codegen skips `createBearerSessionManager`. `cookie`/`opaque` — roadmap, not implemented. See packages/session/README.en.md \"Strategies side by side\"."
+          "description": "Session strategy. `bearer` — react33-managed access+refresh JWT (BearerSessionManager + createBearerSessionLoad). `bearer-static` — managed access token with NO refresh (BearerStaticSessionManager): react33 holds + decodes the token and exposes the snapshot + load, but a 401 is terminal (re-auth at the app level). `external` — the dev brings their own session (Firebase Auth, Auth0, Supabase, NextAuth, a token exchange, …): the `runtimeModule` seam exports a ready `load: LoadRequestProps` directly and the codegen skips manager construction. `cookie`/`opaque` — roadmap, not implemented. See packages/session/README.en.md \"Strategies side by side\"."
         },
         "runtimeModule": {
           "type": "string",
-          "description": "Module specifier emitted verbatim into an import of the generated session module — relative to that GENERATED FILE (react33Session.runtimeOutput), no extension. The un-serializable seam for this session. For `bearer`: exports `selectors: BearerSessionSelectors<Tokens>` + `refresh: (rt: string) => Promise<Tokens | null>`. For `external`: exports `load: LoadRequestProps` (always) and `sessionStore?: SessionStore<TSnapshot>` (only when this session is the `primarySession`). For `cookie`/`opaque`: `selectIdentity` + a `fetchMe` callable. Framework-agnostic by design (no React) — no `.client` suffix; e.g. `./main.session.runtime` resolves `main.session.runtime.ts`."
+          "description": "Module specifier emitted verbatim into an import of the generated session module — relative to that GENERATED FILE (react33Session.runtimeOutput), no extension. The un-serializable seam for this session. For `bearer`: exports `selectors: BearerSessionSelectors<Tokens>` + `refresh: (rt: string) => Promise<Tokens | null>`. For `bearer-static`: exports `selectors: BearerStaticSessionSelectors<Tokens>` (just `selectAccessToken`) — no `refresh`. For `external`: exports `load: LoadRequestProps` (always) and `sessionStore?: SessionStore<TSnapshot>` (only when this session is the `primarySession`). For `cookie`/`opaque`: `selectIdentity` + a `fetchMe` callable. Framework-agnostic by design (no React) — no `.client` suffix; e.g. `./main.session.runtime` resolves `main.session.runtime.ts`."
         },
         "bearer": {
           "type": "object",
@@ -349,6 +349,34 @@
               "type": "boolean",
               "default": true,
               "description": "When true, the bridge calls `session.ensureFreshSession()` if the access token is expired AND a refresh token exists, BEFORE attaching the header to the request. Disable to refresh strictly reactively via `onRetry` on 401 — see README → \"Why proactiveRefresh + onRetry is safe to combine\"."
+            }
+          },
+          "additionalProperties": false
+        },
+        "bearerStatic": {
+          "type": "object",
+          "description": "Settings consumed by `createBearerStaticSessionManager` + `createBearerStaticSessionLoad`. Ignored unless strategy === \"bearer-static\". Optional — all fields default; with `storage: \"memory\"` no config is needed at all.",
+          "properties": {
+            "storage": {
+              "type": "string",
+              "enum": ["memory", "sessionStorage", "localStorage"],
+              "default": "memory",
+              "description": "Where the access token is kept. `memory` (default): not persisted, lost on reload — right when a third-party SDK owns the real session. `sessionStorage`: persisted per-tab, survives reload. `localStorage`: persisted and synced across tabs."
+            },
+            "storageKey": {
+              "type": "string",
+              "description": "Storage key for the access token. Required unless `storage` is `\"memory\"`."
+            },
+            "accessTokenSkewSec": {
+              "type": "number",
+              "default": 30,
+              "description": "Seconds before the JWT `exp` claim to consider the access token expired. Used by `isAccessTokenExpired()`."
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "default": { "Authorization": "Bearer {token}" },
+              "description": "Header template merged into each request by `createBearerStaticSessionLoad`. The literal `{token}` is replaced with the current access token. Use for non-bearer schemes too — e.g. `{ \"X-Api-Key\": \"{token}\" }`."
             }
           },
           "additionalProperties": false

@@ -7,7 +7,7 @@
  * `primarySession` pointing nowhere) are enforced here with explicit errors.
  */
 
-export type SessionStrategy = 'bearer' | 'cookie' | 'opaque' | 'external';
+export type SessionStrategy = 'bearer' | 'bearer-static' | 'cookie' | 'opaque' | 'external';
 
 export type SessionBearerConfig = {
   storageKey?: string;
@@ -15,6 +15,13 @@ export type SessionBearerConfig = {
   accessTokenSkewSec?: number;
   headers?: Record<string, string>;
   proactiveRefresh?: boolean;
+};
+
+export type SessionBearerStaticConfig = {
+  storage?: 'memory' | 'sessionStorage' | 'localStorage';
+  storageKey?: string;
+  accessTokenSkewSec?: number;
+  headers?: Record<string, string>;
 };
 
 export type SessionRetryConfig = {
@@ -28,6 +35,7 @@ export type SessionDef = {
   strategy: SessionStrategy;
   runtimeModule: string;
   bearer?: SessionBearerConfig;
+  bearerStatic?: SessionBearerStaticConfig;
   retry?: SessionRetryConfig;
 };
 
@@ -42,7 +50,13 @@ export type React33SessionConfig = {
   bindings: Record<string, string>;
 };
 
-const STRATEGIES: readonly SessionStrategy[] = ['bearer', 'cookie', 'opaque', 'external'];
+const STRATEGIES: readonly SessionStrategy[] = [
+  'bearer',
+  'bearer-static',
+  'cookie',
+  'opaque',
+  'external',
+];
 
 function asObject(v: unknown): Record<string, unknown> | undefined {
   return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : undefined;
@@ -73,7 +87,7 @@ function readSessionDef(name: string, raw: unknown): SessionDef {
   }
   if (strategy === 'cookie' || strategy === 'opaque') {
     throw new Error(
-      `react33Session.sessions.${name}.strategy "${strategy}" is reserved but not implemented yet — use "bearer" or "external".`,
+      `react33Session.sessions.${name}.strategy "${strategy}" is reserved but not implemented yet — use "bearer", "bearer-static" or "external".`,
     );
   }
   if (typeof obj.runtimeModule !== 'string' || obj.runtimeModule.length === 0) {
@@ -87,11 +101,25 @@ function readSessionDef(name: string, raw: unknown): SessionDef {
     );
   }
 
+  const bearerStatic = asObject(obj.bearerStatic) as SessionBearerStaticConfig | undefined;
+  if (
+    strategy === 'bearer-static' &&
+    bearerStatic &&
+    bearerStatic.storage !== undefined &&
+    bearerStatic.storage !== 'memory' &&
+    (typeof bearerStatic.storageKey !== 'string' || bearerStatic.storageKey.length === 0)
+  ) {
+    throw new Error(
+      `react33Session.sessions.${name}.bearerStatic.storageKey is required when bearerStatic.storage is not "memory".`,
+    );
+  }
+
   return {
     name,
     strategy,
     runtimeModule: obj.runtimeModule,
     bearer,
+    bearerStatic,
     retry: asObject(obj.retry) as SessionRetryConfig | undefined,
   };
 }

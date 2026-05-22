@@ -43,6 +43,14 @@
       "partner": {
         "strategy": "external",
         "runtimeModule": "./partner.session.runtime"
+      },
+      "kiosk": {
+        "strategy": "bearer-static",
+        "runtimeModule": "./kiosk.session.runtime",
+        "bearerStatic": {
+          "storage": "sessionStorage",
+          "storageKey": "demo.kiosk.token"
+        }
       }
     }
   },
@@ -52,7 +60,8 @@
     "runtimeModule": "./session.runtime.generated",
     "apis": {
       "billing": { "url": "https://billing.example.com", "session": "main" },
-      "reports": { "url": "https://reports.partner.example.com", "session": "partner" }
+      "reports": { "url": "https://reports.partner.example.com", "session": "partner" },
+      "catalog": { "url": "https://catalog.example.com", "session": "kiosk" }
     },
     "openApi": {
       "files": {

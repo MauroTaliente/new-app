@@ -145,3 +145,54 @@ describe('deriveSessionClientOutputPath', () => {
     );
   });
 });
+
+describe('bearer-static strategy', () => {
+  const withStatic = (bearerStatic?: object, primary?: string | null) =>
+    configJson({
+      extraSessions: {
+        kiosk: {
+          strategy: 'bearer-static',
+          runtimeModule: './kiosk.session.runtime',
+          ...(bearerStatic ? { bearerStatic } : {}),
+        },
+      },
+      extraApis: { catalog: { url: 'https://catalog.test', session: 'kiosk' } },
+      primary,
+    });
+
+  it('readReact33SessionConfig accepts a bearer-static session', () => {
+    const cfg = readReact33SessionConfig(withStatic({ storage: 'memory' }))!;
+    const kiosk = cfg.sessions.find((s) => s.name === 'kiosk')!;
+    expect(kiosk.strategy).toBe('bearer-static');
+    expect(cfg.bindings.catalog).toBe('kiosk');
+  });
+
+  it('throws when bearerStatic.storage is not memory and storageKey is missing', () => {
+    expect(() => readReact33SessionConfig(withStatic({ storage: 'localStorage' }))).toThrow(
+      /bearerStatic\.storageKey is required/,
+    );
+  });
+
+  it('emits createBearerStaticSessionManager + load, with no defaultsByApi entry', () => {
+    const cfg = readReact33SessionConfig(
+      withStatic({ storage: 'localStorage', storageKey: 'kiosk.token' }),
+    )!;
+    const src = emitSessionRuntimeAgnosticSource(cfg);
+    expect(src).toContain('createBearerStaticSessionManager, createBearerStaticSessionLoad');
+    expect(src).toContain('export const kioskSession = createBearerStaticSessionManager({');
+    expect(src).toContain('storage: "localStorage"');
+    expect(src).toContain('storageKey: "kiosk.token"');
+    expect(src).toContain('selectors: kioskSeam.selectors');
+    expect(src).toContain('const kioskLoad = createBearerStaticSessionLoad(kioskSession');
+    expect(src).toContain('catalog: kioskLoad,');
+    // bearer-static has no refresh → no retry helper for its API.
+    expect(src).not.toContain('catalog: createBearerSessionRetry');
+  });
+
+  it('a bearer-static primarySession imports the manager for createSessionRuntime', () => {
+    const cfg = readReact33SessionConfig(withStatic({ storage: 'memory' }, 'kiosk'))!;
+    const src = emitSessionRuntimeClientSource(cfg)!;
+    expect(src).toContain('import { kioskSession } from "./session.runtime.generated"');
+    expect(src).toContain('session: kioskSession,');
+  });
+});

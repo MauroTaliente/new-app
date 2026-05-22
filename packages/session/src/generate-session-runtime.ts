@@ -64,6 +64,26 @@ function emitBearerSession(s: SessionDef): string[] {
   ];
 }
 
+function emitBearerStaticSession(s: SessionDef): string[] {
+  const b = s.bearerStatic ?? {};
+  const managerOpts: string[] = [];
+  if (b.storage !== undefined) managerOpts.push(`  storage: ${quote(b.storage)},`);
+  if (b.storageKey !== undefined) managerOpts.push(`  storageKey: ${quote(b.storageKey)},`);
+  if (b.accessTokenSkewSec !== undefined) {
+    managerOpts.push(`  accessTokenSkewSec: ${b.accessTokenSkewSec},`);
+  }
+  managerOpts.push(`  selectors: ${seamAlias(s.name)}.selectors,`);
+
+  const loadArg = b.headers !== undefined ? `, { headers: ${JSON.stringify(b.headers)} }` : '';
+
+  return [
+    `export const ${managerName(s.name)} = createBearerStaticSessionManager({`,
+    ...managerOpts,
+    '});',
+    `const ${loadName(s.name)} = createBearerStaticSessionLoad(${managerName(s.name)}${loadArg});`,
+  ];
+}
+
 function emitApiRuntime(config: React33SessionConfig): string[] {
   const sessionByName = new Map(config.sessions.map((s) => [s.name, s]));
   const apiNames = Object.keys(config.bindings);
@@ -94,11 +114,18 @@ export function emitSessionRuntimeAgnosticSource(config: React33SessionConfig): 
   const bearerSessions = config.sessions.filter((s) => s.strategy === 'bearer');
   const anyBearer = bearerSessions.length > 0;
   const anyRetry = bearerSessions.some((s) => Boolean(s.retry));
+  const anyBearerStatic = config.sessions.some((s) => s.strategy === 'bearer-static');
 
   const lines: string[] = [SESSION_RUNTIME_BANNER, '', "import type { ApiRuntime } from '@react33/react-networking';"];
+  const named: string[] = [];
   if (anyBearer) {
-    const named = ['createBearerSessionManager', 'createBearerSessionLoad'];
+    named.push('createBearerSessionManager', 'createBearerSessionLoad');
     if (anyRetry) named.push('createBearerSessionRetry');
+  }
+  if (anyBearerStatic) {
+    named.push('createBearerStaticSessionManager', 'createBearerStaticSessionLoad');
+  }
+  if (named.length > 0) {
     lines.push(`import { ${named.join(', ')} } from '@react33/react-session';`);
   }
   for (const s of config.sessions) {
@@ -109,6 +136,8 @@ export function emitSessionRuntimeAgnosticSource(config: React33SessionConfig): 
   for (const s of config.sessions) {
     if (s.strategy === 'bearer') {
       lines.push(...emitBearerSession(s));
+    } else if (s.strategy === 'bearer-static') {
+      lines.push(...emitBearerStaticSession(s));
     } else {
       lines.push(
         `// External session "${s.name}" — the load is supplied by the seam (third-party SDK, token exchange, …).`,
@@ -153,7 +182,8 @@ export function emitSessionRuntimeClientSource(config: React33SessionConfig): st
   ];
 
   let sessionExpr: string;
-  if (primary.strategy === 'bearer') {
+  if (primary.strategy === 'bearer' || primary.strategy === 'bearer-static') {
+    // Managed strategies export their manager from the agnostic file; it satisfies SessionStore.
     lines.push(
       `import { ${managerName(primary.name)} } from ${quote(agnosticModuleSpecifier(config.runtimeOutput))};`,
     );
