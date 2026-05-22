@@ -3,7 +3,7 @@ import type { PickSegment } from './types.js';
 
 function resolveLang<Locale extends string>(
   dictionaries: Record<Locale, unknown>,
-  lang: string | undefined,
+  lang: string | null | undefined,
   fallbackLocale: Locale,
 ): Locale {
   if (lang !== undefined && lang !== null && lang in dictionaries) {
@@ -20,7 +20,7 @@ export function getLocale<
   Structure extends Record<string, unknown>,
 >(
   dictionaries: Record<Locale, Structure>,
-  lang: string | undefined,
+  lang: string | null | undefined,
   fallbackLocale: Locale,
   scope: keyof Structure | readonly (keyof Structure)[],
 ): PickSegment<Structure, typeof scope> {
@@ -35,7 +35,7 @@ export function getAllLocale<
   Structure extends Record<string, unknown>,
 >(
   dictionaries: Record<Locale, Structure>,
-  lang: string | undefined,
+  lang: string | null | undefined,
   fallbackLocale: Locale,
 ): Structure {
   const loc = resolveLang(dictionaries, lang, fallbackLocale);

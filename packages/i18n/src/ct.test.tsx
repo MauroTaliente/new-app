@@ -7,7 +7,7 @@ describe('ct', () => {
     const nodes = ct('');
     expect(nodes).toHaveLength(1);
     expect(isValidElement(nodes[0])).toBe(true);
-    expect((nodes[0] as { type: typeof Fragment }).type).toBe(Fragment);
+    expect((nodes[0] as unknown as { type: typeof Fragment }).type).toBe(Fragment);
   });
 
   it('interpolación {{var}} y deja placeholder si falta', () => {

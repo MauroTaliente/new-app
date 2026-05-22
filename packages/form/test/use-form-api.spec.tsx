@@ -153,7 +153,9 @@ describe('useFormApi', () => {
     act(() => {
       result.current[1].setMessage(FORM_MESSAGE_KEY, 'Could not save');
     });
-    expect(result.current[1].messages[FORM_MESSAGE_KEY]).toBe('Could not save');
+    expect((result.current[1].messages as Record<string, unknown>)[FORM_MESSAGE_KEY]).toBe(
+      'Could not save',
+    );
 
     act(() => {
       result.current[1].reset();

@@ -13,7 +13,7 @@ describe('createThemePersistence', () => {
   });
 
   it('reads and writes cookie mode', () => {
-    const p = createThemePersistence({
+    const p = createThemePersistence<'light' | 'dark'>({
       defaultTheme: 'light',
       persistenceMode: 'cookie',
       cookieName: 'demo-theme',
@@ -24,7 +24,7 @@ describe('createThemePersistence', () => {
   });
 
   it('reads and writes localStorage mode', () => {
-    const p = createThemePersistence({
+    const p = createThemePersistence<'light' | 'dark'>({
       defaultTheme: 'light',
       persistenceMode: 'localStorage',
       localStorageKey: 'theme',
