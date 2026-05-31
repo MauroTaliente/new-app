@@ -40,6 +40,11 @@ function extractCode(data: unknown): string | undefined {
  * `onRetry` runs `session.ensureFreshSession()`; the manager's single-flight guarantees one
  * refresh even under parallel callers (the proactive `createBearerSessionLoad` path included).
  * The `load` re-runs before the retried request, so the refreshed token reaches it.
+ *
+ * A retried request that carries `skipLoad` (an OpenAPI public route — notably the refresh
+ * endpoint itself) is treated as terminal: refreshing would be re-entrant (the refresh request
+ * awaiting its own `ensureFreshSession()`), and a public route's 401 is never a token-expiry
+ * anyway. Such 401s surface to the caller unretried.
  */
 export function createBearerSessionRetry<TTokens>(
   session: BearerSessionManager<TTokens>,
@@ -48,8 +53,9 @@ export function createBearerSessionRetry<TTokens>(
   const { statuses = { 401: 1 }, tokenExpiredCode } = options;
   return {
     retries: statuses,
-    onRetry: async ({ status, response }) => {
+    onRetry: async ({ status, response, skipLoad }) => {
       if (status !== 401) return;
+      if (skipLoad) return; // public / load-bypassed request: refresh would re-enter itself
       if (tokenExpiredCode !== undefined) {
         const code = extractCode(response?.data);
         if (code !== tokenExpiredCode) return; // absent or different → terminal: no refresh

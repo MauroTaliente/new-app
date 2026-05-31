@@ -64,4 +64,10 @@ describe('createBearerSessionRetry', () => {
     );
     expect(ensureFreshSession).toHaveBeenCalledOnce();
   });
+
+  it('a 401 on a skipLoad request is terminal — no refresh (avoids re-entrant refresh)', async () => {
+    const { session, ensureFreshSession } = fakeSession();
+    await createBearerSessionRetry(session).onRetry!(ctx({ status: 401, skipLoad: true }));
+    expect(ensureFreshSession).not.toHaveBeenCalled();
+  });
 });

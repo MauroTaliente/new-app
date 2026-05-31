@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-session",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Bearer session primitives: in-memory access, persisted refresh, single-flight refresh — extensible for more session strategies over time.",
