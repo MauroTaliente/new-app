@@ -31,6 +31,12 @@ export {
 export { subscribeStorageKey } from './storage-events';
 
 export {
+  createPersistedSignal,
+  type PersistedSignal,
+  type PersistedSignalOptions,
+} from './persisted-signal.client';
+
+export {
   parseDocumentCookie,
   getCookie,
   setCookie,

@@ -5,7 +5,7 @@ import type { Action, DynamicOptions } from '@react33/react-networking';
 import type { StorageDriverOptions } from './storage';
 import { getLocalStorage, putLocalStorage, setLocalStorage } from './storage';
 
-function useGetLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function useGetLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async () => {
     if (!options.name || typeof window === 'undefined') {
       return { data: options.initData as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -13,10 +13,10 @@ function useGetLocal<Params, Data, Response>(options: DynamicOptions<Params, Dat
     const data = getLocalStorage(options as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
-function useSetLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function useSetLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async (params) => {
     if (!options.name || typeof window === 'undefined') {
       return { data: params as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -24,10 +24,10 @@ function useSetLocal<Params, Data, Response>(options: DynamicOptions<Params, Dat
     const data = setLocalStorage({ ...options, params } as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
-function usePutLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function usePutLocal<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async (params) => {
     if (!options.name || typeof window === 'undefined') {
       return { data: params as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -35,7 +35,7 @@ function usePutLocal<Params, Data, Response>(options: DynamicOptions<Params, Dat
     const data = putLocalStorage({ ...options, params } as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
 export { useGetLocal, useSetLocal, usePutLocal };

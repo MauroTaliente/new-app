@@ -8,7 +8,7 @@ import { getCookie, putCookie, setCookie } from './cookie-browser';
 type CookieHookOptions<T> = CookieClientOptions<T> &
   Partial<Omit<DynamicOptions<unknown, T, null>, keyof CookieClientOptions<T>>>;
 
-function useGetCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
+function useGetCookie<T>(options: CookieHookOptions<T>) {
   const action: Action<unknown, T> = async () => {
     if (!options.name || typeof document === 'undefined') {
       return { data: options.initData as T, status: HttpCode.NOT_ACCEPTABLE };
@@ -16,10 +16,10 @@ function useGetCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
     const data = getCookie(options) as T;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>, watch);
+  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>);
 }
 
-function useSetCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
+function useSetCookie<T>(options: CookieHookOptions<T>) {
   const action: Action<unknown, T> = async (data: unknown) => {
     if (!options.name || typeof document === 'undefined') {
       return { data: data as T, status: HttpCode.NOT_ACCEPTABLE };
@@ -27,10 +27,10 @@ function useSetCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
     const out = setCookie({ ...options, params: data as T });
     return { data: out as T, status: HttpCode.OK };
   };
-  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>, watch);
+  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>);
 }
 
-function usePutCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
+function usePutCookie<T>(options: CookieHookOptions<T>) {
   const action: Action<unknown, T> = async (rawData: unknown) => {
     if (!options.name || typeof document === 'undefined') {
       return { data: rawData as T, status: HttpCode.NOT_ACCEPTABLE };
@@ -38,7 +38,7 @@ function usePutCookie<T>(options: CookieHookOptions<T>, watch: unknown[] = []) {
     const out = putCookie({ ...options, params: rawData as T });
     return { data: out as T, status: HttpCode.OK };
   };
-  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>, watch);
+  return useAsyncFetch<unknown, T, null>({ ...options, action } as DynamicOptions<unknown, T, null>);
 }
 
 export { useGetCookie, useSetCookie, usePutCookie };

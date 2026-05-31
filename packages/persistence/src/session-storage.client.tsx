@@ -5,7 +5,7 @@ import type { Action, DynamicOptions } from '@react33/react-networking';
 import type { StorageDriverOptions } from './storage';
 import { getSessionStorage, putSessionStorage, setSessionStorage } from './storage';
 
-function useGetSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function useGetSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async () => {
     if (!options.name || typeof window === 'undefined') {
       return { data: options.initData as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -13,10 +13,10 @@ function useGetSession<Params, Data, Response>(options: DynamicOptions<Params, D
     const data = getSessionStorage(options as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
-function useSetSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function useSetSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async (params) => {
     if (!options.name || typeof window === 'undefined') {
       return { data: params as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -24,10 +24,10 @@ function useSetSession<Params, Data, Response>(options: DynamicOptions<Params, D
     const data = setSessionStorage({ ...options, params } as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
-function usePutSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>, watch: unknown[] = []) {
+function usePutSession<Params, Data, Response>(options: DynamicOptions<Params, Data, Response>) {
   const action: Action<Params, Data> = async (params) => {
     if (!options.name || typeof window === 'undefined') {
       return { data: params as Data, status: HttpCode.NOT_ACCEPTABLE };
@@ -35,7 +35,7 @@ function usePutSession<Params, Data, Response>(options: DynamicOptions<Params, D
     const data = putSessionStorage({ ...options, params } as StorageDriverOptions<Data>) as Data;
     return { data, status: HttpCode.OK };
   };
-  return useAsyncFetch({ ...options, action }, watch);
+  return useAsyncFetch({ ...options, action });
 }
 
 export { useGetSession, useSetSession, usePutSession };

@@ -8,6 +8,109 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 **0.0.x** and bumped together when breaking or meaningful changes land; see
 [Versioning policy](#versioning-policy) below.
 
+## [Unreleased]
+
+Publish order: helpers → hooks → networking → persistence → session →
+config / i18n / theme / react-generate. The **networking** bump carries a
+breaking change (the `watch` API is removed); persistence, session and the demo
+depend on it.
+
+### @react33/react-helpers `0.0.6`
+
+#### Added
+
+- **`omitNullOrEmpty(value)` / `omitNullOrEmptyDeep(value)`** — prune
+  `null` / `undefined` / `''` / `[]` / `{}` entries from objects (and, for the
+  deep form, recursively); arrays filter their entries. For sanitising request
+  payloads and query maps before they hit the wire.
+- **`clampInt(value, min = 1, max?)`** — `Math.floor` + clamp to `[min, max]`
+  (NaN passes through). Pagination-oriented; shared by the query-int resolvers.
+- **`@react33/react-helpers/router` subpath** — pure, framework-free
+  query-string resolvers: `safeInt` / `queryInt` (+ `QueryParamRaw`) and
+  `safeString` / `queryString` (+ `RouteQueryRaw`). Curried forms (`queryInt(1)`)
+  drop straight into `getGroup` resolver maps. Pairs with
+  `@react33/react-hooks/router` so loaders, tests and hooks resolve identically.
+
+### @react33/react-hooks `0.0.5`
+
+#### Added
+
+- **Typed `getGroup` resolvers** — `getGroup({ page: queryInt(1) })` now infers
+  the result shape (`RouteQueryResolver`, `RouteQueryGroupDefaults`,
+  `RouteQueryGroupResult`, `InferRouteQueryValue`), accepting resolver functions
+  alongside string / number / boolean defaults.
+
+#### Changed
+
+- **Default route-query update mode is now `'replace'`** (was `'silent'`),
+  exported as `DEFAULT_ROUTE_QUERY_MODE`, so `useSearchParams` in react-router /
+  Next re-renders on `add()` / `applyUrl()`. Both adapters compare against the
+  router-derived `route` instead of `window.location`, fixing a stale address
+  bar in tests and embedded hosts.
+
+### @react33/react-networking `0.0.5`
+
+#### Added
+
+- **`RequestProps.skipLoad` (and `RetryContext.skipLoad`)** — when set,
+  `createDataFlow` bypasses `load(shared)` entirely (no auth augmentation, no
+  proactive refresh). Lets public routes and the refresh endpoint itself avoid a
+  re-entrant load; the openapi codegen stamps `skipLoad: true` on operations the
+  spec marks public (`security: []`). The flag is stripped from `RequestInit`.
+
+#### Changed
+
+- Swapped the `use-memo-one` dependency for React's own `useMemo` / `useCallback`
+  — one fewer transitive dep, and no double-React hazard when a consumer links
+  the package locally.
+
+#### Breaking
+
+- **Removed the `watch` API from `useAsyncFetch`** — the second `watch`
+  argument, `mapWatchToParams`, and `resetDataOnWatchChange` are gone, and both
+  codegen templates no longer emit them. Reactive GETs use an explicit
+  `useEffect` + `trigger`/`refetch`; `fetchOnMount` remains for the simple
+  initial-GET case. Regenerate API hooks and migrate any `watch` callers.
+
+### @react33/react-persistence `0.0.5`
+
+#### Added
+
+- **`createPersistedSignal({ key, storage?, initData })`** — a reactive,
+  storage-backed signal for state whose **source of truth lives outside React**
+  (so non-React code can read it synchronously) yet still drives React
+  subscribers. Returns `{ get, set, subscribe, use }`: `get()` is a plain sync
+  read (e.g. for a networking `LoadRequestProps`); `use()` is a
+  `useSyncExternalStore` binding with a snapshot cache for stable references.
+  Unlike calling the loose `getLocalStorage` / `setLocalStorage` /
+  `subscribeStorageKey` directly, the factory owns `set` + a **same-tab**
+  in-process emitter together — `subscribeStorageKey` only fires cross-tab, so a
+  loose `setLocalStorage` never notifies its own tab. Counterpart to
+  `newContext` (context **owns** the data) for the "data lives in storage,
+  React **subscribes**" case. See the react33-architecture skill, Principle 12
+  (wrapper that *hides* vs factory that *binds*).
+
+#### Changed
+
+- The storage hooks (`useGet/Set/Put` `Local` / `Session` / `Cookie`) drop the
+  now-removed `watch` passthrough to match `@react33/react-networking@0.0.5`.
+
+### @react33/react-session `0.0.4`
+
+#### Fixed
+
+- **`createBearerSessionRetry.onRetry` honours `skipLoad`** — a load-bypassed
+  request (notably the refresh endpoint) no longer triggers
+  `ensureFreshSession()` on a 401, avoiding a re-entrant refresh; such a 401 is
+  never token-expiry.
+
+### @react33/react-config `0.0.4` · @react33/react-i18n `0.0.7` · @react33/react-theme `0.0.4` · @react33/react-generate `0.0.6`
+
+#### Changed
+
+- Coordinated-release version bumps (no functional change) to keep the workspace
+  libraries aligned for this publish round.
+
 ## [0.0.5] — 2026-05-18
 
 Publish **`@react33/react-i18n@0.0.5`** before **`@react33/react-generate@0.0.5`** so apps on `pnpm codegen` get `useTf` ICU formatting from the published runtime.
