@@ -113,7 +113,23 @@ depend on it.
   error / touched / focus), for range-capable inputs such as `InputDatePicker`
   with `selectionMode="range"` (`{...api.connectRange(a, b)}`).
 
-### @react33/react-config `0.0.4` · @react33/react-i18n `0.0.7` · @react33/react-theme `0.0.4` · @react33/react-generate `0.0.6`
+### @react33/react-generate `0.0.7`
+
+#### Fixed
+
+- **Codegen emits `skipLoad: true` on public routes again.** `0.0.6` was already
+  published (from the prior release, when the workspace had
+  `@react33/react-networking@0.0.4`) and is immutable, so its rewritten pin
+  froze at `react-networking@0.0.4` — which predates `skipLoad`. Installing
+  `react-generate@0.0.6` therefore pulled the pre-`skipLoad` generator and
+  stopped stamping `skipLoad` on `security: []` operations (including the
+  refresh-session endpoint), re-introducing the re-entrant-refresh hazard.
+  `0.0.7` re-publishes from a workspace pinning `react-networking@0.0.5`, so the
+  generator emits `skipLoad` again. (Same class of bug as the `0.0.4 →
+  react-networking@0.0.2` note below — **never reuse a published
+  `react-generate` version number; always bump past `npm view` latest**.)
+
+### @react33/react-config `0.0.4` · @react33/react-i18n `0.0.7` · @react33/react-theme `0.0.4`
 
 #### Changed
 
