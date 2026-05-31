@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-theme",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
   "description": "Theme runtime: provider, hooks and DOM sync for design-token themes.",
