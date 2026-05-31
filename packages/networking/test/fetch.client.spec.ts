@@ -7,13 +7,10 @@ import HttpCode from '../src/types/http-status-code.js';
 describe('useAsyncFetch', () => {
   it('runs action on trigger and exposes data', async () => {
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        {
-          name: 't1',
-          action: async () => ({ status: HttpCode.OK, data: { n: 1 } }),
-        },
-        [],
-      ),
+      useAsyncFetch({
+        name: 't1',
+        action: async () => ({ status: HttpCode.OK, data: { n: 1 } }),
+      }),
     );
 
     act(() => {
@@ -31,7 +28,7 @@ describe('useAsyncFetch', () => {
     const action = vi.fn(async () => ({ status: HttpCode.OK, data: {} }));
 
     const { result } = renderHook(() =>
-      useAsyncFetch({ name: 'p1', prevent: true, action }, []),
+      useAsyncFetch({ name: 'p1', prevent: true, action }),
     );
 
     act(() => {
@@ -56,7 +53,7 @@ describe('useAsyncFetch', () => {
     });
 
     const { result } = renderHook(() =>
-      useAsyncFetch({ name: 'r1', action, retries: 2, retryDelayMs: 0 }, []),
+      useAsyncFetch({ name: 'r1', action, retries: 2, retryDelayMs: 0 }),
     );
 
     act(() => {
@@ -78,7 +75,7 @@ describe('useAsyncFetch', () => {
     }));
 
     const { result } = renderHook(() =>
-      useAsyncFetch({ name: 'n1', action, retries: 3 }, []),
+      useAsyncFetch({ name: 'n1', action, retries: 3 }),
     );
 
     act(() => {
@@ -99,13 +96,10 @@ describe('useAsyncFetch', () => {
     });
 
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        {
-          name: 'i2',
-          action: async () => deferred,
-        },
-        [],
-      ),
+      useAsyncFetch({
+        name: 'i2',
+        action: async () => deferred,
+      }),
     );
 
     act(() => {
@@ -129,15 +123,12 @@ describe('useAsyncFetch', () => {
 
   it('accepts requestCache preset global', async () => {
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        {
-          name: 'cache-preset',
-          requestCache: 'global',
-          cacheTtlMs: 60_000,
-          action: async () => ({ status: HttpCode.OK, data: { ok: true } }),
-        },
-        [],
-      ),
+      useAsyncFetch({
+        name: 'cache-preset',
+        requestCache: 'global',
+        cacheTtlMs: 60_000,
+        action: async () => ({ status: HttpCode.OK, data: { ok: true } }),
+      }),
     );
 
     act(() => {
@@ -149,86 +140,20 @@ describe('useAsyncFetch', () => {
     });
   });
 
-  it('fetchOnMount runs once without watch-driven refetch', async () => {
+  it('fetchOnMount runs once on mount only', async () => {
     const action = vi.fn(async () => ({ status: HttpCode.OK, data: { n: 1 } }));
 
-    const { result, rerender } = renderHook(
-      ({ dep }) =>
-        useAsyncFetch(
-          {
-            name: 'mount-once',
-            fetchOnMount: true,
-            mapWatchToParams: () => ({ dep }),
-            action,
-          },
-          [dep],
-        ),
-      { initialProps: { dep: 1 } },
+    const { result } = renderHook(() =>
+      useAsyncFetch({
+        name: 'mount-once',
+        fetchOnMount: true,
+        action,
+      }),
     );
 
     await waitFor(() => {
       expect(result.current.data).toEqual({ n: 1 });
     });
-    expect(action).toHaveBeenCalledTimes(1);
-
-    rerender({ dep: 2 });
-    await waitFor(() => {
-      expect(result.current.params).toEqual({ dep: 2 });
-    });
-    expect(action).toHaveBeenCalledTimes(1);
-  });
-
-  it('mapWatchToParams syncs params without network', async () => {
-    const action = vi.fn(async () => ({ status: HttpCode.OK, data: {} }));
-
-    const { result, rerender } = renderHook(
-      ({ id }) =>
-        useAsyncFetch(
-          {
-            name: 'sync-only',
-            mapWatchToParams: () => ({ id }),
-            action,
-          },
-          [id],
-        ),
-      { initialProps: { id: 'a' } },
-    );
-
-    expect(action).not.toHaveBeenCalled();
-    expect(result.current.params).toEqual({ id: 'a' });
-
-    rerender({ id: 'b' });
-    expect(result.current.params).toEqual({ id: 'b' });
-    expect(action).not.toHaveBeenCalled();
-  });
-
-  it('resetDataOnWatchChange resets data without network', async () => {
-    const action = vi.fn(async () => ({ status: HttpCode.OK, data: { loaded: true } }));
-
-    const { result, rerender } = renderHook(
-      ({ key }) =>
-        useAsyncFetch(
-          {
-            name: 'reset-data',
-            initData: { empty: true },
-            resetDataOnWatchChange: true,
-            mapWatchToParams: () => ({ key }),
-            action,
-          },
-          [key],
-        ),
-      { initialProps: { key: 1 } },
-    );
-
-    act(() => {
-      result.current.trigger({ key: 1 });
-    });
-    await waitFor(() => {
-      expect(result.current.data).toEqual({ loaded: true });
-    });
-
-    rerender({ key: 2 });
-    expect(result.current.data).toEqual({ empty: true });
     expect(action).toHaveBeenCalledTimes(1);
   });
 
@@ -241,10 +166,7 @@ describe('useAsyncFetch', () => {
     });
 
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        { name: 'rec1', action, retries: { 503: 2 }, retryDelayMs: 0 },
-        [],
-      ),
+      useAsyncFetch({ name: 'rec1', action, retries: { 503: 2 }, retryDelayMs: 0 }),
     );
 
     act(() => {
@@ -264,10 +186,7 @@ describe('useAsyncFetch', () => {
     }));
 
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        { name: 'rec2', action, retries: { 503: 5 }, retryDelayMs: 0 },
-        [],
-      ),
+      useAsyncFetch({ name: 'rec2', action, retries: { 503: 5 }, retryDelayMs: 0 }),
     );
 
     act(() => {
@@ -290,10 +209,7 @@ describe('useAsyncFetch', () => {
     const onRetry = vi.fn();
 
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        { name: 'on-retry', action, retries: 1, retryDelayMs: 0, onRetry },
-        [],
-      ),
+      useAsyncFetch({ name: 'on-retry', action, retries: 1, retryDelayMs: 0, onRetry }),
     );
 
     act(() => {
@@ -324,10 +240,13 @@ describe('useAsyncFetch', () => {
     });
 
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        { name: 'on-retry-model', action, retries: 1, retryDelayMs: 0, onRetry },
-        [],
-      ),
+      useAsyncFetch({
+        name: 'on-retry-model',
+        action,
+        retries: 1,
+        retryDelayMs: 0,
+        onRetry,
+      }),
     );
 
     act(() => {
@@ -355,14 +274,11 @@ describe('useAsyncFetch', () => {
   it('accepts a custom RequestCache instance', async () => {
     const myCache = createRequestCache();
     const { result } = renderHook(() =>
-      useAsyncFetch(
-        {
-          name: 'cache-custom',
-          requestCache: myCache,
-          action: async () => ({ status: HttpCode.OK, data: { custom: true } }),
-        },
-        [],
-      ),
+      useAsyncFetch({
+        name: 'cache-custom',
+        requestCache: myCache,
+        action: async () => ({ status: HttpCode.OK, data: { custom: true } }),
+      }),
     );
 
     act(() => {

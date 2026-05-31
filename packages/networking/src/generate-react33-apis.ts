@@ -120,22 +120,18 @@ export {};
       const pascal = toPascalCase(name);
       return `export function use${pascal}Request<Params, Data, Response = null>(
   settings: DynamicOptions<Params, Data, Response>,
-  watch: unknown[] = [],
 ) {
   const { action: settingsAction, url = '/', method = 'GET', ...rest } = settings;
   const action =
     settingsAction ??
     (async (params?: Params) =>
       apis.${name}({ url, method, body: params }) as unknown as Promise<RequestReturn<Data>>);
-  return useAsyncFetch<Params, Data, Response>(
-    {
-      ...rest,
-      url,
-      method,
-      action,
-    },
-    watch,
-  );
+  return useAsyncFetch<Params, Data, Response>({
+    ...rest,
+    url,
+    method,
+    action,
+  });
 }`;
     })
     .join('\n\n');

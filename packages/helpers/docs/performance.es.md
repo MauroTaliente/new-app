@@ -11,7 +11,7 @@ Cada instancia de hook ejecuta **como mucho una request lógica a la vez**. Nuev
 ## Tamaño de bundle
 
 - Imports **nombrados** desde `@react33/react-helpers` y el resto para facilitar tree-shaking.
-- `@react33/react-networking` usa `use-memo-one` y React como peers.
+- `@react33/react-networking` declara React (y Zod opcional) como peers.
 - `@react33/react-i18n` incluye **`intl-messageformat`** para ICU—medí el bundle si el presupuesto es ajustado.
 
 ## Contexto y tema

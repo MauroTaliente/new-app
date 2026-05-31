@@ -4,8 +4,7 @@
  * Client hook: one in-flight request per instance; see README in this package.
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { useMemo, useCallback } from 'use-memo-one';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { isDeepEqual } from '@react33/react-helpers';
 import { shouldRetry, sleepMs } from '../helpers';
 import {
@@ -39,8 +38,6 @@ const useAsyncFetch = <Params, Data, Response = null>(
     name,
     state,
     fetchOnMount = false,
-    mapWatchToParams,
-    resetDataOnWatchChange = false,
     prevent = false,
     retries = 0,
     retryDelayMs = 0,
@@ -64,12 +61,10 @@ const useAsyncFetch = <Params, Data, Response = null>(
     cacheTtlMs,
     scope,
   }: DynamicOptions<Params, Data, Response>,
-  watch: readonly unknown[] = [],
 ) => {
   const memo = useMemo(
     () => ({
       author: 'unknown',
-      watchSynced: false,
       localMeta: { ...emptyMeta },
       loading: initLoading || fetchOnMount || false,
       params: undefined as Params | undefined,
@@ -91,9 +86,6 @@ const useAsyncFetch = <Params, Data, Response = null>(
 
   const [endCount, setEndCount] = useState(0);
   const [status, setStatus] = useState<HttpCode>(0);
-  /** Bumps on watch sync so `memo.params` / `memo.data` updates are visible in render. */
-  const [syncRevision, setSyncRevision] = useState(0);
-  void syncRevision;
 
   const optsRef = useRef({
     name,
@@ -231,18 +223,6 @@ const useAsyncFetch = <Params, Data, Response = null>(
     endController(status);
     return () => { };
   }, [endCount]);
-
-  useEffect(() => {
-    if (mapWatchToParams) {
-      memo.params = mapWatchToParams(watch);
-    }
-    if (resetDataOnWatchChange && memo.watchSynced) {
-      memo.data = optsRef.current.initData as ResponseOrData<Data, Response>;
-    }
-    memo.watchSynced = true;
-    setSyncRevision((r) => r + 1);
-    return () => { };
-  }, [...watch]);
 
   useEffect(() => {
     if (!fetchOnMount) return;

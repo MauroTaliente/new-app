@@ -4,10 +4,10 @@ Utilidades HTTP para navegador y servidor, hook **`useAsyncFetch`** (una petici�
 
 ### `useAsyncFetch` (contrato v2)
 
-- **`trigger(params?)`** — único disparador de red; sin `params` en las options del hook.
-- **`fetchOnMount`** — un GET inicial al montar (usa `memo.params` tras `mapWatchToParams`).
-- **`watch`** — solo sincroniza con `mapWatchToParams` / `resetDataOnWatchChange`; **no** refetch al cambiar deps.
-- Refetch explícito: `trigger({ day })` o `useEffect(() => trigger(...), [day])` en el componente.
+- **`trigger(params?)`** — único disparador de red (GET y POST); sin `params` en las options del hook.
+- **`fetchOnMount`** — un GET opcional al montar (usa `memo.params` actual, normalmente tras un `trigger`).
+- Sin segundo argumento `watch`, sin `mapWatchToParams`.
+- GET reactivos (URL/filtros): **`useEffect(() => trigger(params), deps)`** en el componente (sin wrappers).
 
 Detalle y ejemplos: [README.en.md](README.en.md#useasyncfetch).
 
@@ -79,6 +79,8 @@ El SDK OpenAPI sigue usando `{scope}Request` de `apis.generated.ts`; para inyect
 **Unions discriminadas:** schemas con `oneOf` + `discriminator` generan `z.discriminatedUnion('via', [...])` para alinear con formularios Zod.
 
 **Validación runtime (`validate`):** en `openApi.files.*` podés activar Zod sobre params y response (`mode: log` | `strict`). Logs con `operationId`, schema e issues. Ver [README.en.md — Runtime validation](README.en.md#runtime-validation-validate-in-config).
+
+**Rutas públicas (`security: []`):** el SDK generado emite **`skipLoad: true`** automáticamente. El `load` no corre para esas calls — así el endpoint de refresh no se re-llama a sí mismo. Ver `RequestProps.skipLoad` y `RetryContext.skipLoad` (los retry policies de session lo tratan como terminal: un 401 en pública nunca es token-expirado).
 
 **Helpers:** `buildPathUrl`, `resolveOpenApiRequest`, `validateOpenApiParams`, `validateOpenApiResponse`, `OpenApiHookOverrides`.
 

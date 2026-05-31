@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-networking",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "HTTP helpers, useAsyncFetch (one in-flight request per instance), and event bus",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
@@ -64,7 +64,6 @@
     "@apidevtools/swagger-parser": "^12.1.0",
     "@react33/react-helpers": "workspace:*",
     "ts-essentials": "^10.0.4",
-    "use-memo-one": "^1.1.3",
     "yaml": "^2.7.0"
   },
   "peerDependencies": {

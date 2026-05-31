@@ -48,6 +48,14 @@ export type RetryContext<Data = unknown> = {
   response?: RequestReturn<Data>;
   /** Original thrown error, when the attempt threw (`status === 0`). Absent when a response was received. */
   error?: unknown;
+  /**
+   * Mirrors {@link RequestProps.skipLoad} of the request being retried. When `true` the request
+   * deliberately bypassed the registry `load`, so it carries none of the shared per-call
+   * augmentation (auth headers, etc.). A retry policy that would re-authenticate and replay
+   * (e.g. the session 401→refresh bridge) should treat such a request as terminal — replaying
+   * it would just re-send the same un-augmented request. See {@link RequestProps.skipLoad}.
+   */
+  skipLoad?: boolean;
 };
 
 /** Called between retry attempts. Awaited — use to refresh tokens, parse `Retry-After`, log, etc. */
@@ -75,6 +83,21 @@ export interface RequestProps<Params = unknown> extends Omit<SettingsProps, 'bod
    * which is retriable in number-form retries by default. Combine with `retries` to get bounded total time.
    */
   timeoutMs?: number;
+  /**
+   * Bypass the registry `load` for this call. When `true`, `createDataFlow` skips `load(shared)`
+   * entirely — the request is sent with no per-call augmentation (no auth headers, no proactive
+   * token refresh).
+   *
+   * Default (undefined): the `load` runs as usual.
+   *
+   * The motivating case is an **auth-refresh endpoint**: the refresh request is itself issued
+   * from inside the `load`'s refresh path, so routing it back through the same `load` deadlocks
+   * (the request awaits the very refresh that is awaiting it). Marking the refresh call
+   * `skipLoad` breaks that cycle. The OpenAPI codegen sets it automatically for operations the
+   * spec declares public (`security: []`). Also surfaced on {@link RetryContext.skipLoad} so
+   * retry policies can recognise an un-augmented request.
+   */
+  skipLoad?: boolean;
 }
 
 /**
@@ -210,12 +233,8 @@ export type DynamicOptions<Params = unknown, Data = unknown, Response = null> = 
   onSuccess?: (model: DynamicModel<Params, Data, Response>) => void;
   onError?: (model: DynamicModel<Params, Data, Response>) => void;
   onUnauthorized?: (model: DynamicModel<Params, Data, Response>) => void;
-  /** Run one fetch on mount using `memo.params` (after `mapWatchToParams` sync). */
+  /** Run one fetch on mount using current `memo.params` (from a prior `trigger` or `undefined`). */
   fetchOnMount?: boolean;
-  /** When `watch` changes, update `memo.params` only — no network. */
-  mapWatchToParams?: (watch: readonly unknown[]) => Params;
-  /** After the first mount, reset `data` to `initData` when `watch` changes (no network). */
-  resetDataOnWatchChange?: boolean;
   prevent?: boolean;
   /** Retry budget. See {@link RetryBudget}. Backward-compatible with `retries: number`. */
   retries?: RetryBudget;
@@ -293,10 +312,7 @@ export type DynamicMemo<Params, Data, Response = null> = {
 };
 
 export interface AsyncFetch<Params, Data, Response = null> {
-  (
-    props: DynamicOptions<Params, Data, Response>,
-    watch: readonly unknown[],
-  ): DynamicModel<Params, Data, Response>;
+  (props: DynamicOptions<Params, Data, Response>): DynamicModel<Params, Data, Response>;
 }
 
 // Constants

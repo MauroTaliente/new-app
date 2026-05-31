@@ -95,7 +95,7 @@ describe('generateOpenApi sources', () => {
     );
     expect(hooks).toContain('useListTrips');
     expect(hooks).toContain('options?: ListTripsHookOverrides');
-    expect(hooks).toContain('watch: unknown[] = []');
+    expect(hooks).not.toContain('watch: unknown[]');
     expect(hooks).toContain('ListTripsHookOverrides');
     expect(hooks).toContain("'use client'");
     expect(hooks).toContain('useListTrips');
@@ -136,6 +136,24 @@ describe('generateOpenApi sources', () => {
     );
     expect(bundle.initDataSource).toContain('satisfies ListTripsData');
     expect(bundle.initDataSource).toMatch(/export const empty\w+ = /);
+  });
+
+  it('emits skipLoad: true only for public operations in the SDK', async () => {
+    const parsed = await parseOpenApiFile(demoYaml, fileConfig);
+    const sdk = generateSdkModuleSource(
+      parsed,
+      fileConfig,
+      { zod: '/tmp/demo.openapi.zod.ts', types: '/tmp/demo.openapi.types.ts', apis: '/tmp/apis.generated.ts' },
+      '/tmp',
+    );
+
+    // `login` is `security: []` → public → its scopeRequest call bypasses the load.
+    const loginFn = sdk.slice(sdk.indexOf('export async function login('));
+    expect(loginFn.slice(0, loginFn.indexOf('OpenApiMeta'))).toContain('skipLoad: true');
+
+    // `listTrips` inherits the global `bearerAuth` → not public → no skipLoad.
+    const listTripsFn = sdk.slice(sdk.indexOf('export async function listTrips('));
+    expect(listTripsFn.slice(0, listTripsFn.indexOf('OpenApiMeta'))).not.toContain('skipLoad');
   });
 
   it('emits z.discriminatedUnion for AddMemberBody', async () => {

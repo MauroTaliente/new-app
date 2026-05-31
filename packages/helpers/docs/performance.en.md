@@ -11,7 +11,7 @@ Each hook instance runs **at most one logical request at a time**. New triggers 
 ## Bundle size
 
 - Prefer **named imports** from `@react33/react-helpers` and other packages so bundlers can drop unused code.
-- `@react33/react-networking` pulls in `use-memo-one` and React as peers—size depends on your app’s shared dependencies.
+- `@react33/react-networking` lists React (and optional Zod) as peers—size depends on your app’s shared dependencies.
 - `@react33/react-i18n` bundles **`intl-messageformat`** for ICU messages—measure if bundle budget is tight; tree-shake locale data in your app.
 
 ## Context and theme

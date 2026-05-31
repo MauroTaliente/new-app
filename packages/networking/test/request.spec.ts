@@ -329,4 +329,92 @@ describe('createDataFlow', () => {
     expect(res.status).toBe(200);
     expect(calls).toBe(2);
   });
+
+  it('skipLoad: true bypasses the load entirely', async () => {
+    globalThis.fetch = vi.fn(async () =>
+      new Response('{}', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+    ) as typeof fetch;
+
+    const load = vi.fn(async () => ({ headers: { Authorization: 'Bearer t' } }));
+    const ready = createDataFlow({ url: 'https://base.test' }, load);
+
+    await ready({ url: '/v1', method: 'GET', skipLoad: true });
+
+    expect(load).not.toHaveBeenCalled();
+    const init = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit;
+    expect((init.headers as Headers).get('Authorization')).toBeNull();
+  });
+
+  it('skipLoad does not leak into RequestInit', async () => {
+    globalThis.fetch = vi.fn(async () =>
+      new Response('{}', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+    ) as typeof fetch;
+
+    const ready = createDataFlow({ url: 'https://base.test' });
+    await ready({ url: '/v1', method: 'GET', skipLoad: true });
+
+    const init = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit;
+    expect('skipLoad' in init).toBe(false);
+  });
+
+  it('propagates skipLoad to the onRetry context', async () => {
+    let calls = 0;
+    globalThis.fetch = vi.fn(async () => {
+      calls++;
+      if (calls === 1) return new Response('', { status: 401 });
+      return new Response('{"ok":true}', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    }) as typeof fetch;
+
+    const captured: any[] = [];
+    const ready = createDataFlow({ url: 'https://base.test' });
+    await ready({
+      url: '/v1',
+      method: 'GET',
+      retries: { 401: 1 },
+      retryDelayMs: 0,
+      skipLoad: true,
+      onRetry: async (ctx: any) => {
+        captured.push(ctx);
+      },
+    });
+
+    expect(captured).toHaveLength(1);
+    expect(captured[0].skipLoad).toBe(true);
+  });
+
+  it('omits skipLoad from the onRetry context for a normal request', async () => {
+    let calls = 0;
+    globalThis.fetch = vi.fn(async () => {
+      calls++;
+      if (calls === 1) return new Response('', { status: 503 });
+      return new Response('{"ok":true}', {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    }) as typeof fetch;
+
+    const captured: any[] = [];
+    const ready = createDataFlow({ url: 'https://base.test' });
+    await ready({
+      url: '/v1',
+      method: 'GET',
+      retries: 1,
+      retryDelayMs: 0,
+      onRetry: async (ctx: any) => {
+        captured.push(ctx);
+      },
+    });
+
+    expect(captured).toHaveLength(1);
+    expect(captured[0].skipLoad).toBeUndefined();
+  });
 });

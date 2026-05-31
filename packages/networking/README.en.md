@@ -16,13 +16,10 @@ Client hook (`'use client'`). Exposes `trigger`, `loading`, `data`, `error`, `st
 
 | Mechanism | Role |
 |-----------|------|
-| **`trigger(params?)`** | **Only** way to start a network call. Sets `memo.params` when `params` is passed; reuses the last params when omitted. |
-| **`fetchOnMount`** | Optional **one** fetch on first mount (typical GET lists). Uses `memo.params` after `mapWatchToParams` runs. |
-| **`watch` (2nd arg)** | Dependency list. **Does not** fetch when it changes. |
-| **`mapWatchToParams`** | `(watch) => Params` — syncs `memo.params` when `watch` changes (**no network**). |
-| **`resetDataOnWatchChange`** | After first mount, resets `data` to `initData` when `watch` changes (**no network**). |
+| **`trigger(params?)`** | **Only** way to start a network call (GET, POST, …). Sets `memo.params` when `params` is passed; reuses the last params when omitted. |
+| **`fetchOnMount`** | Optional **one** fetch on first mount using current `memo.params` (usually `undefined` unless you already called `trigger`). |
 
-There is **no** `params` option on the hook settings and **no** refetch-on-deps. Dynamic query/path values belong in `trigger({ … })` or in `mapWatchToParams` + `trigger`.
+There is **no** `params` option on the hook settings, **no** second `watch` argument, and **no** hidden refetch-on-deps inside the hook. Reactive GETs: **`useEffect` + `trigger(params)`** in the component when URL or state changes.
 
 - One in-flight request per instance (`count` / `alive`).
 - Duplicate `trigger` with the **same** params while `loading` is ignored.
@@ -30,30 +27,36 @@ There is **no** `params` option on the hook settings and **no** refetch-on-deps.
 
 ### Examples
 
-**GET on mount (list):**
+**GET on mount (static params):**
 
 ```tsx
-const { data, trigger, initialLoading } = usePokemonList(
-  {
-    fetchOnMount: true,
-    mapWatchToParams: () => ({ query: { limit: 10, offset: 0 } }),
-  },
-  [],
-);
+const { trigger: loadList } = usePokemonList({ fetchOnMount: false });
+useEffect(() => {
+  loadList({ query: { limit: 10, offset: 0 } });
+}, [loadList]);
 ```
 
-**Imperative fetch when context changes (refetch):**
+Or **`fetchOnMount: true`** when params on first fetch can be `undefined`.
+
+**Reactive GET (URL / filters):**
 
 ```tsx
+const { trigger: fetchTrips } = useListTrips({ initData: mock, fetchOnMount: false });
 useEffect(() => {
-  trigger({ query: { day } });
-}, [day]);
+  fetchTrips({ query: { page, q: search } });
+}, [page, search, fetchTrips]);
+```
+
+**Mutation / user action:**
+
+```tsx
+signInReq.trigger({ body: values }, ({ data, status }) => { … });
 ```
 
 **Detail on user action (no fetch on deps):**
 
 ```tsx
-const { trigger: loadDetail } = usePokemonRetrieve({}, []);
+const { trigger: loadDetail } = usePokemonRetrieve();
 const onSelect = (name: string) => loadDetail({ path: { id: name } });
 ```
 
@@ -68,7 +71,7 @@ const onSelect = (name: string) => loadDetail({ path: { id: name } });
 | `setter` | Map response to `data` |
 | `retries` / `retryDelayMs` | Retry failures only |
 | `prevent` | Skip network |
-| `initData` | Initial `data` / reset target |
+| `initData` | Initial `data` |
 | `requestCache` / `cacheKey` / `cacheTtlMs` | Dedupe + optional TTL |
 
 Caching wraps the **`action`** (your `apis.*` call), not raw `fetch`.
@@ -79,68 +82,66 @@ Caching wraps the **`action`** (your `apis.*` call), not raw `fetch`.
 
 ## Declarative API registry (`createApiRegistry`)
 
-Build many named HTTP clients from a list instead of repeating `createDataFlow` for each base URL.
+Declare **`react33Networking.apis`** in `react33.config.json` (name → `{ url, headers?, session?, … }`). Set **`registryOutput`** to the path of **`apis.generated.ts`**. The default client hooks module is **`apis.client.generated.tsx`** (override with **`hooksOutput`**).
 
-- **`ApiClientConfig`**: `{ name, url, ...RequestInit }` — `name` must be a letter-first identifier (`admin`, `api_1`).
-- **`ApiRegistry<T>`**: alias for a map of `Request` clients; default `T` is a wide `Record<string, Request<unknown, unknown>>`. With the map form of `createApiRegistry`, **`T` is inferred** as `ApiRegistryFromDefinitions<typeof definitions>` when `definitions` keeps literal keys (see below).
-- **`createApiRegistry(entries | definitions, { load?, loads?, defaults?, defaultsByApi? })`**: pass an array of `{ name, url, ... }` **or** a map of `ApiClientConfigBody` (keys are API names). Map form returns **`ApiRegistry<ApiRegistryFromDefinitions<T>>`** so `apis.pokemon`, `apis.admin`, etc. are known to TypeScript without hand-written generics. Use **`satisfies Record<string, ApiClientConfigBody>`** on the object (as the generator does) so keys are not widened to `string`. Array form returns the wide `ApiRegistry` unless you use `as const` on names.
-- **`load`**: shared `LoadRequestProps` for every client (e.g. one auth flow).
-- **`loads`**: overrides per `name` when some APIs use different tokens or headers.
-- **`defaults`**: registry-wide `RequestProps` defaults (`retries`, `onRetry`, `retryDelayMs`, `timeoutMs`) applied to every client.
-- **`defaultsByApi`**: per-`name` defaults — the per-API counterpart of `defaults`. Use when the policy is API-specific, e.g. a session-specific retry/`onRetry` so a 401 from one API refreshes only that API's session. Merge order (lowest→highest): `defaults` < `defaultsByApi[name]` < per-API definition < per-call props.
-- **`ApiRuntime`**: the seam type a `runtimeModule` exports for the codegen — `{ defineDefinitions?, load?, loads?, defaults?, defaultsByApi? }`. The `@react33/react-session` codegen generates a module of this shape (see that package's README).
+Run **`react-networking-generate --config react33.config.json`** or **`react-generate`**. **`--output`** overrides **`registryOutput`** from JSON.
 
-### `react33.config.json` + `react-networking-generate`
+### API surface
 
-For apps that already use `react33.config.json`, declare **`react33Networking.apis` as an object** (keys are the API names—no repeated `name` field):
+- **`createApiRegistry(entries | definitions, { load?, loads?, defaults?, defaultsByApi? })`** — array of `{ name, url, ... }` **or** a map keyed by API name (use **`satisfies Record<string, ApiClientConfigBody>`** so keys stay literal and `apis.pokemon` is known to TypeScript without hand-written generics).
+- **`load`** — shared `LoadRequestProps` for every client (one auth flow).
+- **`loads`** — per-`name` override when some APIs use different tokens/headers. Modern wiring: prefer **`apis.<name>.session`** in `react33.config.json` (FK to a `react33Session.sessions.*` entry) so the codegen attaches the right `load` automatically — `loads` stays as the escape hatch.
+- **`defaults`** — registry-wide `RequestProps` defaults (`retries`, `onRetry`, `retryDelayMs`, `timeoutMs`).
+- **`defaultsByApi`** — per-`name` defaults. Merge order (lowest→highest): `defaults` < `defaultsByApi[name]` < per-API definition < per-call props.
+- **`ApiRuntime`** — the seam type a `runtimeModule` exports for the codegen: `{ defineDefinitions?, load?, loads?, defaults?, defaultsByApi? }`. `@react33/react-session` emits a module of this shape (see that package's README).
+
+The generator writes **two modules**:
+
+1. **`apis.generated.ts`** — `export const definitions`, `export const apis`, `export type ApiNames = keyof typeof apis`, and one **`export const {name}Request = apis.{name}`** per API. **Server-safe** (no React).
+2. **`apis.client.generated.tsx`** — `'use client'`, **`use{Name}Request`** for each API: `useAsyncFetch` + `apis.{name}` as the `action`.
+
+Why flat `pokemonRequest` + `usePokemonRequest` instead of `api.pokemon.request` / `api.pokemon.useRequest`? Server modules **must not** import hooks. A single namespace split across two files adds indirection; flat exports keep imports obvious: server → `pokemonRequest`, client → `usePokemonRequest`.
+
+Programmatic use: `import { generateApisModuleSource, generateApisHooksModuleSource, deriveHooksGeneratedPath, readReact33NetworkingOutputPaths } from '@react33/react-networking/generate'`.
+
+## OpenAPI 3.1 codegen
+
+Add **`react33Networking.openApi.files`** (see `@react33/react-config` schema). Each entry points to a **≥ 3.1** YAML/JSON spec, an existing **`scope`** in `apis`, and output paths:
+
+| Output | Content |
+|--------|---------|
+| `*.openapi.zod.ts` | Zod schemas (runtime validation; forms) |
+| `*.openapi.types.ts` | `z.infer` + `{Operation}HookOverrides` |
+| `*.openapi.ts` | Server-safe SDK (`listTrips`, …) → `{scope}Request` |
+| `*.openapi.client.tsx` | `useListTrips`, … via `use{Scope}Request` |
+| `initData.source` | TS module with constants (`operations.*.initData` picks the symbol) |
+
+Minimal example (2 PokeAPI operations in the demo):
 
 ```json
-"react33Networking": {
-  "apis": {
+"openApi": {
+  "files": {
     "pokemon": {
-      "url": "https://pokeapi.co/api/v2",
-      "headers": { "Accept": "application/json" }
-    },
-    "admin": {
-      "url": "https://api.example.com",
-      "cache": "no-store"
+      "specSource": "./openapi/pokeapi.openapi.yaml",
+      "scope": "pokemon",
+      "basePath": "/api/v2",
+      "output": {
+        "zod": "./src/api/pokemon.openapi.zod.ts",
+        "types": "./src/api/pokemon.openapi.types.ts",
+        "sdk": "./src/api/pokemon.openapi.ts",
+        "hooks": "./src/api/pokemon.openapi.client.generated.ts"
+      },
+      "operations": {
+        "pokemonList": { "fetchOnMount": true }
+      }
     }
   }
 }
 ```
 
-Set **`react33Networking.registryOutput`** in `react33.config.json` (path relative to the config file) for the server-safe module, or pass **`--output`** on the CLI (CLI wins). Optional **`react33Networking.hooksOutput`** overrides the client hooks path; otherwise it is derived next to `apis.generated.ts` as **`apis.client.generated.tsx`**.
+Generated hooks: `usePokemonList(options?)` — no `watch` second argument.
 
-Then run the generator (after `@react33/react-networking` is built):
-
-```bash
-react-networking-generate --config react33.config.json
-```
-
-It writes **two modules**:
-
-1. **`apis.generated.ts`** — **`export const definitions`** (typed config), **`export const apis`**, **`export type ApiNames`** (`keyof typeof apis` for exhaustiveness), and one **`export const {name}Request = apis.{name}`** per API (server-safe `Request` clients).
-2. **`apis.client.generated.tsx`** — `'use client'`, **`use{Name}Request`** for each API: `useAsyncFetch` + `apis.{name}` in the `action`.
-
-**Why flat `pokemonRequest` + `usePokemonRequest` instead of `api.pokemon.request` / `api.pokemon.useRequest`?** Namespaced objects are fine in a single environment, but here the **server module must not import hooks**. One namespace split across two files (`api` vs `apiHooks`) adds indirection without much gain; flat exports keep imports obvious: server → `pokemonRequest` / `apis`, client → `usePokemonRequest`.
-
-Use **`apis.generated.ts`** from server code, route handlers, and non-React callers; import **`use*Request`** only from client components (Next.js: avoid pulling hooks into server modules). The `satisfies` form preserves literal API keys on `definitions`. Re-run when `react33.config.json` changes.
-
-Programmatic use: `import { generateApisModuleSource, generateApisHooksModuleSource, deriveHooksGeneratedPath, readReact33NetworkingOutputPaths } from '@react33/react-networking/generate'`.
-
-### OpenAPI 3.1 codegen
-
-Add `react33Networking.openApi.files` in `react33.config.json` (see `@react33/react-config` schema). Each entry points at an OpenAPI **3.1+** YAML/JSON file, a `scope` key from `react33Networking.apis`, and output paths for:
-
-- `*.openapi.zod.ts` — Zod schemas (`z` is an optional peer dependency)
-- `*.openapi.types.ts` — `z.infer` types + `{Operation}HookOverrides`
-- `*.openapi.ts` — server-safe SDK (`listTrips`, …) calling `{scope}Request`
-- `*.openapi.client.tsx` — `useListTrips` hooks via `use{Scope}Request`
-- optional `initData.source` — constants module wired from `operations.<id>.initData`
-
-`react-networking-generate` emits the above after `apis.generated.ts`. **Auth stays in `createApiRegistry` `loads` / `AuthProfile`** — generated SDK functions only include `@openapi-security` JSDoc hints from the spec, not tokens.
-
-Helpers: `buildPathUrl`, `resolveOpenApiRequest`, `validateOpenApiParams`, `validateOpenApiResponse`, `OpenApiHookOverrides`.
+The generated SDK marks public operations (`security: []`) with **`skipLoad: true`** so the auth-refresh endpoint cannot re-enter its own refresh. See `RequestProps.skipLoad` and `RetryContext.skipLoad`.
 
 ### Runtime validation (`validate` in config)
 
@@ -150,15 +151,13 @@ In `openApi.files.*`:
 "validate": { "params": true, "response": true, "mode": "log" }
 ```
 
-- **`params`**: Zod-check before `resolveOpenApiRequest` / network.
-- **`response`**: Zod-check on `response.data` after fetch.
-- **`mode`**: `log` (console warn, keep going) or `strict` (throw `OpenApiValidationError`).
+- **`params`** — Zod-check before `resolveOpenApiRequest` / network.
+- **`response`** — Zod-check on `response.data` after fetch.
+- **`mode`** — `log` (warn, keep going) or `strict` (throw `OpenApiValidationError`).
 
 Per call: `pokemon_list(params, { validate: false })` or `validate: { response: false }`.
 
-Defaults are baked per operation as `{operationId}ValidateDefaults` in the generated SDK.
-
-Merge order: `defaults.validate` → `openApi.files.*.validate` → `operations.<operationId>.validate` (later wins).
+Defaults are baked per operation as `{operationId}ValidateDefaults` in the generated SDK. Merge order: `defaults.validate` → `openApi.files.*.validate` → `operations.<operationId>.validate` (later wins).
 
 ```json
 "validate": { "params": true, "response": true, "mode": "log" },
@@ -168,116 +167,60 @@ Merge order: `defaults.validate` → `openApi.files.*.validate` → `operations.
 }
 ```
 
-Pure helpers (no storage I/O):
-
-- **`mergeRequestProps(base, patch)`** — merge `RequestProps`, including `Headers`.
+## Auth: `AuthProfile` and secrets
 
 ### `AuthProfile` (serializable contract)
 
-Defined in this package for typing and docs; **reading** cookies/storage is implemented in `@react33/react-persistence` (this package does not depend on persistence).
+Typed here, **read** in `@react33/react-persistence` (this package has no persistence dependency).
 
-- **`storage`**: `'cookie' | 'localStorage' | 'sessionStorage'`
-- **`key`**: cookie name or storage key
-- **`headers`**: map of header values, each may contain the literal `{token}`
+- **`storage`** — `'cookie' | 'localStorage' | 'sessionStorage'`
+- **`key`** — cookie name or storage key
+- **`headers`** — header map; each value may contain the literal `{token}`
 
-### Example: ten APIs, three with their own tokens
+For most apps, prefer **`@react33/react-session`** (bearer / bearer-static / external strategies) over hand-rolling profiles — it covers the same surface plus refresh, cross-tab serialisation, and 401 retry.
 
-Define **reusable profiles** in TypeScript (env URLs, not JSON functions):
+### API keys (and other secrets): never in JSON config
+
+**Do not** commit API keys or tokens to `react33.config.json` (or any static config that ships with the repo). Use **environment variables** and wire the secret in **TypeScript** via `LoadRequestProps`.
 
 ```ts
-import {
-  createApiRegistry,
-  type ApiClientConfigBody,
-  type AuthProfile,
-} from '@react33/react-networking';
-import {
-  createLoadRequestPropsFromAuthProfile,
-  createLoadRequestPropsFromAuthProfiles,
-} from '@react33/react-persistence';
+import type { LoadRequestProps } from '@react33/react-networking';
+import { mergeRequestProps } from '@react33/react-networking';
 
-const authMain: AuthProfile = {
-  storage: 'cookie',
-  key: 'authjs.session-token',
-  headers: { Authorization: 'Bearer {token}' },
-};
+const apiKey = import.meta.env.VITE_MY_API_KEY; // or process.env.MY_API_KEY
 
-const authServiceA: AuthProfile = {
-  storage: 'localStorage',
-  key: 'token_service_a',
-  headers: { Authorization: 'Bearer {token}' },
-};
-
-const authServiceB: AuthProfile = {
-  storage: 'sessionStorage',
-  key: 'token_service_b',
-  headers: { 'X-Api-Key': '{token}' },
-};
-
-const profiles = createLoadRequestPropsFromAuthProfiles({
-  main: authMain,
-  serviceA: authServiceA,
-  serviceB: authServiceB,
-});
-
-const definitions = {
-  admin: { url: process.env.NEXT_PUBLIC_ADMIN_URL!, headers: { Accept: 'application/json' }, cache: 'no-store' },
-  account: { url: process.env.NEXT_PUBLIC_ACCOUNT_URL!, headers: { Accept: 'application/json' }, cache: 'no-store' },
-  flight: { url: process.env.NEXT_PUBLIC_FLIGHT_URL!, headers: { Accept: 'application/json' }, cache: 'no-store' },
-  // ... seven more public or unauthenticated APIs: omit per-api load, use empty global load
-} satisfies Record<string, ApiClientConfigBody>;
-
-const apis = createApiRegistry(definitions, {
-  load: async (s) => s,
-  loads: {
-    admin: profiles.main,
-    account: profiles.main,
-    someOther: profiles.serviceA,
-    // map only the three that need tokens; others fall back to `load`
-  },
-});
-
-// apis.admin({ url: '/v1/stations', method: 'GET' })
+const loadWithApiKey: LoadRequestProps = async (shared) =>
+  mergeRequestProps(shared, { headers: { 'X-Api-Key': apiKey ?? '' } });
 ```
 
-For **HMAC, two custom headers, or non-stored secrets**, pass a custom `LoadRequestProps` in `loads[apiName]` from app code instead of `AuthProfile`.
+Rules:
 
-### API keys (and other secrets): do not put them in JSON config
-
-**Never** commit API keys or tokens inside `react33.config.json` (or any static config that ships with the repo). Use **environment variables** and wire the secret in **TypeScript** via `LoadRequestProps`, so it is resolved at build/runtime from the environment, not from generated config.
-
-**Recommended flow**
-
-1. Define the secret in `.env`, CI, or your host (e.g. `VITE_*` / `NEXT_PUBLIC_*` only if you accept the value in the client bundle; for truly private keys, call the API from the server or a proxy route).
-2. In the module where you call `createApiRegistry` or `createDataFlow`, pass a `load` (shared) or `loads[apiName]` (per client) that reads the env and merges headers:
-
-   ```ts
-   import type { LoadRequestProps } from '@react33/react-networking';
-   import { mergeRequestProps } from '@react33/react-networking';
-
-   const apiKey = import.meta.env.VITE_MY_API_KEY; // or process.env.MY_API_KEY
-
-   const loadWithApiKey: LoadRequestProps = async (shared) =>
-     mergeRequestProps(shared, {
-       headers: { 'X-Api-Key': apiKey ?? '' },
-     });
-   ```
-
-3. If **codegen or build steps** generate hooks from `react33.config.json`, treat the JSON as **non-secret metadata only** (API name, base URL, *name* of the header such as `"X-Api-Key"`). The **value** always comes from env in hand-written or templated TS that references `import.meta.env` / `process.env`—never inline the key into generated files from JSON.
-4. Tokens **stored** in cookies or `localStorage` / `sessionStorage` are covered by **`AuthProfile`** and `@react33/react-persistence`’s `createLoadRequestPropsFromAuthProfile`. Static API keys from env are not: use a custom `load` as above.
-
-**Summary:** required API key = **env + `LoadRequestProps`** (`mergeRequestProps`). Config files can describe *that* an API needs a key; they must not contain the key itself.
+1. `.env` / CI / host env. Public client builds: `VITE_*` / `NEXT_PUBLIC_*`. Truly private keys: call the API from the server or a proxy route.
+2. If codegen reads `react33.config.json`, treat the JSON as **non-secret metadata only** (API name, base URL, header *name* like `"X-Api-Key"`). The **value** comes from env in hand-written TS — never inline keys into generated files.
+3. Tokens **stored** in cookies/localStorage/sessionStorage → `AuthProfile` + `createLoadRequestPropsFromAuthProfile` from `@react33/react-persistence`. Static keys from env → custom `load` as above.
 
 ## Helpers
 
-- **`buildRequestUrl` / `buildRequestBody`** – query string for GET with object body, JSON body for mutations.
-- **`joinResponses`** – merge several `{ status, loading, data, errors }` into one aggregate (parent composition).
-- **`shouldRetryAfterHttpFailure`** – default retry policy (5xx, 408, 429).
-- **`sleepMs`** – delay helper used between retries.
+- **`buildRequestUrl` / `buildRequestBody`** — query string for GET with object body, JSON body for mutations.
+- **`joinResponses`** — merge several `{ status, loading, data, errors }` into one aggregate (parent composition).
+- **`shouldRetryAfterHttpFailure`** — default retry policy (5xx, 408, 429).
+- **`sleepMs`** — delay helper used between retries.
+- **`mergeRequestProps(base, patch)`** — merge `RequestProps`, including `Headers`.
 
 ## Event bus
 
-`createEventBus` is unchanged: typed `on` / `off` / `emit` / `once` with an optional queued replay for early emits. It does not depend on React or fetch.
+Independent from fetch. **`createEventBus`**, **`useEventBus`**, typed channels. See source under `src/event-bus/`.
 
-## Comparison (mental model)
+## Package layout
 
-This package favors **local, explicit control** and a **serial** request model per hook. Optional **`RequestCache`** adds in-memory dedup/TTL when you wire it—without a built-in global invalidation graph.
+| Path | Role |
+|------|------|
+| `src/fetch/fetch.client.tsx` | `useAsyncFetch` |
+| `src/fetch/fetch.server.ts` | `request`, `createDataFlow` |
+| `src/openapi/` | OpenAPI parse + codegen |
+| `src/generate-react33-apis.ts` | Registry codegen CLI |
+
+## Peer dependencies
+
+- **`react` ≥ 18** (client hooks)
+- **`zod` ^4** (optional; OpenAPI validation)

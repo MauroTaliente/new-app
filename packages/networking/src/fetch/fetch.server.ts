@@ -17,10 +17,11 @@ const request = async <Params, Data>({
   method = 'GET',
   headers,
   body,
-  // Pull retry/onRetry/retryDelayMs out of `settings` so they don't leak into `RequestInit`.
+  // Pull retry/onRetry/retryDelayMs/skipLoad out of `settings` so they don't leak into `RequestInit`.
   retries: _retries,
   retryDelayMs: _retryDelayMs,
   onRetry: _onRetry,
+  skipLoad: _skipLoad,
   timeoutMs,
   signal: externalSignal,
   ...settings
@@ -83,7 +84,9 @@ const createDataFlow = (
 
     while (true) {
       // Reload before each attempt: lets `onRetry` (e.g. token refresh) take effect on the next try.
-      const loadedProps = await load(shared);
+      // `skipLoad` requests bypass `load` entirely — see `RequestProps.skipLoad` (breaks the
+      // refresh-endpoint deadlock where the load would re-trigger the very refresh in progress).
+      const loadedProps = props.skipLoad ? {} : await load(shared);
 
       const baseUrl = shared.url ?? '';
       const childUrl = props.url ?? '';
@@ -123,6 +126,7 @@ const createDataFlow = (
           // Mutually exclusive: response on receive, error on throw. status === 0 ⇔ no response.
           ...(lastResponse !== undefined ? { response: lastResponse } : {}),
           ...(lastError !== undefined ? { error: lastError } : {}),
+          ...(mergedProps.skipLoad ? { skipLoad: true } : {}),
         });
       }
       const delay = mergedProps.retryDelayMs ?? 0;

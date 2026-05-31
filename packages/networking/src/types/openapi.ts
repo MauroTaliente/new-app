@@ -10,7 +10,5 @@ export type OpenApiHookOverrides<Params, Data, Response = null> = Partial<
     | 'retries'
     | 'retryDelayMs'
     | 'initLoading'
-    | 'mapWatchToParams'
-    | 'resetDataOnWatchChange'
   >
 >;

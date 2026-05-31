@@ -163,7 +163,7 @@ ${paramsValidateBlock}
   return ${scope}Request({
     url,
     method: ${JSON.stringify(op.method)},
-    body,
+    body,${meta.isPublic ? '\n    // Public route (`security: []`): bypass the scope `load` so an auth-refresh\n    // endpoint cannot re-enter its own refresh. See `RequestProps.skipLoad`.\n    skipLoad: true,' : ''}
   }).then((res) => {
 ${responseValidateBlock}
   }) as Promise<RequestReturn<${pascal}Data>>;
@@ -256,10 +256,7 @@ export function generateHooksModuleSource(
     const jsdoc = formatSecurityJSDoc(meta, fileConfig.scope);
 
     hookBlocks.push(`${jsdoc}
-export function use${pascal}(
-  options?: ${pascal}HookOverrides,
-  watch: unknown[] = [],
-) {
+export function use${pascal}(options?: ${pascal}HookOverrides) {
   return use${scopePascal}Request<${pascal}Params, ${pascal}Data>({
     name: ${JSON.stringify(op.operationId)},
     url: ${JSON.stringify(op.pathTemplate)},
@@ -269,7 +266,7 @@ export function use${pascal}(
     ${initDataLine}
     action: async (params) => ${op.operationId}(params as ${pascal}Params, { verbose: options?.verbose ?? ${verbose} }) as Promise<RequestReturn<${pascal}Data>>,
     ...options,
-  }, watch);
+  });
 }
 `);
   }
