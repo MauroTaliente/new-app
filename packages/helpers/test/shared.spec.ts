@@ -4,6 +4,7 @@ import {
   buildCalendarMonth,
   capitalized,
   clampDate,
+  clampInt,
   getFallback,
   getPathSegmentReady,
   getValueFromPath,
@@ -129,6 +130,16 @@ describe('type guards and string helpers', () => {
     expect(getFallback(undefined, 'ok', 'later')).toBe('ok');
     expect(getFallback(undefined, null)).toBe(null);
     expect(getFallback()).toBeUndefined();
+  });
+
+  it('clampInt floors and clamps into [min, max]', () => {
+    expect(clampInt(3.9)).toBe(3);                  // floor
+    expect(clampInt(0)).toBe(1);                    // default min = 1
+    expect(clampInt(-5)).toBe(1);                   // below min
+    expect(clampInt(10, 1, 5)).toBe(5);             // cap to max
+    expect(clampInt(2.7, 1, 5)).toBe(2);            // inside range, floored
+    expect(clampInt(-1, 0)).toBe(0);                // custom min (0-based index)
+    expect(clampInt(7, 1, 5)).toBe(5);              // over max
   });
 });
 

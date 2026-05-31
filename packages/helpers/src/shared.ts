@@ -83,6 +83,62 @@ export function isNullOrEmpty(value: any): value is null | '' | undefined | [] |
   );
 }
 
+/**
+ * Return a copy of `value` with entries removed where the entry value satisfies
+ * `isNullOrEmpty` (i.e. `null | undefined | '' | [] | {}`).
+ *
+ * - Array → `filter` out empty entries (indexes collapse).
+ * - Plain object → drop keys whose value is empty.
+ * - Anything else → returned unchanged.
+ *
+ * Shallow: nested objects/arrays are kept as-is even if they only contain empty
+ * values. Use `omitNullOrEmptyDeep` to prune recursively.
+ */
+export function omitNullOrEmpty<T>(value: readonly T[]): T[];
+export function omitNullOrEmpty<T extends Record<string, unknown>>(value: T): Partial<T>;
+export function omitNullOrEmpty<T>(value: T): T;
+export function omitNullOrEmpty(value: any): any {
+  if (isArray(value)) return value.filter((v) => !isNullOrEmpty(v));
+  if (isObject(value)) {
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(value)) {
+      const v = (value as Record<string, unknown>)[key];
+      if (!isNullOrEmpty(v)) out[key] = v;
+    }
+    return out;
+  }
+  return value;
+}
+
+/**
+ * Recursive variant of `omitNullOrEmpty`: walks into nested objects and arrays
+ * first, then prunes any branch that collapses to empty after pruning. Useful
+ * for sanitising API payloads where `{ filters: { name: '', tags: [] } }`
+ * should disappear from its parent.
+ */
+export function omitNullOrEmptyDeep<T>(value: readonly T[]): T[];
+export function omitNullOrEmptyDeep<T extends Record<string, unknown>>(value: T): Partial<T>;
+export function omitNullOrEmptyDeep<T>(value: T): T;
+export function omitNullOrEmptyDeep(value: any): any {
+  if (isArray(value)) {
+    const out: unknown[] = [];
+    for (const item of value) {
+      const cleaned = omitNullOrEmptyDeep(item);
+      if (!isNullOrEmpty(cleaned)) out.push(cleaned);
+    }
+    return out;
+  }
+  if (isObject(value)) {
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(value)) {
+      const cleaned = omitNullOrEmptyDeep((value as Record<string, unknown>)[key]);
+      if (!isNullOrEmpty(cleaned)) out[key] = cleaned;
+    }
+    return out;
+  }
+  return value;
+}
+
 export function isNullOrUndefined(value: any): value is null | '' | undefined | [] | {} {
   return value === undefined || value === null;
 }
@@ -144,6 +200,20 @@ export const safeNumber = (value: unknown, fallback: number | null = null) => {
   }
   return fallback;
 };
+
+/**
+ * Floor `value` and clamp it into `[min, max]` (max optional). Default `min = 1`
+ * mirrors `safeInt` — built for pagination indexes where you arrived at a number
+ * via arithmetic (e.g. `page + delta`) and need to guarantee a positive integer
+ * before handing it to a setter or URL.
+ *
+ * NaN input passes through (same as the bare `Math.max(1, Math.floor(next))`
+ * idiom). If you need NaN safety, validate before calling.
+ */
+export function clampInt(value: number, min = 1, max?: number): number {
+  const n = Math.max(min, Math.floor(value));
+  return max !== undefined ? Math.min(max, n) : n;
+}
 
 type NonU<T> = T extends undefined ? never : T;
 export function getFallback<T>(...values: readonly T[]): NonU<T> | undefined {

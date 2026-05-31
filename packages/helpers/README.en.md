@@ -12,6 +12,23 @@ From npm (after publish): use the same package name with a semver range.
 
 `import { … } from '@react33/react-helpers'`
 
+## Router entry (`@react33/react-helpers/router`)
+
+Parsers for `useRouteQuery().getGroup` resolvers — pair with **`@react33/react-hooks/router`**.
+
+```ts
+import { queryInt, safeInt } from '@react33/react-helpers/router';
+import { useRouteQuery } from '@react33/react-hooks/router';
+```
+
+| Export | Notes |
+|--------|--------|
+| `safeInt` | `(raw, fallback, min?)` → positive integer from query string |
+| `queryInt` | `(fallback, min?)` → resolver for `getGroup({ page: queryInt(1) })` |
+| `safeString` | `(raw, fallback?)` → trimmed string (not `safeStringify`) |
+| `queryString` | `(fallback?)` → resolver for `getGroup({ search: queryString() })` |
+| `QueryParamRaw`, `RouteQueryRaw` | `string \| null` (absent param) |
+
 ## Highlights
 
 | Area | Examples |
