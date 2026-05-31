@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
+  DEFAULT_ROUTE_QUERY_MODE,
   getObjectWithTag,
   removeTagFromObject,
   useRouteQueryCore,
@@ -11,7 +12,14 @@ import {
 } from './route-query-shared.js';
 
 export { getObjectWithTag, removeTagFromObject };
-export type { RouteQueryPayload, RouteQueryUpdateMode };
+export type {
+  RouteQueryGroupDefaults,
+  RouteQueryGroupResult,
+  RouteQueryPayload,
+  RouteQueryRaw,
+  RouteQueryResolver,
+  RouteQueryUpdateMode,
+} from './route-query-shared.js';
 
 /**
  * Query params helper scoped by `tag + sep`.
@@ -28,14 +36,9 @@ export function useRouteQuery(tag = '', sep = '') {
   }, [pathname, searchParams]);
 
   const applyUrl = useCallback(
-    (url: string, mode: RouteQueryUpdateMode = 'silent') => {
+    (url: string, mode: RouteQueryUpdateMode = DEFAULT_ROUTE_QUERY_MODE) => {
       const finalUrl = url || pathname || '/';
-      const currentUrl =
-        typeof window !== 'undefined'
-          ? `${window.location.pathname}${window.location.search}`
-          : route;
-
-      if (currentUrl === finalUrl) return;
+      if (route === finalUrl) return;
       if (mode === 'push') {
         router.push(finalUrl, { scroll: false });
         return;

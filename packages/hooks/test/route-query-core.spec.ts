@@ -1,3 +1,4 @@
+import { queryInt } from '@react33/react-helpers/router';
 import { describe, it, expect, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useRouteQueryCore } from '../src/route-query-shared.js';
@@ -21,13 +22,19 @@ describe('useRouteQueryCore', () => {
   it('add merges params with tag prefix and calls applyUrl', () => {
     const { result, applyUrl } = mountCore();
     act(() => result.current.add({ status: 'open' }));
-    expect(applyUrl).toHaveBeenCalledWith('/list?foo=bar&n=7&f_status=open', 'silent');
+    expect(applyUrl).toHaveBeenCalledWith('/list?foo=bar&n=7&f_status=open', 'replace');
   });
 
   it('removes tagged keys when payload value is empty', () => {
     const { result, applyUrl } = mountCore('f_foo=bar');
     act(() => result.current.add({ foo: '' }));
-    expect(applyUrl).toHaveBeenCalledWith('/list', 'silent');
+    expect(applyUrl).toHaveBeenCalledWith('/list', 'replace');
+  });
+
+  it('add accepts silent for edge cases that bypass the router', () => {
+    const { result, applyUrl } = mountCore();
+    act(() => result.current.add({ status: 'open' }, 'silent'));
+    expect(applyUrl).toHaveBeenCalledWith('/list?foo=bar&n=7&f_status=open', 'silent');
   });
 
   it('does not call applyUrl when tagged values are unchanged', () => {
@@ -57,5 +64,37 @@ describe('useRouteQueryCore', () => {
       n: 7,
       flag: true,
     });
+  });
+
+  it('getGroup runs resolver callbacks with raw query values', () => {
+    const sp = new URLSearchParams('f_page=5&f_pageSize=foo');
+    const applyUrl = vi.fn();
+    const { result } = renderHook(() =>
+      useRouteQueryCore('f', '_', {
+        pathname: '/list',
+        searchParams: sp,
+        applyUrl,
+      }),
+    );
+    expect(
+      result.current.getGroup({
+        page: queryInt(1),
+        pageSize: queryInt(9),
+        label: 'all',
+      }),
+    ).toEqual({ page: 5, pageSize: 9, label: 'all' });
+  });
+
+  it('getGroup resolvers receive null when param is absent', () => {
+    const sp = new URLSearchParams('');
+    const applyUrl = vi.fn();
+    const { result } = renderHook(() =>
+      useRouteQueryCore('f', '_', {
+        pathname: '/list',
+        searchParams: sp,
+        applyUrl,
+      }),
+    );
+    expect(result.current.getGroup({ page: queryInt(1) })).toEqual({ page: 1 });
   });
 });

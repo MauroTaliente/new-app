@@ -56,10 +56,21 @@ Wrap the app with `BrowserRouter` / `RouterProvider` so `useNavigate` and `useSe
 
 | Export | Notes |
 |--------|--------|
-| `useRouteQuery` | URL query ↔ state (`push` / `replace` / `silent`) |
+| `useRouteQuery` | URL query ↔ state; `add()` defaults to **`replace`** (`silent` is edge-only) |
+| `getGroup` | Typed defaults (`string` / `number` / `boolean`) or **resolver** `(raw) => value` |
 | `getObjectWithTag`, `removeTagFromObject` | Query helpers |
 
+`getGroup` resolvers pair with **`@react33/react-helpers/router`**: `queryInt` / `safeInt`, `queryString` / `safeString`, etc.
+
 Requires `react-router-dom` in the app that imports this entry.
+
+### Why `replace` (not `silent`) as the default
+
+`silent` calls `history.replaceState` directly. That **does not** fire `popstate` and **does not** update the router's internal state — so `useSearchParams` (both `react-router-dom` and `next/navigation`) returns stale values and any screen that derives state from the URL via a hook stays out of sync until a full reload. We hit this on Vite + react-router list screens and confirmed the same on Next 13+ App Router.
+
+`replace` routes the update through the framework (`router.replace` / `navigate(..., { replace: true })`), which updates the address bar **and** notifies subscribers. No new history entry — same UX as `silent`, with hooks that actually re-render.
+
+Use `silent` only when you intentionally bypass the router (a non-React widget, an embedded host, an analytics-only param you don't render).
 
 ## Out of scope (by design)
 

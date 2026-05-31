@@ -56,10 +56,21 @@ La app debe estar envuelta en `BrowserRouter` / `RouterProvider`.
 
 | Export | Notas |
 |--------|--------|
-| `useRouteQuery` | Query ↔ estado (`push` / `replace` / `silent`) |
+| `useRouteQuery` | Query ↔ estado; `add()` por defecto **`replace`** (`silent` solo casos edge) |
+| `getGroup` | Defaults tipados (`string` / `number` / `boolean`) o **resolver** `(raw) => value` |
 | `getObjectWithTag`, `removeTagFromObject` | Helpers de query |
 
+Los resolvers de `getGroup` se complementan con **`@react33/react-helpers/router`**: `queryInt` / `safeInt`, `queryString` / `safeString`, etc.
+
 Requiere `react-router-dom` en la app que importe este entry.
+
+### Por qué el default es `replace` y no `silent`
+
+`silent` llama `history.replaceState` directo. Eso **no** dispara `popstate` y **no** actualiza el estado interno del router — entonces `useSearchParams` (de `react-router-dom` y de `next/navigation`) devuelve valores viejos y cualquier pantalla que lea la URL por hook queda desincronizada hasta un reload completo. Lo pegamos en listas Vite + react-router y confirmamos el mismo comportamiento en Next 13+ App Router.
+
+`replace` rutea el cambio por el framework (`router.replace` / `navigate(..., { replace: true })`), que actualiza la URL **y** notifica a los suscriptores. No agrega entry de history — misma UX que `silent`, pero con hooks que sí re-renderizan.
+
+Usá `silent` sólo cuando saltás el router a propósito (un widget no-React, un host embebido, un param de analytics que no renderizás).
 
 ## Fuera de alcance a propósito
 

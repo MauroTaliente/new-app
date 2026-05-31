@@ -19,15 +19,24 @@ describe('useRouteQuery (next)', () => {
     window.history.replaceState(null, '', '/test');
   });
 
-  it('add escribe query en modo silent con history.replaceState', () => {
-    const spy = vi.spyOn(window.history, 'replaceState');
+  it('add por defecto usa router.replace', () => {
     const { result } = renderHook(() => useRouteQuery());
     act(() => result.current.add({ a: '2' }));
+    expect(replace).toHaveBeenCalledWith(expect.stringContaining('a=2'), {
+      scroll: false,
+    });
+  });
+
+  it('add con silent usa history.replaceState (edge)', () => {
+    const spy = vi.spyOn(window.history, 'replaceState');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ a: '2' }, 'silent'));
     expect(spy).toHaveBeenCalled();
     const withQuery = spy.mock.calls.find(
       (c) => typeof c[2] === 'string' && c[2].includes('a=2') && c[2].includes('foo=bar'),
     );
     expect(withQuery).toBeDefined();
+    expect(replace).not.toHaveBeenCalled();
     spy.mockRestore();
   });
 
@@ -54,15 +63,12 @@ describe('useRouteQuery (next)', () => {
     expect(replace).toHaveBeenCalledWith(expect.stringContaining('only=x'), { scroll: false });
   });
 
-  it('no navega si la URL final ya coincide (silent)', () => {
+  it('no navega si la URL final ya coincide', () => {
     window.history.replaceState(null, '', '/test?foo=bar');
-    const spy = vi.spyOn(window.history, 'replaceState');
     const { result } = renderHook(() => useRouteQuery());
     act(() => result.current.add({ foo: 'bar' }));
     expect(push).not.toHaveBeenCalled();
     expect(replace).not.toHaveBeenCalled();
-    expect(spy).not.toHaveBeenCalled();
-    spy.mockRestore();
   });
 
   it('clean navega al pathname sin query', () => {

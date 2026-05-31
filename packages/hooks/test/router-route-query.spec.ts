@@ -17,15 +17,24 @@ describe('useRouteQuery (react-router)', () => {
     window.history.replaceState(null, '', '/test');
   });
 
-  it('add escribe query en modo silent con history.replaceState', () => {
-    const spy = vi.spyOn(window.history, 'replaceState');
+  it('add por defecto usa navigate con replace', () => {
     const { result } = renderHook(() => useRouteQuery());
     act(() => result.current.add({ a: '2' }));
+    expect(navigate).toHaveBeenCalledWith(expect.stringContaining('a=2'), {
+      replace: true,
+    });
+  });
+
+  it('add con silent usa history.replaceState (edge)', () => {
+    const spy = vi.spyOn(window.history, 'replaceState');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ a: '2' }, 'silent'));
     expect(spy).toHaveBeenCalled();
     const withQuery = spy.mock.calls.find(
       (c) => typeof c[2] === 'string' && c[2].includes('a=2') && c[2].includes('foo=bar'),
     );
     expect(withQuery).toBeDefined();
+    expect(navigate).not.toHaveBeenCalled();
     spy.mockRestore();
   });
 
@@ -45,6 +54,28 @@ describe('useRouteQuery (react-router)', () => {
     const { result } = renderHook(() => useRouteQuery());
     act(() => result.current.add({ foo: 'bar' }));
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('elimina query keys aunque window.location no coincida con el router', () => {
+    window.history.replaceState(null, '', '/');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ n: null }));
+    expect(navigate).toHaveBeenCalledWith('/test?foo=bar&flag=true', {
+      replace: true,
+    });
+  });
+
+  it('no llama replaceState en add por defecto', () => {
+    const spy = vi.spyOn(window.history, 'replaceState');
+    const { result } = renderHook(() => useRouteQuery());
+    act(() => result.current.add({ z: '9' }));
+    expect(navigate).toHaveBeenCalled();
+    expect(
+      spy.mock.calls.some(
+        (c) => typeof c[2] === 'string' && c[2].includes('z=9'),
+      ),
+    ).toBe(false);
+    spy.mockRestore();
   });
 
   it('getGroup coerciona tipos desde defaults', () => {
