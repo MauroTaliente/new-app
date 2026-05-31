@@ -104,6 +104,15 @@ depend on it.
   `ensureFreshSession()` on a 401, avoiding a re-entrant refresh; such a 401 is
   never token-expiry.
 
+### @react33/react-form `0.2.5`
+
+#### Added
+
+- **`api.connectRange(startKey, endKey)` → `FromInputRangeApi`** — a `[start,
+  end]` tuple binding that commits each end to its own field (merging
+  error / touched / focus), for range-capable inputs such as `InputDatePicker`
+  with `selectionMode="range"` (`{...api.connectRange(a, b)}`).
+
 ### @react33/react-config `0.0.4` · @react33/react-i18n `0.0.7` · @react33/react-theme `0.0.4` · @react33/react-generate `0.0.6`
 
 #### Changed
