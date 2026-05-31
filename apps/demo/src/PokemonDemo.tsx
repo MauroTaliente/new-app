@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@react33/react-styles';
 import { usePokemonList, usePokemonRetrieve } from './api/pokemon.openapi.client.generated';
 
@@ -11,14 +11,11 @@ export function PokemonDemo() {
     initialLoading: listInitialLoading,
     error: listError,
     trigger: refetchList,
-  } = usePokemonList(
-    {
-      fetchOnMount: true,
-      verbose: true,
-      mapWatchToParams: () => ({ query: { limit: 10, offset: 0 } }),
-    },
-    [],
-  );
+  } = usePokemonList({ verbose: true });
+
+  useEffect(() => {
+    refetchList({ query: { limit: 10, offset: 0 } });
+  }, [refetchList]);
 
   const {
     data: detail,

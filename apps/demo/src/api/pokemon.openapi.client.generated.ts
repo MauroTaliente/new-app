@@ -12,10 +12,7 @@ import { emptyPokemonListData } from './pokemon.init-data';
  * Wire auth via createApiRegistry loads for this scope (AuthProfile / LoadRequestProps).
  * @openapi-scope pokemon
  */
-export function usePokemonList(
-  options?: PokemonListHookOverrides,
-  watch: unknown[] = [],
-) {
+export function usePokemonList(options?: PokemonListHookOverrides) {
   return usePokemonRequest<PokemonListParams, PokemonListData>({
     name: "pokemon_list",
     url: "/pokemon/",
@@ -25,7 +22,7 @@ export function usePokemonList(
     initData: emptyPokemonListData,
     action: async (params) => pokemon_list(params as PokemonListParams, { verbose: options?.verbose ?? true }) as Promise<RequestReturn<PokemonListData>>,
     ...options,
-  }, watch);
+  });
 }
 
 /**
@@ -34,10 +31,7 @@ export function usePokemonList(
  * Wire auth via createApiRegistry loads for this scope (AuthProfile / LoadRequestProps).
  * @openapi-scope pokemon
  */
-export function usePokemonRetrieve(
-  options?: PokemonRetrieveHookOverrides,
-  watch: unknown[] = [],
-) {
+export function usePokemonRetrieve(options?: PokemonRetrieveHookOverrides) {
   return usePokemonRequest<PokemonRetrieveParams, PokemonRetrieveData>({
     name: "pokemon_retrieve",
     url: "/pokemon/{id}/",
@@ -47,5 +41,5 @@ export function usePokemonRetrieve(
     
     action: async (params) => pokemon_retrieve(params as PokemonRetrieveParams, { verbose: options?.verbose ?? true }) as Promise<RequestReturn<PokemonRetrieveData>>,
     ...options,
-  }, watch);
+  });
 }
