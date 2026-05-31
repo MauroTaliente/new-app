@@ -198,6 +198,7 @@ const parseDateInput = (raw: string, locale: string): DateSingle => {
   const match = input.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
   if (match) {
     const [, firstPart, secondPart, yearPart] = match;
+    if (!firstPart || !secondPart || !yearPart) return null;
     const dayFirst = isDayFirstLocale(locale);
     const parsedYear = Number(yearPart);
     const year = yearPart.length === 2 ? 2000 + parsedYear : parsedYear;
@@ -538,7 +539,7 @@ export const InputDatePicker = ({
   useEffect(() => {
     if (!open || !activeDayKey || !syncDayFocus) return () => { };
 
-    const orderedCells = monthGrid.weeks.flatMap((week) => week);
+    const orderedCells = monthGrid.weeks.flat();
     const activeTarget = dayRefs.current[activeDayKey];
     if (activeTarget && !activeTarget.disabled) {
       activeTarget.focus();
@@ -817,6 +818,7 @@ export const InputDatePicker = ({
             type="button"
             variant="text"
             size="icon-sm"
+            tabIndex={-1}
             className={resolvedStyles.iconButton}
             disabled={locked}
             onClick={handleInputClick}
@@ -840,6 +842,7 @@ export const InputDatePicker = ({
           onBlur={handleInputBlur}
           onKeyDown={handleInputKeyDown}
           onClick={handleInputClick}
+          role="combobox"
           aria-haspopup="dialog"
           aria-expanded={open}
           autoComplete="off"
@@ -883,7 +886,7 @@ export const InputDatePicker = ({
           </div>
 
           <div className={inputDatePickerStyles.monthGrid}>
-            {monthGrid.weeks.flatMap((week) => week).map((cell) => {
+            {monthGrid.weeks.flat().map((cell) => {
               const isDisabled = isDayDisabled(cell.date);
               const isInRange = isDayInRange(cell.date);
               const isToday = isSameLocalDay(cell.date, new Date());

@@ -155,6 +155,32 @@ export interface FromInputNativeApi<T extends Values = any, K extends keyof T = 
   value?: T[K];
 }
 
+/**
+ * Range binding over two fields. `value` is the `[start, end]` tuple read from
+ * both fields; `onChange` receives `[start, end]` and commits each end to its
+ * OWN field (so each keeps its native validator). `error`/`touched`/`focus`
+ * are merged from both fields. Pair with a range-capable input — e.g. an
+ * `InputDatePicker` in `selectionMode="range"` — via `{...api.connectRange(a, b)}`.
+ */
+export interface FromInputRangeApi<
+  T extends Values = any,
+  S extends keyof T = keyof T,
+  E extends keyof T = keyof T,
+> {
+  space?: string;
+  id?: string;
+  name: InputName<S>;
+  value: [T[S] | undefined, T[E] | undefined];
+  error?: string;
+  touched?: boolean;
+  focus?: boolean;
+  showError?: boolean;
+  loading?: boolean;
+  onChange?: (value: [T[S], T[E]]) => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
+}
+
 export interface FormInputStateApi<T extends Values = any, K extends keyof T = keyof T> {
   value?: T[K];
   error?: string;
@@ -182,6 +208,13 @@ export interface FormApi<T extends Values = any, K extends keyof T = keyof T> ex
   redo: () => void;
   registerField: (key: InputName<K>, initialValue: Values) => void;
   connect: <K extends Extract<keyof T, string>>(key: InputName<K>) => FromInputCustomApi<T, K>;
+  connectRange: <
+    S extends Extract<keyof T, string>,
+    E extends Extract<keyof T, string>,
+  >(
+    startKey: InputName<S>,
+    endKey: InputName<E>,
+  ) => FromInputRangeApi<T, S, E>;
   connectNative: <K extends Extract<keyof T, string>>(
     key: InputName<K>,
   ) => FromInputNativeApi<T, K>;
@@ -856,6 +889,41 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     [space, getInputState, getInputHandlers, loading],
   );
 
+  const connectRange = useCallback(
+    (startKey: InputName<K>, endKey: InputName<K>) => {
+      const start = getInputState(startKey);
+      const end = getInputState(endKey);
+      const error = start.error || end.error || undefined;
+      const touched = !!(start.touched || end.touched);
+      const focus = !!(start.focus || end.focus);
+      return {
+        id: getUID(space, startKey),
+        name: startKey,
+        space,
+        value: [start.value, end.value] as [any, any],
+        error,
+        touched,
+        focus,
+        showError: !!error && touched && !focus && !loading,
+        onChange: (value: [any, any]) => {
+          const [nextStart, nextEnd] = isArray(value) ? value : [value, undefined];
+          setValue(startKey, nextStart);
+          setValue(endKey, nextEnd);
+        },
+        onBlur: () => {
+          setBlur(startKey, false);
+          setBlur(endKey, false);
+        },
+        onFocus: () => {
+          setFocus(startKey, true);
+          setFocus(endKey, true);
+        },
+        loading,
+      };
+    },
+    [space, getInputState, setValue, setBlur, setFocus, loading],
+  );
+
   const connectNative = useCallback(
     (name: InputName<K>) => {
       const input = getInputState(name);
@@ -909,6 +977,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
         getInputState,
         getInputHandlers,
         connect,
+        connectRange,
         connectNative,
       } as FormApi<T>),
     [
@@ -946,6 +1015,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       getInputState,
       getInputHandlers,
       connect,
+      connectRange,
       connectNative,
     ],
   );
