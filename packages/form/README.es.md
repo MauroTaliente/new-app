@@ -54,6 +54,78 @@ function MiForm() {
 
 Para inputs listos para usar (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) instalá `@react33/react-ui`.
 
+## Conectar inputs — `connect`, `connectRange`, `connectEntity`
+
+Tres conectores enlazan un input de UI al form. Solo difieren en **cuántos
+campos** maneja el input y **qué forma de valor** habla — así modelás cualquier
+input **sin romper tu contrato/schema**: cada campo queda plano y conserva su
+propio validador.
+
+| Conector | Campos | Forma de `value` | `onChange` recibe | Usalo cuando… |
+| --- | --- | --- | --- | --- |
+| `connect(key)` | **1** | el valor del campo | el nuevo valor | el input mapea 1:1 a un campo |
+| `connectRange(a, b)` | **2** | tupla `[a, b]` | `[a, b]` (o escalar → `[v, undefined]`) | los dos campos son un **par ordenado / rango** |
+| `connectEntity(map)` | **N** | objeto keyeado por **input keys** | ese mismo objeto (o `null` para limpiar todo) | el input emite un **compuesto con nombres**, cada parte en su propio campo |
+
+Los tres exponen el mismo `error` / `touched` / `focus` / `showError` mergeado y
+commitean **cada campo por su propio `setValue`**, así los validadores por campo
+y el schema nunca se aplanan ni se reemplazan.
+
+### 1. `connect` — un input, un campo
+
+El caso de todos los días: un text, un select, un switch. El valor del input
+*es* el campo.
+
+```tsx
+<Field {...api.connect('email')} label="Email">
+  <InputText type="email" />
+</Field>
+// values → { email: 'a@b.com' }
+```
+
+### 2. `connectRange` — un input, un par ordenado
+
+Un solo control que produce **dos valores correlacionados con significado
+posicional** — un rango de fechas, un min/max, un desde/hasta. El input habla
+una tupla `[inicio, fin]`; cada extremo va a su propio campo (así `start_date`
+y `end_date` mantienen validadores separados).
+
+```tsx
+<Field {...api.connectRange('start_date', 'end_date')} label="Fechas del viaje">
+  <InputDatePicker selectionMode="range" />
+</Field>
+// el picker emite ['2026-06-01', '2026-06-10']
+// values → { start_date: '2026-06-01', end_date: '2026-06-10' }
+```
+
+### 3. `connectEntity` — un input, un compuesto con nombres
+
+Un control cuyo valor natural es un **objeto con sus propias claves de dominio**,
+pero cuyas partes deben caer en **campos planos separados** para respetar tu
+contrato. El `keyMap` (`{ inputKey: fieldPath }`) es el único lugar donde se
+cruzan los dos vocabularios; el input queda genérico, el schema queda plano.
+
+```tsx
+// Un media picker habla { url, assetId }; el contrato quiere el asset id plano.
+export type MediaEntity = { url: string; assetId: string | null };
+
+<Field label="Portada">
+  <InputMedia
+    {...api.connectEntity<MediaEntity>({
+      url: 'cover_image_url',    // preview
+      assetId: 'cover_asset_id', // lo que se envía
+    })}
+  />
+</Field>
+// el picker emite { url: 'https://…', assetId: 'ast_123' }
+// values → { cover_image_url: 'https://…', cover_asset_id: 'ast_123' }
+```
+
+`fieldPath` puede ser anidado (`'destination/city'`), y las claves hermanas
+bajo un mismo padre se preservan. Tipalo por input
+(`connectEntity<MediaEntity>(…)`) para que un keyMap mal/incompleto sea error de
+compilación.
+
 ## Errores remotos y HTTP
 
 | API | Uso |

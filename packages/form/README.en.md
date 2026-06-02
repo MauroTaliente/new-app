@@ -54,6 +54,78 @@ function MyForm() {
 
 For batteries-included inputs (`InputText`, `InputSelect`, `InputSwitch`, `InputSlider`, `InputDatePicker`, `InputChips`) install `@react33/react-ui`.
 
+## Connecting inputs — `connect`, `connectRange`, `connectEntity`
+
+Three connectors bind a UI input to the form. They differ only in **how many
+fields** the input drives and **what value shape** it speaks — so you can model
+any input **without bending your contract/schema**: every field stays flat and
+keeps its own validator.
+
+| Connector | Fields | `value` shape | `onChange` receives | Use when… |
+| --- | --- | --- | --- | --- |
+| `connect(key)` | **1** | the field's value | the new value | the input maps 1:1 to one field |
+| `connectRange(a, b)` | **2** | `[a, b]` tuple | `[a, b]` (or scalar → `[v, undefined]`) | the two fields are an **ordered pair / span** |
+| `connectEntity(map)` | **N** | object keyed by **input keys** | that same object (or `null` to clear all) | the input emits a **named composite**, each part living in its own field |
+
+All three expose the same merged `error` / `touched` / `focus` / `showError`
+and commit **each field through its own `setValue`**, so per-field validators
+and the form schema are never flattened or replaced.
+
+### 1. `connect` — one input, one field
+
+The everyday case: a text box, a select, a switch. The input's value *is* the
+field.
+
+```tsx
+<Field {...api.connect('email')} label="Email">
+  <InputText type="email" />
+</Field>
+// values → { email: 'a@b.com' }
+```
+
+### 2. `connectRange` — one input, an ordered pair
+
+A single control that produces **two correlated values with positional
+meaning** — a date range, a min/max, a from/to. The input speaks a `[start,
+end]` tuple; each end commits to its own field (so `start_date` and `end_date`
+keep separate validators).
+
+```tsx
+<Field {...api.connectRange('start_date', 'end_date')} label="Trip dates">
+  <InputDatePicker selectionMode="range" />
+</Field>
+// the picker emits ['2026-06-01', '2026-06-10']
+// values → { start_date: '2026-06-01', end_date: '2026-06-10' }
+```
+
+### 3. `connectEntity` — one input, a named composite
+
+A control whose natural value is an **object with its own domain keys**, but
+whose parts must land in **separate flat fields** to match your contract. The
+`keyMap` (`{ inputKey: fieldPath }`) is the only place the two vocabularies
+meet; the input stays generic, the schema stays flat.
+
+```tsx
+// A media picker speaks { url, assetId }; the contract wants the asset id flat.
+export type MediaEntity = { url: string; assetId: string | null };
+
+<Field label="Cover">
+  <InputMedia
+    {...api.connectEntity<MediaEntity>({
+      url: 'cover_image_url',   // preview
+      assetId: 'cover_asset_id', // what you submit
+    })}
+  />
+</Field>
+// the picker emits { url: 'https://…', assetId: 'ast_123' }
+// values → { cover_image_url: 'https://…', cover_asset_id: 'ast_123' }
+```
+
+`fieldPath` may be nested (`'destination/city'`), and sibling keys under a
+shared parent are preserved. Type it per input
+(`connectEntity<MediaEntity>(…)`) so a wrong/incomplete keyMap is a compile
+error.
+
 ## Remote and HTTP feedback
 
 | API | Role |
