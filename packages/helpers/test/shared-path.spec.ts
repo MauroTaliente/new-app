@@ -1,9 +1,35 @@
 import { describe, it, expect } from 'vitest';
 import {
   getValueFromPath,
+  hasValueByPath,
   mergeValueByPath,
   setValueByPath,
 } from '../src/shared.js';
+
+describe('hasValueByPath (presence, not value)', () => {
+  const data = { a: 1, b: undefined, nested: { c: 2 }, list: [10] };
+
+  it('is true for a present key even when its value is undefined', () => {
+    expect(hasValueByPath('a', data)).toBe(true);
+    expect(hasValueByPath('b', data)).toBe(true); // present but undefined
+  });
+
+  it('is false for an absent key', () => {
+    expect(hasValueByPath('zzz', data)).toBe(false);
+    expect(hasValueByPath('nested/zzz', data)).toBe(false);
+  });
+
+  it('traverses nested object + array paths', () => {
+    expect(hasValueByPath('nested/c', data)).toBe(true);
+    expect(hasValueByPath('list/0', data)).toBe(true);
+    expect(hasValueByPath('list/5', data)).toBe(false);
+  });
+
+  it('is false on empty path or nullish data', () => {
+    expect(hasValueByPath('', data)).toBe(false);
+    expect(hasValueByPath('a/b', null)).toBe(false);
+  });
+});
 
 describe('path resolvers (form-style slash paths)', () => {
   const nested = { user: { name: 'Ada', tags: ['a', 'b'] } };

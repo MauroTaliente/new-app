@@ -487,6 +487,29 @@ export function getValueFromPath(path: string, data: any): any {
   return builder(path, data);
 }
 
+/**
+ * True when `path` exists as a key in `data` — even if its value is
+ * `undefined`. Distinguishes "absent" from "present-but-undefined" (which
+ * `getValueFromPath` cannot), so callers can avoid re-seeding a field that was
+ * intentionally cleared. Traverses `/`-separated segments like the siblings.
+ */
+export function hasValueByPath(path: string, data: any): boolean {
+  if (!path) return false;
+  function builder(path: string, data: any): boolean {
+    if (data === null || data === undefined) return false;
+    const [segment, ...rest] = path.split('/');
+    const { property, index } = getPathSegmentReady(segment);
+    const key = property !== undefined ? property : index;
+    if (key === undefined) return false;
+    if (!Object.prototype.hasOwnProperty.call(data, key as PropertyKey)) {
+      return false;
+    }
+    if (rest.length === 0) return true;
+    return builder(rest.join('/'), data[key as keyof typeof data]);
+  }
+  return builder(path, data);
+}
+
 export function mergeValueByPath(path: string, value: any, data: any) {
   function builder(path: string, value: any, data: any): any {
     const [segment, ...rest] = path.split('/');
