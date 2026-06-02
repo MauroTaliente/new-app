@@ -25,6 +25,7 @@ import {
   isNullOrEmpty,
   isFunction,
   getValueFromPath,
+  hasValueByPath,
   setValueByPath,
   getFallback,
   isEmptyArray,
@@ -181,6 +182,39 @@ export interface FromInputRangeApi<
   onFocus?: () => void;
 }
 
+/**
+ * Entity binding over N fields via a **keyMap** `{ inputKey: fieldKey }`.
+ * Unlike `connectRange` (positional tuple), this reads/emits an **object keyed
+ * by the input's own keys** — so a composite input (e.g. a media picker that
+ * speaks `{ url, assetId }`) stays generic while each part still lives in its
+ * OWN flat field (keeping per-field validators + a contract-shaped form).
+ *
+ * - `value` is the entity assembled from the fields, keyed by the input keys,
+ *   so the input's value resolver reads it natively.
+ * - `onChange` receives that same object and commits each input key to its
+ *   mapped field; `null` clears them all.
+ * - `error`/`touched`/`focus` merge across the mapped fields; `name`/`id`
+ *   anchor on the **first** entry (the primary).
+ *
+ * Pair via `{...api.connectEntity({ url: 'cover_image_url', assetId: 'cover_asset_id' })}`.
+ */
+export interface FromInputEntityApi<
+  E extends Record<string, unknown> = Record<string, unknown>,
+> {
+  space?: string;
+  id?: string;
+  name: string;
+  value: Partial<E>;
+  error?: string;
+  touched?: boolean;
+  focus?: boolean;
+  showError?: boolean;
+  loading?: boolean;
+  onChange?: (next: Partial<E> | null) => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
+}
+
 export interface FormInputStateApi<T extends Values = any, K extends keyof T = keyof T> {
   value?: T[K];
   error?: string;
@@ -215,6 +249,15 @@ export interface FormApi<T extends Values = any, K extends keyof T = keyof T> ex
     startKey: InputName<S>,
     endKey: InputName<E>,
   ) => FromInputRangeApi<T, S, E>;
+  /**
+   * Bind a composite input to N fields via a keyMap `{ inputKey: fieldPath }`.
+   * `fieldPath` may be top-level or nested (`'place/city'`). Pass the input's
+   * entity type for per-input safety — `connectEntity<MediaEntity>({...})`
+   * forces the map to cover exactly that input's keys.
+   */
+  connectEntity: <E extends Record<string, unknown> = Record<string, unknown>>(
+    map: { [P in keyof E]: InputName<Extract<keyof T, string>> },
+  ) => FromInputEntityApi<E>;
   connectNative: <K extends Extract<keyof T, string>>(
     key: InputName<K>,
   ) => FromInputNativeApi<T, K>;
@@ -571,7 +614,13 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     entries.forEach(([key, value]) => {
       if (memo.register[key]) return;
       memo.register[key] = true;
-      setValues((prev) => setValueByPath(key, value, { ...prev }));
+      // Seed the initial value ONLY when the field is genuinely absent. A field
+      // already present (incl. one intentionally cleared to `undefined`, or set
+      // by a composite input's onChange in the same tick) must NOT be reset —
+      // late registration is a no-op on the value, never a clobber.
+      setValues((prev) =>
+        hasValueByPath(key, prev) ? prev : setValueByPath(key, value, { ...prev }),
+      );
       setToucheds((prev) => setValueByPath(key, false, getPathStateBase(prev)));
       setFocuses((prev) => setValueByPath(key, false, getPathStateBase(prev)));
     });
@@ -924,6 +973,47 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
     [space, getInputState, setValue, setBlur, setFocus, loading],
   );
 
+  const connectEntity = useCallback(
+    (map: Record<string, string>) => {
+      const entries = Object.entries(map) as Array<[string, InputName<K>]>;
+      const primary = (entries[0]?.[1] ?? '') as InputName<K>;
+      const states = entries.map(([, fieldKey]) => getInputState(fieldKey));
+      const error = states.find((s) => s.error)?.error || undefined;
+      const touched = states.some((s) => !!s.touched);
+      const focus = states.some((s) => !!s.focus);
+      return {
+        id: getUID(space, primary),
+        name: primary,
+        space,
+        // Entity keyed by the INPUT keys → the input's value resolver reads it.
+        value: Object.fromEntries(
+          entries.map(([inputKey, fieldKey]) => [
+            inputKey,
+            getInputState(fieldKey).value,
+          ]),
+        ),
+        error,
+        touched,
+        focus,
+        showError: !!error && touched && !focus && !loading,
+        // Receives the input's object (or null); commits each key to its field.
+        onChange: (next: Record<string, any> | null) => {
+          for (const [inputKey, fieldKey] of entries) {
+            setValue(fieldKey, next ? next[inputKey] : undefined);
+          }
+        },
+        onBlur: () => {
+          for (const [, fieldKey] of entries) setBlur(fieldKey, false);
+        },
+        onFocus: () => {
+          for (const [, fieldKey] of entries) setFocus(fieldKey, true);
+        },
+        loading,
+      };
+    },
+    [space, getInputState, setValue, setBlur, setFocus, loading],
+  );
+
   const connectNative = useCallback(
     (name: InputName<K>) => {
       const input = getInputState(name);
@@ -978,6 +1068,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
         getInputHandlers,
         connect,
         connectRange,
+        connectEntity,
         connectNative,
       } as FormApi<T>),
     [
@@ -1016,6 +1107,7 @@ export function useFormApi<T extends Values = any, K extends keyof T = keyof T>(
       getInputHandlers,
       connect,
       connectRange,
+      connectEntity,
       connectNative,
     ],
   );
