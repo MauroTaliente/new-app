@@ -2,11 +2,38 @@ import type { ParsedOperation } from './parse-openapi';
 import { operationIdToPascal, schemaNameToEmptyConstant } from './naming';
 import type { SchemaContext } from './schema-to-zod';
 
-/** Minimal JSON-like literal from schema for init-data constants (bootstrap). */
-export function schemaToEmptyLiteral(schema: Record<string, unknown> | null, depth = 0): string {
+/**
+ * Minimal JSON-like literal from schema for init-data constants (bootstrap).
+ *
+ * `schemas` is the component map, used to follow `$ref`s. Without it a `$ref`
+ * degrades to `{}`, which stops satisfying its type the moment the referenced
+ * schema has required properties — so a spec that names its shared value
+ * objects (rather than inlining them) would emit skeletons that do not compile.
+ */
+export function schemaToEmptyLiteral(
+  schema: Record<string, unknown> | null,
+  depth = 0,
+  schemas?: Record<string, Record<string, unknown>>,
+): string {
   if (!schema || depth > 8) return '{}';
   if (schema.$ref && typeof schema.$ref === 'string') {
-    return '{}';
+    const name = schema.$ref.replace('#/components/schemas/', '');
+    const target = schemas?.[name];
+    // Follow the ref when we can; `{}` stays the fallback for an unresolvable
+    // one (external file, unknown component) so this never throws on a spec we
+    // only partially understand.
+    return target ? schemaToEmptyLiteral(target, depth + 1, schemas) : '{}';
+  }
+
+  // `anyOf` / `oneOf` including a `null` member is how OpenAPI 3.1 spells a
+  // nullable value — and `null` IS the natural empty literal for one, so the
+  // union collapses to it. A union without null falls back to its first arm.
+  for (const key of ['anyOf', 'oneOf'] as const) {
+    const union = schema[key];
+    if (!Array.isArray(union) || union.length === 0) continue;
+    const members = union as Record<string, unknown>[];
+    if (members.some((m) => m.type === 'null')) return 'null';
+    return schemaToEmptyLiteral(members[0]!, depth + 1, schemas);
   }
   if (schema.enum && Array.isArray(schema.enum) && schema.enum.length > 0) {
     return JSON.stringify(schema.enum[0]);
@@ -35,7 +62,7 @@ export function schemaToEmptyLiteral(schema: Record<string, unknown> | null, dep
     if (!props) return '{}';
     const required = (schema.required as string[] | undefined) ?? Object.keys(props);
     const fields = required.map((key) => {
-      const val = schemaToEmptyLiteral(props[key], depth + 1);
+      const val = schemaToEmptyLiteral(props[key], depth + 1, schemas);
       return `${key}: ${val}`;
     });
     return `{ ${fields.join(', ')} }`;
@@ -68,7 +95,7 @@ export function generateInitDataModuleSource(
     if (emitted.has(constName)) continue;
     emitted.add(constName);
     typeNames.add(dataTypeName);
-    const literal = schemaToEmptyLiteral(op.responseSchema);
+    const literal = schemaToEmptyLiteral(op.responseSchema, 0, ctx.schemas);
     exports.push(`export const ${constName} = ${literal} satisfies ${dataTypeName};`);
     exports.push('');
   }

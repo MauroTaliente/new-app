@@ -97,3 +97,61 @@ describe('collectReferencedInitDataSymbols', () => {
     expect([...symbols]).toEqual(['emptyPokemonListData']);
   });
 });
+
+describe('schemaToEmptyLiteral with $ref and unions', () => {
+  const schemas = {
+    Media: {
+      type: 'object',
+      properties: {
+        media_url: { type: 'string' },
+        media_id: { type: 'string' },
+        name: { type: 'string' },
+      },
+      required: ['media_url', 'media_id'],
+    },
+  } as Record<string, Record<string, unknown>>;
+
+  it('follows a $ref instead of degrading to {}', () => {
+    // `{}` used to be emitted here, which stops satisfying the type as soon as
+    // the referenced schema has required properties.
+    expect(schemaToEmptyLiteral({ $ref: '#/components/schemas/Media' }, 0, schemas)).toBe(
+      "{ media_url: '', media_id: '' }",
+    );
+  });
+
+  it('still degrades to {} for an unresolvable $ref', () => {
+    expect(schemaToEmptyLiteral({ $ref: '#/components/schemas/Nope' }, 0, schemas)).toBe('{}');
+    expect(schemaToEmptyLiteral({ $ref: '#/components/schemas/Media' })).toBe('{}');
+  });
+
+  it('emits null for a 3.1 nullable union', () => {
+    expect(
+      schemaToEmptyLiteral(
+        { anyOf: [{ $ref: '#/components/schemas/Media' }, { type: 'null' }] },
+        0,
+        schemas,
+      ),
+    ).toBe('null');
+    expect(schemaToEmptyLiteral({ oneOf: [{ type: 'string' }, { type: 'null' }] })).toBe('null');
+  });
+
+  it('falls back to the first arm of a union without null', () => {
+    expect(schemaToEmptyLiteral({ anyOf: [{ type: 'string' }, { type: 'integer' }] })).toBe("''");
+  });
+
+  it('resolves a $ref nested in a required property', () => {
+    const expr = schemaToEmptyLiteral(
+      {
+        type: 'object',
+        properties: {
+          avatar: { anyOf: [{ $ref: '#/components/schemas/Media' }, { type: 'null' }] },
+          cover: { $ref: '#/components/schemas/Media' },
+        },
+        required: ['avatar', 'cover'],
+      },
+      0,
+      schemas,
+    );
+    expect(expr).toBe("{ avatar: null, cover: { media_url: '', media_id: '' } }");
+  });
+});
