@@ -156,6 +156,36 @@ describe('generateOpenApi sources', () => {
     expect(listTripsFn.slice(0, listTripsFn.indexOf('OpenApiMeta'))).not.toContain('skipLoad');
   });
 
+  it('emits z.null() DataSchema for a 202 Accepted (no body) op, kept in lockstep with the types module', async () => {
+    const parsed = await parseOpenApiFile(demoYaml, {
+      ...fileConfig,
+      include: { tags: ['trips'] },
+    });
+
+    // 202 must be recognized as the success status (not fall through to the
+    // 200 fallback, which would leave it body-less AND schema-less).
+    const exportOp = parsed.operations.find(
+      (o) => o.operationId === 'requestTripExport',
+    );
+    expect(exportOp).toBeDefined();
+    expect(exportOp?.successStatus).toBe('202');
+    expect(exportOp?.hasBody).toBe(false);
+
+    // Zod emits a z.null() schema for the body-less success...
+    const zod = generateZodModuleSource(parsed);
+    expect(zod).toContain('export const RequestTripExportDataSchema = z.null();');
+    // ...and 204 keeps emitting it too (unchanged behavior).
+    expect(zod).toContain('export const DeleteTripDataSchema = z.null();');
+
+    // The types module references every op's DataSchema unconditionally — that
+    // reference now always resolves (this is the regression that broke Trivo).
+    const types = generateTypesModuleSource('./demo.openapi.zod.ts', parsed, '/tmp');
+    expect(types).toContain('RequestTripExportDataSchema');
+    expect(types).toContain(
+      'export type RequestTripExportData = z.infer<typeof RequestTripExportDataSchema>;',
+    );
+  });
+
   it('emits z.discriminatedUnion for AddMemberBody', async () => {
     const parsed = await parseOpenApiFile(demoYaml, {
       ...fileConfig,

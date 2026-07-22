@@ -80,7 +80,7 @@ function resolveResponseSchema(
   doc: Record<string, unknown>,
 ): { status: string; schema: Record<string, unknown> | null; schemaName: string | null } {
   if (!responses) return { status: '200', schema: null, schemaName: null };
-  const priority = ['200', '201', '204', 'default'];
+  const priority = ['200', '201', '202', '204', 'default'];
   for (const status of priority) {
     const res = responses[status] as Record<string, unknown> | undefined;
     if (!res) continue;

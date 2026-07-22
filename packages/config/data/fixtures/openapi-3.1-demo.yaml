@@ -145,6 +145,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/trips/{tripId}/export:
+    parameters:
+      - $ref: '#/components/parameters/TripId'
+    post:
+      operationId: requestTripExport
+      tags: [trips]
+      summary: Fire-and-forget export (202 Accepted, no body).
+      responses:
+        '202':
+          description: Export accepted; processed asynchronously.
+
   /v1/trips/{tripId}/members:
     parameters:
       - $ref: '#/components/parameters/TripId'

@@ -55,7 +55,14 @@ export function generateZodModuleSource(
     if (op.responseSchema && op.hasBody) {
       const dataSchema = schemaToZodExpr(ctx, op.responseSchema, `${pascal}Data`);
       ctx.lines.push(`export const ${pascal}DataSchema = ${dataSchema};`);
-    } else if (op.successStatus === '204') {
+    } else {
+      // No typed success body — 204 No Content, 202 Accepted (fire-and-forget),
+      // or a success response without an application/json schema. Emit z.null()
+      // for EVERY such case (not just 204) so the types module's unconditional
+      // `${pascal}DataSchema` reference always resolves. This keeps the zod and
+      // types emitters in lockstep regardless of status code; the alternative
+      // (conditional emit) silently breaks the generated import the moment an
+      // operation's success status isn't 200/201/204.
       ctx.lines.push(`export const ${pascal}DataSchema = z.null();`);
     }
   }
