@@ -28,9 +28,12 @@ async function run() {
     console.log('react-i18n-generate: no react33I18n in config — skip');
     return;
   }
-  console.log(`react-i18n-generate: wrote ${result.outputPath}`);
-  if (result.runtimeOutputPath) {
-    console.log(`react-i18n-generate: wrote ${result.runtimeOutputPath}`);
+  for (const bundle of result.bundles) {
+    const label = bundle.name ? `[${bundle.name}] ` : '';
+    console.log(`react-i18n-generate: ${label}wrote ${bundle.outputPath}`);
+    console.log(
+      `react-i18n-generate: ${label}wrote ${bundle.runtimeOutputPath}`,
+    );
   }
 }
 

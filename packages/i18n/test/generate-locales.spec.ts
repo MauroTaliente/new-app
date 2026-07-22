@@ -9,7 +9,10 @@ import {
   flattenLocaleStructure,
   writeI18nFromConfig,
 } from '../src/generate-locales.js';
-import { readReact33I18nConfig } from '../src/read-react33-i18n-config.js';
+import {
+  readReact33I18nConfig,
+  readReact33I18nConfigs,
+} from '../src/read-react33-i18n-config.js';
 
 describe('readReact33I18nConfig', () => {
   it('returns null when section is missing', () => {
@@ -32,6 +35,86 @@ describe('readReact33I18nConfig', () => {
       localesDir: './locales',
       cookieName: 'locale',
     });
+  });
+
+  it('returns the first bundle for a collection (back-compat)', () => {
+    expect(
+      readReact33I18nConfig({
+        react33I18n: {
+          bundles: {
+            app: { defaultLocale: 'es', locales: ['es'], localesDir: './a' },
+            ui: { defaultLocale: 'en', locales: ['en'], localesDir: './u' },
+          },
+        },
+      }),
+    ).toEqual({
+      name: 'app',
+      defaultLocale: 'es',
+      locales: ['es'],
+      localesDir: './a',
+    });
+  });
+});
+
+describe('readReact33I18nConfigs', () => {
+  it('returns null when section is missing', () => {
+    expect(readReact33I18nConfigs({})).toBeNull();
+  });
+
+  it('wraps the flat form in a single-entry array (no name)', () => {
+    expect(
+      readReact33I18nConfigs({
+        react33I18n: {
+          defaultLocale: 'es',
+          locales: ['es', 'en'],
+          localesDir: './locales',
+        },
+      }),
+    ).toEqual([
+      { defaultLocale: 'es', locales: ['es', 'en'], localesDir: './locales' },
+    ]);
+  });
+
+  it('returns one entry per bundle, lifting the map key onto name', () => {
+    expect(
+      readReact33I18nConfigs({
+        react33I18n: {
+          bundles: {
+            app: {
+              defaultLocale: 'es',
+              locales: ['es', 'en'],
+              localesDir: './lib/i18n/locales',
+            },
+            ui: {
+              defaultLocale: 'en',
+              locales: ['es', 'en'],
+              localesDir: './ui/i18n/locales',
+            },
+          },
+        },
+      }),
+    ).toEqual([
+      {
+        name: 'app',
+        defaultLocale: 'es',
+        locales: ['es', 'en'],
+        localesDir: './lib/i18n/locales',
+      },
+      {
+        name: 'ui',
+        defaultLocale: 'en',
+        locales: ['es', 'en'],
+        localesDir: './ui/i18n/locales',
+      },
+    ]);
+  });
+
+  it('throws on a malformed bundle entry', () => {
+    expect(() =>
+      readReact33I18nConfigs({
+        react33I18n: { bundles: { app: { locales: ['es'] } } },
+      }),
+    ).toThrow(/react33I18n\.bundles\.app/);
   });
 });
 
@@ -176,5 +259,55 @@ describe('writeI18nFromConfig', () => {
       cwd: root,
     });
     expect(result.skipped).toBe(true);
+    expect(result.bundles).toEqual([]);
+  });
+
+  it('writes every bundle of a collection independently', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'react-i18n-gen-'));
+    mkdirSync(join(root, 'app'), { recursive: true });
+    mkdirSync(join(root, 'ui'), { recursive: true });
+    writeFileSync(
+      join(root, 'react33.config.json'),
+      JSON.stringify({
+        react33I18n: {
+          bundles: {
+            app: {
+              defaultLocale: 'es',
+              locales: ['es'],
+              localesDir: './app',
+              typesOutput: './out/app/i18n.generated.ts',
+              runtimeOutput: './out/app/i18n.runtime.generated.tsx',
+            },
+            ui: {
+              defaultLocale: 'en',
+              locales: ['en'],
+              localesDir: './ui',
+              typesOutput: './out/ui/i18n.generated.ts',
+              runtimeOutput: './out/ui/i18n.runtime.generated.tsx',
+            },
+          },
+        },
+      }),
+    );
+
+    const result = await writeI18nFromConfig({
+      configPath: 'react33.config.json',
+      cwd: root,
+      loadLocale: async (_path, code) =>
+        code === 'es'
+          ? { trips: { title: 'Viajes' } }
+          : { inputMedia: { upload: 'Upload' } },
+    });
+
+    expect(result.skipped).toBe(false);
+    expect(result.bundles.map((b) => b.name)).toEqual(['app', 'ui']);
+
+    const appOut = readFileSync(join(root, 'out/app/i18n.generated.ts'), 'utf8');
+    expect(appOut).toContain('TripsMessageKey = "title"');
+    expect(appOut).toContain('DEFAULT_LOCALE = "es"');
+
+    const uiOut = readFileSync(join(root, 'out/ui/i18n.generated.ts'), 'utf8');
+    expect(uiOut).toContain('InputMediaMessageKey = "upload"');
+    expect(uiOut).toContain('DEFAULT_LOCALE = "en"');
   });
 });

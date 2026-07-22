@@ -29,6 +29,21 @@ Peers: `react`, `next` (opcional para apps solo con core).
 
 `react33I18n` comparte con `react33Theme` el bloque **`react33Persistence`**: `cookieName`, `localStorageKey`, `persistenceMode`, `persistenceEnvKey` opcional (ver `@react33/react-config` → `$defs.react33Persistence`). Además: `defaultLocale`, `locales`, `localesDir`, `typesOutput`, `runtimeOutput`, `runtimeMode`, `urlLocalePattern`, etc.
 
+#### Single-or-collection (`bundles`) — desde 0.0.8
+
+`react33I18n` acepta **una sola instancia** (forma plana, retrocompatible) **o una colección** de bundles independientes, igual que `react33Session.sessions`. Cada bundle emite su propio `typesOutput`/`runtimeOutput` (un `Structure` separado), útil para separar copy de app vs. un kit de UI portable:
+
+```jsonc
+"react33I18n": {
+  "bundles": {
+    "app": { "defaultLocale": "es", "locales": ["es","en"], "localesDir": "./src/lib/i18n/locales", "typesOutput": "…", "runtimeOutput": "…", "cookieName": "locale", "persistenceMode": "cookie" },
+    "ui":  { "defaultLocale": "en", "locales": ["es","en"], "localesDir": "./src/components/ui/i18n/locales", "typesOutput": "…", "runtimeOutput": "…" }
+  }
+}
+```
+
+La clave del map se eleva a `name` en cada config. Un bundle "controlado" por otro (sin `LocaleProvider` propio) omite la persistencia y consume solo `dictionaries`, indexándolos por el locale del bundle dueño. `readReact33I18nConfigs(json)` devuelve el array; `readReact33I18nConfig(json)` sigue devolviendo el primero (retrocompat).
+
 ### Codegen (`react-i18n-generate`)
 
 CLI y tercer paso de **`react-generate`**. Escribe:
