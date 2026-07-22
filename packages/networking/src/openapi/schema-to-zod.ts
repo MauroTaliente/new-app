@@ -81,6 +81,27 @@ export function schemaToZodExpr(
     return isNullable(schema) ? `${union}.nullable()` : union;
   }
 
+  if (schema.anyOf && Array.isArray(schema.anyOf)) {
+    const members = schema.anyOf as Record<string, unknown>[];
+    // `anyOf: [X, { type: 'null' }]` is how OpenAPI 3.1 spells "X or null", and
+    // the ONLY way to make a `$ref` nullable — a `$ref` cannot carry a sibling
+    // `nullable`. So the null member is stripped and re-applied as `.nullable()`
+    // rather than becoming a union arm, which keeps a nullable ref reading like
+    // every other nullable value.
+    const hasNull = members.some((m) => m.type === 'null');
+    const rest = members.filter((m) => m.type !== 'null');
+    if (rest.length === 0) return 'z.null()';
+    const parts = rest.map((s, i) =>
+      schemaToZodExpr(ctx, s, rest.length === 1 ? selfName : `${selfName}Any${i}`),
+    );
+    const expr = parts.length === 1 ? parts[0]! : `z.union([${parts.join(', ')}])`;
+    // A member may already be nullable in its own right (3.0 `nullable: true`
+    // alongside a 3.1 null arm); never emit `.nullable().nullable()`.
+    return (hasNull || isNullable(schema)) && !expr.endsWith('.nullable()')
+      ? `${expr}.nullable()`
+      : expr;
+  }
+
   if (schema.allOf && Array.isArray(schema.allOf)) {
     const parts = schema.allOf.map((s, i) => schemaToZodExpr(ctx, s as Record<string, unknown>, `${selfName}All${i}`));
     if (parts.length === 1) return parts[0];
