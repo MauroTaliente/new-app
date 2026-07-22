@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-generate",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "Unified codegen: styles, networking, i18n, and theme runtime from react33.config.json",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",
