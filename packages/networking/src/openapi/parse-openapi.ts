@@ -153,10 +153,21 @@ export async function parseOpenApiFile(
   const abs = resolve(specPath);
   const raw = readFileSync(abs, 'utf8');
   const doc = (abs.endsWith('.json') ? JSON.parse(raw) : parseYaml(raw)) as Record<string, unknown>;
+  // BUNDLE, not dereference. Both inline external files, but `dereference` also
+  // expands every INTERNAL `#/components/schemas/X` in place — which erases the
+  // spec's own vocabulary before any emitter sees it. A component referenced by
+  // twenty operations then became twenty anonymous inline objects, so the
+  // generated zod/types had no `XSchema` to share and consumers could not import
+  // a shared value by name.
+  //
+  // `bundle` keeps internal refs intact, and every emitter already understands
+  // them: `schemaToZodExpr` resolves a `$ref` to `${name}Schema` and emits the
+  // component once, and `resolveResponseSchema` still derefs the TOP-level
+  // response schema so an operation whose whole body is a component keeps
+  // producing its own `…DataSchema`.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const bundled = (await SwaggerParser.dereference(doc as any, {
+  const bundled = (await SwaggerParser.bundle(doc as any, {
     resolve: { external: false },
-    dereference: { circular: 'ignore' },
   })) as Record<string, unknown>;
   const openapi = String(bundled.openapi ?? '');
   assertOpenApi31Plus(openapi);

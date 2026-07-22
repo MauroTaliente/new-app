@@ -196,3 +196,32 @@ describe('generateOpenApi sources', () => {
     expect(zod).toContain("'via'");
   });
 });
+
+describe('component schemas survive as named exports', () => {
+  it('emits a shared component once and references it by name', async () => {
+    // The spec is BUNDLED, not dereferenced: internal `$ref`s stay intact, so a
+    // component used from several places becomes one named schema instead of an
+    // anonymous inline copy per use site. `PaginatedTrips` nests `Trip` (array
+    // items) and `PageMeta`.
+    const parsed = await parseOpenApiFile(demoYaml, fileConfig);
+    const zod = generateZodModuleSource(parsed);
+
+    expect(zod).toContain('export const TripSchema =');
+    expect(zod).toContain('export const PageMetaSchema =');
+    // Referenced, not re-inlined.
+    expect(zod).toContain('z.array(TripSchema)');
+    expect(zod).toContain('meta: PageMetaSchema');
+    // Emitted exactly once no matter how many operations use it.
+    expect(zod.match(/export const TripSchema =/g)).toHaveLength(1);
+  });
+
+  it('declares a component before the schema that references it', async () => {
+    const parsed = await parseOpenApiFile(demoYaml, fileConfig);
+    const zod = generateZodModuleSource(parsed);
+    // Order matters: these are `const`s in one module, so a forward reference
+    // would be a TDZ crash at import time, not a type error.
+    expect(zod.indexOf('export const TripSchema =')).toBeLessThan(
+      zod.indexOf('z.array(TripSchema)'),
+    );
+  });
+});
