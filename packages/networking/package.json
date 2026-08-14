@@ -1,6 +1,6 @@
 {
   "name": "@react33/react-networking",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "HTTP helpers, useAsyncFetch (one in-flight request per instance), and event bus",
   "license": "MIT",
   "author": "Mauro Taliente <mauro.taliente3@gmail.com>",

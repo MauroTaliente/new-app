@@ -25,3 +25,13 @@ describe('DynamicModel typing', () => {
     expectTypeOf(o.fetchOnMount).toEqualTypeOf<boolean | undefined>();
   });
 });
+
+// 0.0.11 — `when` must be reachable from the CODEGEN surface, not only the
+// direct API. `OpenApiHookOverrides` is an explicit Pick, so adding an option
+// to DynamicOptions does NOT expose it to generated hooks by itself — this
+// type-level assertion pins the seam (architecture principle 10).
+describe('OpenApiHookOverrides', () => {
+  it('accepts the `when` declarative gate', () => {
+    expectTypeOf({} as OpenApiHookOverrides<undefined, { ok: boolean }>).toHaveProperty('when');
+  });
+});

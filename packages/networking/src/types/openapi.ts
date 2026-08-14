@@ -4,6 +4,7 @@ export type OpenApiHookOverrides<Params, Data, Response = null> = Partial<
   Pick<
     DynamicOptions<Params, Data, Response>,
     | 'fetchOnMount'
+    | 'when'
     | 'verbose'
     | 'initData'
     | 'prevent'

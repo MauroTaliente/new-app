@@ -10,6 +10,16 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 ## [Unreleased]
 
+### @react33/react-networking `0.0.11`
+
+#### Fixed
+
+- **`when` alcanzable desde los hooks generados.** `OpenApiHookOverrides` es un
+  `Pick` explícito y `when` no estaba en la lista: la opción existía en la API
+  directa pero era inalcanzable desde la superficie codegen — exactamente la
+  trampa del principio 10 (dos superficies de consumo, dos lugares que
+  enhebrar). Cazada al intentar usarla en el consumidor real.
+
 ### @react33/react-networking `0.0.10`
 
 Tres aumentos de `useAsyncFetch`, nacidos de una cacería real de bugs en el
