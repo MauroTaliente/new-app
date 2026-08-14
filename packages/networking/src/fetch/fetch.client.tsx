@@ -38,6 +38,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     name,
     state,
     fetchOnMount = false,
+    when = undefined,
     prevent = false,
     retries = 0,
     retryDelayMs = 0,
@@ -66,7 +67,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
     () => ({
       author: 'unknown',
       localMeta: { ...emptyMeta },
-      loading: initLoading || fetchOnMount || false,
+      loading: initLoading || fetchOnMount || when === true || false,
       params: undefined as Params | undefined,
       isRepeated: false,
       isFirst: true,
@@ -86,6 +87,10 @@ const useAsyncFetch = <Params, Data, Response = null>(
 
   const [endCount, setEndCount] = useState(0);
   const [status, setStatus] = useState<HttpCode>(0);
+  // Terminal-status LEVEL. `status` is deliberately a pulse (endController
+  // resets it so the form latch can re-fire on identical codes) — this is the
+  // persistent sibling consumers can branch on after the pulse cleared.
+  const [lastStatus, setLastStatus] = useState<HttpCode>(0);
 
   const optsRef = useRef({
     name,
@@ -151,6 +156,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
 
   const initialLoading = Boolean(memo.loading && meta.success === 0);
   const hasLoadedOnce = meta.success > 0;
+  const hasFailed = meta.block > 0 || meta.error > 0;
 
   const common = {
     trigger,
@@ -159,6 +165,8 @@ const useAsyncFetch = <Params, Data, Response = null>(
     loading: memo.loading,
     initialLoading,
     hasLoadedOnce,
+    hasFailed,
+    lastStatus,
     data: memo.data,
     params: memo.params,
     isRepeated: memo.isRepeated,
@@ -230,6 +238,17 @@ const useAsyncFetch = <Params, Data, Response = null>(
     return () => { };
   }, []);
 
+  // Declarative gate — one fetch per rising edge of `when` (mount included
+  // when it starts true). This is what `fetchOnMount: <dynamic bool>` cannot
+  // do: that one is a mount-time decision, so an input that resolves after
+  // mount (a role behind a token refresh, a tenant id) never fires and never
+  // recovers. Dedup of identical in-flight params is trigger's job.
+  useEffect(() => {
+    if (when !== true) return;
+    setCount((pre) => pre + 1);
+    return () => { };
+  }, [when]);
+
   useEffect(() => {
     if (count <= endCount) return;
     let alive = true;
@@ -240,6 +259,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
         if (o.prevent) {
           if (!alive) return;
           setStatus(300);
+          setLastStatus(300);
           return;
         }
 
@@ -278,11 +298,20 @@ const useAsyncFetch = <Params, Data, Response = null>(
               : await latest.action(params);
             if (!alive) return;
 
-            memo.error = response.error || response.errors;
-            memo.data = latest.setter(response, params) as ResponseOrData<Data, Response>;
-
             const ok = response.status >= 200 && response.status < 300;
+            if (ok) {
+              memo.error = response.error || response.errors;
+              memo.data = latest.setter(response, params) as ResponseOrData<Data, Response>;
+            } else {
+              // Non-2xx: `data` keeps its last good value (or `initData`).
+              // Running the setter here poured the parsed error body into
+              // `data` wearing the success type — every `if (data)` consumer
+              // then read an envelope as a page ("0 roles", blank screens).
+              // The body IS the error payload, so it lands where errors live.
+              memo.error = response.error ?? response.errors ?? response.data ?? response;
+            }
             setStatus(response.status);
+            setLastStatus(response.status);
 
             if (ok) break;
             decisionStatus = response.status;
@@ -295,6 +324,7 @@ const useAsyncFetch = <Params, Data, Response = null>(
             // UI surfaces the error's status (or 500 fallback) — preserves prior behavior.
             const errStatus = ((error as { status?: number })?.status ?? 500) as HttpCode;
             setStatus(errStatus);
+            setLastStatus(errStatus);
             // Retry decision treats throws as `status: 0` (no response received).
             decisionStatus = 0;
             attemptError = error;

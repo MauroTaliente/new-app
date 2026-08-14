@@ -10,6 +10,41 @@ for **applications** (`apps/*`). **Workspace libraries** (`@react33/react-*`) ar
 
 ## [Unreleased]
 
+### @react33/react-networking `0.0.10`
+
+Tres aumentos de `useAsyncFetch`, nacidos de una cacería real de bugs en el
+consumidor (Trivo dashboard, 2026-08-13/14). Cada uno tiene su test que
+reproduce el síntoma de producción.
+
+#### Changed
+
+- **`data` conserva el último valor bueno en no-2xx.** El `setter` corre SOLO
+  en 2xx; antes corría siempre, y un 4xx/5xx con body JSON volcaba el envelope
+  de error dentro de `data` vestido con el tipo del éxito. Cuatro bugs reales
+  salieron de ahí ("0 roles" ante un 404, crash del chat, pantallas vacías con
+  el backend arriba). En no-2xx el body — que ES el payload de error — aterriza
+  en `error` (`response.error ?? response.errors ?? response.data`), y `data`
+  retiene su último valor bueno o el `initData`. Semánticamente es un fix; los
+  consumidores que leían el envelope desde `data` deben pasar a `error`.
+
+#### Added
+
+- **`lastStatus` (nivel) junto al `status` (pulso).** `status` es transitorio a
+  propósito — `endController` lo limpia a 0 un tick después de terminar para
+  que el latch de forms re-dispare con códigos idénticos — pero se leía como
+  nivel, y cualquier condición persistente construida sobre él vale un render
+  (costó una pantalla blanca intermitente al cambiar de tenant). `lastStatus`
+  es el hermano persistente: el último status terminal, nunca reseteado. JSDoc
+  nuevo en ambos declara cuál es cuál.
+- **`hasFailed`** — hermano de `hasLoadedOnce`: `meta.block > 0 || meta.error > 0`.
+  El nivel booleano de "terminó mal al menos una vez", sin inferirlo de `error`.
+- **`when?: boolean` — gate declarativo.** Dispara un fetch en cada flanco
+  ascendente (montaje incluido si arranca en `true`), con los `params` vigentes.
+  Cubre lo que `fetchOnMount: <bool dinámico>` no puede: esa es una decisión de
+  MONTAJE, y un insumo que resuelve después (un rol detrás de un refresh de
+  token, un tenant id) dejaba la request sin disparar y sin recuperación. A
+  diferencia del `enabled` de react-query, `when` no bloquea `trigger` manual.
+
 Publish order: helpers → hooks → networking → persistence → session →
 config / i18n / theme / react-generate. The **networking** bump carries a
 breaking change (the `watch` API is removed); persistence, session and the demo

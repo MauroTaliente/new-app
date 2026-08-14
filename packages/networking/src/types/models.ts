@@ -235,6 +235,21 @@ export type DynamicOptions<Params = unknown, Data = unknown, Response = null> = 
   onUnauthorized?: (model: DynamicModel<Params, Data, Response>) => void;
   /** Run one fetch on mount using current `memo.params` (from a prior `trigger` or `undefined`). */
   fetchOnMount?: boolean;
+  /**
+   * Declarative gate: fire one fetch each time this transitions to `true`
+   * (including on mount when it starts `true`), using current `memo.params`.
+   *
+   * Use it when the fetch depends on state that resolves AFTER mount — a role
+   * read from a session that is still refreshing, a feature flag, a tenant id.
+   * `fetchOnMount: someBool` cannot express that: it is a mount-time decision,
+   * so when the input arrives later the fetch never fires and never recovers.
+   *
+   *   useListAdminBusinesses({ when: superadmin });
+   *
+   * Unlike react-query's `enabled`, `when` does NOT block manual `trigger`
+   * calls — it only adds rising-edge firing. `undefined` means "no gate".
+   */
+  when?: boolean;
   prevent?: boolean;
   /** Retry budget. See {@link RetryBudget}. Backward-compatible with `retries: number`. */
   retries?: RetryBudget;
@@ -267,11 +282,27 @@ export type DynamicModel<Params, Data, Response = null> = Expand<{
   initialLoading: boolean;
   /** True after at least one successful HTTP completion for this named request. */
   hasLoadedOnce: boolean;
+  /** True after at least one failed HTTP completion (4xx/5xx or throw) for this named request. */
+  hasFailed: boolean;
   params?: Params;
   isRepeated: boolean;
   isFirst: boolean;
   data: ResponseOrData<Data, Response>;
+  /**
+   * TRANSIENT (edge signal, not a level): reflects the current lifecycle for
+   * exactly one paint — 100 while in flight, the terminal code on completion —
+   * and is reset to 0 one tick later so an identical status can re-fire
+   * `useEffect([status])` consumers (the form latch depends on this).
+   * NEVER build persistent conditions on it; use `lastStatus`, `hasLoadedOnce`
+   * or `hasFailed` for state that must survive the pulse.
+   */
   status: HttpCode;
+  /**
+   * PERSISTENT level: the last terminal status of this instance (2xx/3xx/4xx/5xx,
+   * or the throw fallback). `0` until the first completion. Unlike `status`, it
+   * is never reset — this is the value to branch on outside the pulse.
+   */
+  lastStatus: HttpCode;
   error: unknown;
   meta: StaticMeta;
   trigger: (
